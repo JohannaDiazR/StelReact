@@ -1,0 +1,96 @@
+*{
+    padding: 0; 
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Varela', sans-serif;
+    text-decoration: none;
+    list-style: none;
+    
+ }
+ :root {
+    --bg-color: #FDF3CD;
+    --text-color: #ffffff;
+    --main-color:  #1E4C40;
+    --error-color: #a11129;
+    --correcto-color: #1ed12d;
+}
+header {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    right: 0;
+    z-index: 2000; /* Aumentar z-index para asegurarse de que el header esté por encima del contenido */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: rgba(235, 5, 5, 0.5);
+    backdrop-filter: blur(10px);
+    padding: 5px 12%;
+    transition: all .50s ease;
+}
+
+
+.navbar {
+    position: fixed; /* Añadir posición fija al navbar */
+    top: 0; /* Añadir posicionamiento en la parte superior */
+    display: flex;
+    background-color: var(--main-color);
+    text-emphasis-color: var(--text-color);
+    width: 100%;
+    height: 90px; /* Ajustar altura del navbar */
+    text-align: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.navbar a{
+    color: var(--text-color);
+    font-size: 1.3rem;
+    font-weight: 550;
+    padding: 2px 0;
+    margin: 0px 30px;
+    transition: all .50s ease;
+    text-align: center;
+    line-height: 60px;
+    align-items: center;
+    margin-left: 50px;
+    
+   
+    
+}
+
+.navbar a:hover {
+    color: #84c7a2;
+
+}
+
+.navbar a.active{
+    color: var(--main-color);
+
+}
+.style-li {
+    text-decoration: none;
+    text-align: center;
+    margin-top: 10px;
+    line-height: 30px;
+    display: flex;
+    align-items: center;
+    font-weight: 700;
+    height: 40PX;
+}  
+.logo{
+    display: flex;
+    align-items: center;
+    margin-right: 50px;
+    
+}
+
+#LogoSTEL {
+    height: 80px;
+}
+.logo p {
+    color: var(--text-color);
+    font-size: 1.9rem;
+    font-weight: 350;
+    margin-right: 60px;
+}

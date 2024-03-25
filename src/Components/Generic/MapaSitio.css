@@ -1,0 +1,61 @@
+* {
+    padding: 0; 
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Varela', sans-serif;
+    text-decoration: none;
+    list-style: none;
+}
+
+:root {
+    --bg-color: #FDF3CD;
+    --text-color: #ffffff;
+    --main-color:  #1E4C40;
+    --error-color: #a11129;
+    --correcto-color: #1ed12d;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 150px;
+    color: var(--main-color);
+    font-weight: bold;
+    font-size: 2.5rem;
+}
+
+.MapaSitio {
+    text-align: center;
+    margin-top: 50px;
+    margin-bottom: 100px;
+}
+
+.card {
+    margin: 20px auto; /* Centrar la tarjeta */
+    width: 70%; /* Usar un ancho relativo */
+    max-width: 1000px; /* Ancho máximo de la tarjeta */
+    padding: 30px;
+    font-size: 40px; /* Aumentar el tamaño de la letra */
+    font-weight: 400;
+    box-sizing: border-box;
+}
+
+.card-body ul {
+    padding: 0;
+}
+
+.card-body ul li {
+    margin-bottom: 15px;
+}
+
+.card-body ul li a {
+    color: var(--main-color);
+    text-decoration: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.card-body ul li a:hover {
+    color: var(--main-color);
+    opacity: 0.8;
+}

@@ -1,0 +1,130 @@
+* {
+    padding: 0; 
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Varela', sans-serif;
+    text-decoration: none;
+    list-style: none;
+}
+
+:root {
+    --bg-color: #FDF3CD;
+    --text-color: #ffffff;
+    --main-color:  #1E4C40;
+    --error-color: #a11129;
+    --correcto-color: #1ed12d;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 150px;
+    color: var(--main-color);
+    font-weight: bold;
+    font-size: 2.5rem;
+
+}
+
+.Contactanos {
+    text-align: center;
+    margin-top: 50px;
+    margin-bottom: 100px;
+}
+
+.icon {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.info {
+    margin-bottom: 15px;
+}
+
+.info h5 {
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+.info p {
+    margin-bottom: 15px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #1E4C40;
+}
+
+.icon-box.icon-box-style-1 {
+    display: -ms-flexbox;
+    display: -webkit-box;
+    display: flex;
+}
+
+.btn-success {
+    width: 100%;
+    padding: 15px; /* Aumentar el padding para darle más tamaño */
+    font-size: 18px;
+    font-weight: 600;
+    background-color: var(--main-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-success:hover {
+    background-color: var(--main-color); 
+    opacity: 0.8;/* Cambiamos el color de hover del botón */
+}
+
+.card {
+    margin-top: 80px;
+    width: 100%;
+    padding: 20px;
+    font-size: 18px;
+    font-weight: 400;
+    box-sizing: border-box;
+    margin: 0; /* Override any margin if present */
+}
+
+.card-title {
+    text-align: center;
+    color: var(--main-color);
+    margin-top: 10px;
+    font-size: var(--main-color);
+    font-weight: 1.5rem;
+}
+
+iframe {
+    width: 100%;
+    height: 450px;
+    border: 0;
+}
+
+@media (max-width: 768px) {
+    .contact-info .icon {
+        font-size: 20px;
+    }
+
+    .card {
+        position: relative;
+        top: 50px; /* Baja el card 50px en pantallas grandes */
+    }
+
+    .contact-info .info h3 {
+        font-size: 16px;
+    }
+
+    .contact-info .info p {
+        font-size: 14px;
+    }
+
+    .contact-form {
+        padding-left: 0;
+    }
+}

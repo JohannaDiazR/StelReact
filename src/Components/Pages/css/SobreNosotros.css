@@ -1,0 +1,87 @@
+*{
+    padding: 0; 
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Varela', sans-serif;
+    text-decoration: none;
+    list-style: none;
+    
+ }
+ :root {
+    --bg-color: #FDF3CD;
+    --text-color: #ffffff;
+    --main-color:  #1E4C40;
+    --error-color: #a11129;
+    --correcto-color: #1ed12d;
+}
+.SobreNosotros {
+    text-align: center;
+    margin-top: 150px;
+    margin-bottom: 100px;
+    display: flex;
+    justify-content: center; /* Centramos horizontalmente */
+    align-items: center; /* Centramos verticalmente */
+    flex-direction: column; /* Alineamos los elementos en columna */
+}
+
+
+.card {
+    margin: 30px auto;
+    max-width: 800px;
+    border-radius: 15px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 30px;
+}
+
+.card-header {
+    background-color: var(--main-color);  
+   
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    padding: 20px;
+    font-size: 2.5rem;
+    /*text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Sombra para mejorar legibilidad */
+}
+.card-header h1 {
+    margin: 0;  /* Eliminar el margen del h1 */
+    font-size: 2rem;  /* Tamaño de fuente del h1 */
+    color: var(--text-color);
+}
+
+
+.card-body {
+    padding: 30px;
+    font-size: 1.2rem;
+    line-height: 1.6;
+}
+
+.carousel {
+    margin-top: 50px;
+    margin-bottom: 50px;
+    width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    background-size: cover; /* Ajustamos el tamaño del fondo */
+}
+
+.carousel-indicators {
+    bottom: -30px;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+    width: 5%;
+}
+
+.carousel-inner {
+    border-radius: 15px;
+    height: 400px;
+}
+
+.carousel-item img {
+    border-radius: 15px;
+    height: 400px;
+    object-fit: cover; /* Ajustamos el objeto para que se ajuste al contenedor */
+    max-width: 100%;
+    width: auto;
+}

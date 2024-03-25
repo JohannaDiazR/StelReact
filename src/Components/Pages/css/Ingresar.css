@@ -1,0 +1,70 @@
+*{
+    padding: 0; 
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Varela', sans-serif;
+    text-decoration: none;
+    list-style: none;
+    
+ }
+ :root {
+    --bg-color: #FDF3CD;
+    --text-color: #ffffff;
+    --main-color:  #1E4C40;
+    --error-color: #a11129;
+    --correcto-color: #1ed12d;
+}
+h1 {
+    text-align: center;
+    margin-top: 50px;
+    color: var(--main-color);
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+.Ingresar-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    font-weight: bold;
+    color: var(--main-color);
+    font-size: 1.5rem;
+}
+
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #1E4C40;
+}
+
+.btn-block {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: var(--main-color);
+    color: #fff;
+    border: none;
+}
+
+.btn-block:hover {
+    background-color: #218838;
+}

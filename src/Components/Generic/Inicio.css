@@ -1,0 +1,48 @@
+.Inicio {
+    padding: 90px;
+}
+
+.llamadoAccion {
+    margin-bottom: 40px;
+}
+
+.contenedorLlamadoAccion {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.box {
+    position: relative;
+    margin-top: 90px;
+}
+
+/*.box a {
+    position: relative;
+    display: block;
+
+}*/
+
+.box img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.conoceMas {
+    position: absolute;
+    bottom: 20px;
+    left: 75%;
+    transform: translate(-50%, -50%);
+    padding: 10px 20px;
+    background-color: #1E4C40;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    z-index: 1;
+}
+
+.conoceMas:hover {
+    background-color: #84c7a2;
+}

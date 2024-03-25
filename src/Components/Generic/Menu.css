@@ -1,0 +1,93 @@
+*{
+    padding: 0; 
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Varela', sans-serif;
+    text-decoration: none;
+    list-style: none;
+    
+ }
+ :root {
+    --bg-color: #FDF3CD;
+    --text-color: #ffffff;
+    --main-color:  #1E4C40;
+    --error-color: #a11129;
+    --correcto-color: #1ed12d;
+}
+.navbar {
+    position: fixed; /* Añadir posición fija al navbar */
+    top: 0; /* Añadir posicionamiento en la parte superior */
+    display: flex;
+    background-color: var(--main-color);
+    text-emphasis-color: var(--text-color);
+    width: 100%;
+    height: 90px; /* Ajustar altura del navbar */
+    text-align: center;
+    align-items: center;
+    z-index: 2000;
+    
+}
+
+.navbar-nav .nav-item .nav-link {
+    color: white !important;
+    padding: 10px 15px;
+    font-size: 1.0rem;
+
+}
+
+.navbar-nav .nav-item .nav-link:hover {
+    background-color: var(--main-color);
+}
+
+.logo{
+    display: flex;
+    align-items: center;
+    margin-right: 50px;
+    
+}
+
+#LogoSTEL {
+    height: 80px;
+}
+.logo p {
+    color: var(--text-color);
+    font-size: 1.9rem;
+    font-weight: 350;
+    margin-right: 60px;
+}
+
+.dropdown-menu {
+    background-color: var(--main-color);
+    font-size: 0.0rem;
+    text-align: start;
+    border-radius: 10px;
+    
+}
+
+.dropdown-item {
+    color: white !important;
+    font-size: 0.8rem;
+    margin-right: 15px;
+    text-align: start;
+    
+}
+.dropdown-item.centered-text {
+    font-size: 14px; /* Adjust the font size as needed */
+    text-align: start; /* This centers the text */
+  }
+
+.dropdown-item:hover {
+    background-color: var(--main-color);
+    opacity: 0.8;
+    margin-left: 0;
+    
+}
+
+.cerrar-sesion .nav-link {
+    display: flex;
+    align-items: center;
+}
+
+.cerrar-sesion .nav-link:hover {
+    background-color: var(--main-color);
+}

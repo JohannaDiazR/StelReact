@@ -1,0 +1,66 @@
+*{
+    padding: 0; 
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Varela', sans-serif;
+    text-decoration: none;
+    list-style: none;
+    
+ }
+ :root {
+    --bg-color: #FDF3CD;
+    --text-color: #ffffff;
+    --main-color:  #1E4C40;
+    --error-color: #a11129;
+    --correcto-color: #1ed12d;
+}
+.Servicios h1 {
+    color: var(--main-color);
+    text-align: center;
+    font-size: 3.0rem;
+    font-weight: 800;
+    margin-bottom: 50px;
+    margin-top: 150px; /* Ajustamos el margen inferior del h1 */
+}
+
+.Servicios {
+    color: var(--main-color);
+    text-align: center;
+    font-size: 4.5rem;
+    margin-top: 20px; /* Ajustamos el margen superior del contenedor */
+    margin-bottom: 50px; /* Ajustamos el margen inferior del contenedor */
+}
+
+.card-Servicios {
+    margin-top: 10px; /* Ajustamos el margen superior de la tarjeta */
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.card-Servicios:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card-Servicios .card-img {
+    border-top-left-radius: 15px;
+    border-top-right-radius: 10px;
+    margin-top: 20px auto; /* Ajustamos el margen superior de la imagen */
+    max-height: 200px;
+    object-fit: cover;
+}
+
+.card-Servicios .card-body {
+    padding: 20px;
+}
+
+.card-Servicios .card-title {
+    font-size: 2.0rem;
+    margin-bottom: 10px;
+}
+
+.card-Servicios .card-text {
+    font-size: 1.0rem;
+    text-align: justify;
+}
