@@ -58,10 +58,12 @@
 
 .dropdown-menu {
     background-color: var(--main-color);
-    font-size: 0.0rem;
+    font-size: 0.8rem; /* Ajustado el tamaño de fuente para el texto del menú desplegable */
     text-align: start;
     border-radius: 10px;
-    
+    margin-left: 15px; /* Añadido margen izquierdo */
+    min-width: 10rem; /* Ancho mínimo del menú desplegable */
+    overflow: hidden;
 }
 
 .dropdown-item {
@@ -69,19 +71,22 @@
     font-size: 0.8rem;
     margin-right: 15px;
     text-align: start;
+    padding: 8px 16px; 
     
 }
 .dropdown-item.centered-text {
     font-size: 14px; /* Adjust the font size as needed */
     text-align: start; /* This centers the text */
+    
   }
 
-.dropdown-item:hover {
+  .dropdown-item:hover {
     background-color: var(--main-color);
     opacity: 0.8;
     margin-left: 0;
-    
-}
+    padding: 0.5rem 1rem;
+    margin-right: -1rem; /* Adjust margin as needed */
+  }
 
 .cerrar-sesion .nav-link {
     display: flex;
