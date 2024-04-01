@@ -22,7 +22,7 @@ const Cartera = () => {
         },
         worker: {
             id: '',
-            nomtrabajador: ''
+            nomTrabajador: ''
         }
     });
 
@@ -107,7 +107,7 @@ const Cartera = () => {
                 },
                 worker: {
                     id: walletStatus.worker.id,
-                    nomtrabajador: walletStatus.worker.nomtrabajador
+                    nomTrabajador: walletStatus.worker.nomTrabajador
                 }
             });
             setShowForm(false);
@@ -131,7 +131,7 @@ const Cartera = () => {
                 },
                 worker: {
                     id: walletStatus.worker.id,
-                    nomtrabajador: walletStatus.worker.nomtrabajador
+                    nomTrabajador: walletStatus.worker.nomTrabajador
                 }
             });
 
@@ -141,6 +141,17 @@ const Cartera = () => {
         } catch (error) {
             console.error('Error updating wallet:', error);
             setMessage('Error al actualizar el estado de cartera');
+        }
+    };
+
+    const deleteWalletStatus = async (id) => {
+        try {
+            await axios.delete(`http://localhost:8085/api/walletStatus/delete/${id}`);
+            fetchWallets();
+            setMessage('Estado de cartera eliminado correctamente');
+        } catch (error) {
+            console.error('Error deleting wallet:', error);
+            setMessage('Error al eliminar el estado de cartera');
         }
     };
 
@@ -158,7 +169,7 @@ const Cartera = () => {
             },
             worker: {
                 id: '',
-                nomtrabajador: ''
+                nomTrabajador: ''
             }
         });
     };
@@ -178,13 +189,12 @@ const Cartera = () => {
                 },
                 worker: {
                     id:selectedWalletStatus.worker ? selectedWalletStatus.worker.id : '',
-                    nomtrabajador: selectedWalletStatus.worker ? selectedWalletStatus.worker.nomtrabajador : ''
+                    nomTrabajador: selectedWalletStatus.worker ? selectedWalletStatus.worker.nomTrabajador : ''
                 }
             });
         } else {
             console.error('Error: selectedWalletStatus is null');
         }
-        
     };
 
     return (
@@ -325,7 +335,7 @@ const Cartera = () => {
                                 <td>{walletStatus.taccestcartera}</td>
                                 <td>{walletStatus.notiestcartera}</td>
                                 <td>{walletStatus.property ? walletStatus.property.numInmueble : 'N/A'}</td>
-                                <td>{walletStatus.worker ? walletStatus.worker.nomtrabajador : 'N/A'}</td>
+                                <td>{walletStatus.worker ? walletStatus.worker.nomTrabajador : 'N/A'}</td>
                                 <td>
                                     <button 
                                         className="btn btn-primary btn-sm" 
@@ -334,6 +344,14 @@ const Cartera = () => {
                                     >
                                         <i className="bi bi-wallet"></i>
                                         <span className="ms-2">Editar</span>
+                                    </button>
+                                    <button 
+                                        className="btn btn-danger btn-sm ms-2" 
+                                        onClick={() => deleteWalletStatus(walletStatus.id)}
+                                        style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
+                                    >
+                                        <i className="bi bi-trash"></i>
+                                        <span className="ms-2">Eliminar</span>
                                     </button>
                                 </td>
                             </tr>

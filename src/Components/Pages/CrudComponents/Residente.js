@@ -25,8 +25,14 @@ const Residente = () => {
         parking: {
             id: '',
             cupParqueadero: ''
-       }
+        }
     });
+
+    useEffect(() => {
+        fetchResidents();
+        fetchRoles();
+        fetchParkings();
+    }, []);
 
     const fetchResidents = async () => {
         try {
@@ -57,16 +63,9 @@ const Residente = () => {
         }
     };
 
-    useEffect(() => {
-        fetchResidents();
-        fetchRoles();
-        fetchParkings();
-        
-    }, []);
-
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        if (name === 'role.id'){
+        if (name === 'role.id') {
             setResident({
                 ...resident,
                 role: {
@@ -74,7 +73,7 @@ const Residente = () => {
                     id: value
                 }
             });
-        } else if (name === 'parking.id'){
+        } else if (name === 'parking.id') {
             setResident({
                 ...resident,
                 parking: {
@@ -85,8 +84,6 @@ const Residente = () => {
         } else {
             setResident({ ...resident, [name]: value });
         }
-
-        
     };
 
     const handleSubmit = async (e) => {
@@ -150,6 +147,17 @@ const Residente = () => {
         }
     };
 
+    const deleteResident = async (id) => {
+        try {
+            await axios.delete(`http://localhost:8085/api/resident/delete/${id}`);
+            fetchResidents();
+            setMessage('Residente eliminado correctamente');
+        } catch (error) {
+            console.error('Error deleting resident:', error);
+            setMessage('Error al eliminar el residente');
+        }
+    };
+
     const showCreateForm = () => {
         setShowForm(true);
         setFormType('create');
@@ -167,7 +175,7 @@ const Residente = () => {
             parking: {
                 id: '',
                 cupParqueadero: ''
-           }
+            }
         });
     };
 
@@ -188,12 +196,12 @@ const Residente = () => {
                 },
                 parking: {
                     id: selectedResident.parking ? selectedResident.parking.id : '',
-                    cupParqueadero: selectedResident.parking? selectedResident.parking.cupParqueadero : ''
+                    cupParqueadero: selectedResident.parking ? selectedResident.parking.cupParqueadero : ''
                 }
             });
         } else {
             console.error('Error: selectedResident is null');
-        } 
+        }
     };
 
     return (
@@ -202,8 +210,8 @@ const Residente = () => {
             <div className='Residente'>
                 <h2>Lista Residentes <i className="bi bi-person-bounding-box"></i></h2>
 
-                <button 
-                    className="btn btn-success mb-3" 
+                <button
+                    className="btn btn-success mb-3"
                     onClick={showCreateForm}
                     style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
                 >
@@ -218,21 +226,21 @@ const Residente = () => {
                                 {formType === 'create' ? (
                                     <>
                                         <i className="bi bi-person-square"></i>
-                                        <span className="ms-2">Crear Residente</span>  
+                                        <span className="ms-2">Crear Residente</span>
                                     </>
                                 ) : (
                                     <>
                                         <i className="bi bi-person-fill-exclamation"></i>
-                                        <span className="ms-2">Editar Residente</span>                                        
+                                        <span className="ms-2">Editar Residente</span>
                                     </>
                                 )}
                             </h3>
-                            <button 
-                                type="button" 
-                                className="btn-close" 
-                                aria-label="Close" 
+                            <button
+                                type="button"
+                                className="btn-close"
+                                aria-label="Close"
                                 onClick={() => setShowForm(false)}
-                            >  
+                            >
                             </button>
                         </div>
                         <div className='card-body'>
@@ -324,12 +332,12 @@ const Residente = () => {
                                         ))}
                                     </select>
                                 </div>
-                                
+
                                 <button type="submit" className="btn btn-success me-2" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}>
                                     <i className="bi bi-person-square"></i>
-                                    {formType === 'create' ? 'Crear' : 'Editar'}  
+                                    {formType === 'create' ? 'Crear' : 'Editar'}
                                 </button>
-                                <button type="button" className="btn btn-secondary me-2" style={{ backgroundColor: '#a11129'}} onClick={() => setShowForm(false)}>
+                                <button type="button" className="btn btn-secondary me-2" style={{ backgroundColor: '#a11129' }} onClick={() => setShowForm(false)}>
                                     <i className="bi bi-person-fill-x"></i>
                                     <span className="ms-2">Cancelar</span>
                                 </button>
@@ -346,7 +354,7 @@ const Residente = () => {
                             <th>Identificación</th>
                             <th>Correo</th>
                             <th>Celular</th>
-                            <th>Número de integrantes</th>                            
+                            <th>Número de integrantes</th>
                             <th>Role</th>
                             <th>Parking</th>
                             <th>Acciones</th>
@@ -363,15 +371,23 @@ const Residente = () => {
                                 <td>{resident.numIntegrantes}</td>
                                 <td>{resident.role ? resident.role.nombreRol : 'N/A'}</td>
                                 <td>{resident.parking ? resident.parking.cupParqueadero : 'N/A'}</td>
-                                
+
                                 <td>
-                                    <button 
-                                        className="btn btn-primary btn-sm" 
+                                    <button
+                                        className="btn btn-primary btn-sm"
                                         onClick={() => showEditForm(resident)}
                                         style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
                                     >
                                         <i className="bi bi-person-square"></i>
                                         <span className="ms-2">Editar</span>
+                                    </button>
+                                    <button
+                                        className="btn btn-danger btn-sm"
+                                        onClick={() => deleteResident(resident.id)}
+                                        style={{ backgroundColor: '#a11129', borderColor: '#a11129', marginLeft: '5px' }}
+                                    >
+                                        <i className="bi bi-trash"></i>
+                                        <span className="ms-2">Eliminar</span>
                                     </button>
                                 </td>
                             </tr>

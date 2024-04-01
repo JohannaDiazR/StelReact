@@ -179,6 +179,16 @@ const Visitante = () => {
         }
     };
 
+    const deleteVisitor = async (id) => {
+        try {
+            await axios.delete(`http://localhost:8085/api/visitor/delete/${id}`);
+            fetchVisitors();
+        } catch (error) {
+            console.error('Error deleting visitor:', error);
+            setMessage('Error al eliminar el visitante');
+        }
+    };
+
     const showCreateForm = () => {
         setShowForm(true);
         setFormType('create');
@@ -437,13 +447,21 @@ const Visitante = () => {
                                 <td>{visitor.parking ? visitor.parking.cupParqueadero : 'N/A'}</td>
                                 <td>
                                     <button 
-                                        className="btn btn-primary btn-sm" 
+                                        className="btn btn-primary btn-sm me-2" 
                                         onClick={() => showEditForm(visitor)}
                                         style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
                                     >
                                         <i className="bi bi-person-fill-exclamation"></i>
                                         <span className="ms-2">Editar</span>
-                                    </button> 
+                                    </button>
+                                    <button 
+                                        className="btn btn-danger btn-sm" 
+                                        onClick={() => deleteVisitor(visitor.id)}
+                                        style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
+                                    >
+                                        <i className="bi bi-person-x"></i>
+                                        <span className="ms-2">Eliminar</span>
+                                    </button>
                                 </td>
                             </tr>
                         ))}

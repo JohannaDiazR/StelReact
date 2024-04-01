@@ -108,6 +108,17 @@ const Usuario = () => {
         }
     };
 
+    const deleteUser = async (id) => {
+        try {
+            await axios.delete(`http://localhost:8085/api/user/delete/${id}`);
+            fetchUsers();
+            setMessage('Usuario eliminado correctamente');
+        } catch (error) {
+            console.error('Error deleting user:', error);
+            setMessage('Error al eliminar el usuario');
+        }
+    };
+
     const showCreateForm = () => {
         setShowForm(true);
         setFormType('create');
@@ -255,6 +266,14 @@ const Usuario = () => {
                                     >
                                         <i className="bi bi-pen"></i>
                                         <span className="ms-2">Editar</span>
+                                    </button>
+                                    <button 
+                                        className="btn btn-danger btn-sm" 
+                                        onClick={() => deleteUser(user.id)}
+                                        style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
+                                    >
+                                        <i className="bi bi-trash"></i>
+                                        <span className="ms-2">Eliminar</span>
                                     </button>
                                 </td>
                             </tr>

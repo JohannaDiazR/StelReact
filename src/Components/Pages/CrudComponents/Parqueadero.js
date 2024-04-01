@@ -70,6 +70,19 @@ const Parqueadero = () => {
         setMessage('Error al actualizar el Parqueadero');
       }
     };
+
+    const deleteParking = async (id) => {
+        if (window.confirm('¿Estás seguro de que deseas eliminar este parqueadero?')) {
+            try {
+                await axios.delete(`http://localhost:8085/api/parking/delete/${id}`);
+                fetchParkings();
+                setMessage('Parqueadero eliminado correctamente');
+            } catch (error) {
+                console.error('Error deleting parking:', error);
+                setMessage('Error al eliminar el parqueadero');
+            }
+        }
+    };
   
     const showCreateForm = () => {
       setShowForm(true);
@@ -256,6 +269,14 @@ const Parqueadero = () => {
                                     >
                                         <i class="bi bi-pen"></i>
                                         <span className="ms-2">Editar</span>
+                                    </button>
+                                    <button 
+                                        className="btn btn-danger btn-sm ms-2" 
+                                        onClick={() => deleteParking(parking.id)}
+                                        style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
+                                    >
+                                        <i class="bi bi-trash"></i>
+                                        <span className="ms-2">Eliminar</span>
                                     </button>
                                 </td>
                             </tr>

@@ -6,7 +6,7 @@ import './css/Trabajador.css';
 
 const Trabajador = () => {
     const [workers, setWorkers] = useState([]);
-    const [roles, setRoles] = useState([]); //Foranea rol
+    const [roles, setRoles] = useState([]);
     const [message, setMessage] = useState('');
     const [showForm, setShowForm] = useState(false);
     const [formType, setFormType] = useState('create');
@@ -114,6 +114,17 @@ const Trabajador = () => {
         } catch (error) {
             console.error('Error updating worker:', error);
             setMessage('Error al actualizar el trabajador');
+        }
+    };
+
+    const deleteWorker = async (id) => {
+        try {
+            await axios.delete(`http://localhost:8085/api/worker/delete/${id}`);
+            fetchWorkers();
+            setMessage('Trabajador eliminado correctamente');
+        } catch (error) {
+            console.error('Error deleting worker:', error);
+            setMessage('Error al eliminar el trabajador');
         }
     };
 
@@ -334,6 +345,14 @@ const Trabajador = () => {
                                     >
                                         <i className="bi bi-wallet"></i>
                                         <span className="ms-2">Editar</span>
+                                    </button>
+                                    <button 
+                                        className="btn btn-danger btn-sm" 
+                                        onClick={() => deleteWorker(worker.id)}
+                                        style={{ backgroundColor: '#a11129', borderColor: '#a11129', marginLeft: '5px' }}
+                                    >
+                                        <i className="bi bi-trash"></i>
+                                        <span className="ms-2">Eliminar</span>
                                     </button>
                                 </td>
                             </tr>

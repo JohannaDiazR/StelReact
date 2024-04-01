@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Menu from '../../Generic/Menu';
 import Footer from '../../Generic/Footer';
-import './css/Inmueble.css'
+import './css/Inmueble.css';
 
 const Inmueble = () => {
-    const [properties, Setproperties] = useState([]);
+    const [properties, setProperties] = useState([]);
     const [residents, setResidents] = useState([]);
     const [message, setMessage] = useState('');
     const [showForm, setShowForm] = useState(false);
@@ -14,7 +14,7 @@ const Inmueble = () => {
         id: '',
         andInmueble: '',
         numInmueble: '',
-        resident : {
+        resident: {
             id: '',
             nomResidente: ''
         }
@@ -23,7 +23,7 @@ const Inmueble = () => {
     const fetchProperties = async () => {
         try {
             const response = await axios.get('http://localhost:8085/api/property/all');
-            Setproperties(response.data.data);
+            setProperties(response.data.data);
             setMessage('');
         } catch (error) {
             console.error('Error fetching properties:', error);
@@ -36,17 +36,18 @@ const Inmueble = () => {
             const response = await axios.get('http://localhost:8085/api/resident/all');
             setResidents(response.data.data);
         } catch (error) {
-            console.error('Error fetching roles:', error);
+            console.error('Error fetching residents:', error);
         }
     };
+
     useEffect(() => {
         fetchProperties();
         fetchResidents();
     }, []);
 
     const handleInputChange = (e) => {
-        const {name, value} = e.target;
-        if (name === 'resident.id'){
+        const { name, value } = e.target;
+        if (name === 'resident.id') {
             setProperty({
                 ...property,
                 resident: {
@@ -55,7 +56,7 @@ const Inmueble = () => {
                 }
             });
         } else {
-            setProperty({...property, [name]: value });
+            setProperty({ ...property, [name]: value });
         }
     };
 
@@ -67,6 +68,7 @@ const Inmueble = () => {
             await updateProperty();
         }
     };
+
     const createProperty = async () => {
         try {
             await axios.post('http://localhost:8085/api/property/create', {
@@ -79,7 +81,7 @@ const Inmueble = () => {
             });
             setShowForm(false);
             fetchProperties();
-        }catch (error) {
+        } catch (error) {
             console.error('Error creating property:', error);
             setMessage('Error al crear el inmueble');
         }
@@ -102,6 +104,18 @@ const Inmueble = () => {
             setMessage('Error al actualizar el inmueble');
         }
     };
+
+    const deleteProperty = async (id) => {
+        try {
+            await axios.delete(`http://localhost:8085/api/property/delete/${id}`);
+            fetchProperties();
+            setMessage('Inmueble eliminado correctamente');
+        } catch (error) {
+            console.error('Error deleting property:', error);
+            setMessage('Error al eliminar el inmueble');
+        }
+    };
+
     const showCreateForm = () => {
         setShowForm(true);
         setFormType('create');
@@ -115,6 +129,7 @@ const Inmueble = () => {
             }
         });
     };
+
     const showEditForm = (selectedProperty) => {
         if (selectedProperty) {
             setShowForm(true);
@@ -131,49 +146,44 @@ const Inmueble = () => {
         } else {
             console.error('Error: selectedProperty is null');
         }
-        
     };
 
     return (
         <>
             <Menu />
             <div className='Property'>
-
                 <h2>Lista Inmuebles <i className="bi bi-house-fill"></i></h2>
-
                 <button
                     className="btn btn-success mb-3"
                     onClick={showCreateForm}
-                    style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40'}} 
+                    style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
                 >
-                    <i class="bi bi-house-add"></i>
+                    <i className="bi bi-house-add"></i>
                     <span className='ms-2'>Crear Inmueble</span>
                 </button>
-
                 {showForm && (
                     <div className='card'>
                         <div className='card-header'>
                             <h3 className='card-title'>
                                 {formType === 'create' ? (
                                     <>
-                                        <i class="bi bi-house-add"></i>
+                                        <i className="bi bi-house-add"></i>
                                         <span className='ms-2'>Crear Inmueble</span>
                                     </>
                                 ) : (
                                     <>
-                                        <i class="bi bi-house-gear-fill"></i>
+                                        <i className="bi bi-house-gear-fill"></i>
                                         <span className='ms-2'>Editar Inmueble</span>
                                     </>
                                 )}
                             </h3>
                             <button
-                                type="button" 
-                                className="btn-close" 
-                                aria-label="Close" 
+                                type="button"
+                                className="btn-close"
+                                aria-label="Close"
                                 onClick={() => setShowForm(false)}
-                            >
-                            </button>
-                        </div>    
+                            ></button>
+                        </div>
                         <div className='card-body'>
                             <form onSubmit={handleSubmit}>
                                 <div className='mb-3'>
@@ -199,14 +209,14 @@ const Inmueble = () => {
                                     />
                                 </div>
                                 <div className='mb-3'>
-                                    <label className='form-label'>Resident</label>
+                                    <label className='form-label'>Residente</label>
                                     <select
                                         className='form-select'
                                         name='resident.id'
                                         value={property.resident.id}
                                         onChange={handleInputChange}
                                     >
-                                        <option value="">Seleccione un resident</option>
+                                        <option value="">Seleccione un residente</option>
                                         {residents.map((resident) => (
                                             <option key={resident.id} value={resident.id}>
                                                 {resident.nomResidente}
@@ -215,16 +225,16 @@ const Inmueble = () => {
                                     </select>
                                 </div>
                                 <button type="submit" className="btn btn-success me-2" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}>
-                                    <i class="bi bi-house-check-fill"></i>
-                                    {formType === 'create' ? 'Crear' : 'Editar'}  
+                                    <i className="bi bi-house-check-fill"></i>
+                                    {formType === 'create' ? 'Crear' : 'Editar'}
                                 </button>
-                                <button type="button" className="btn btn-secondary me-2"style={{ backgroundColor: '#a11129'}} onClick={() => setShowForm(false)}>
-                                    <i class="bi bi-house-x-fill"></i>
+                                <button type="button" className="btn btn-secondary me-2" style={{ backgroundColor: '#a11129' }} onClick={() => setShowForm(false)}>
+                                    <i className="bi bi-house-x-fill"></i>
                                     <span className="ms-2">Cancelar</span>
                                 </button>
                             </form>
-                        </div>    
-                    </div>    
+                        </div>
+                    </div>
                 )}
 
                 <table className='table mt-4'>
@@ -232,8 +242,8 @@ const Inmueble = () => {
                         <tr>
                             <th>Id</th>
                             <th>Anden</th>
-                            <th> Número Inmueble</th>
-                            <th>Resident</th>
+                            <th>Número Inmueble</th>
+                            <th>Residente</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -245,13 +255,21 @@ const Inmueble = () => {
                                 <td>{property.numInmueble}</td>
                                 <td>{property.resident ? property.resident.nomResidente : 'N/A'}</td>
                                 <td>
-                                    <button 
-                                        className="btn btn-primary btn-sm" 
+                                    <button
+                                        className="btn btn-primary btn-sm"
                                         onClick={() => showEditForm(property)}
                                         style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
                                     >
-                                        <i class="bi bi-house-check-fill"></i>
+                                        <i className="bi bi-house-check-fill"></i>
                                         <span className="ms-2">Editar</span>
+                                    </button>
+                                    <button
+                                        className="btn btn-danger btn-sm"
+                                        onClick={() => deleteProperty(property.id)}
+                                        style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
+                                    >
+                                        <i className="bi bi-trash"></i>
+                                        <span className="ms-2">Eliminar</span>
                                     </button>
                                 </td>
                             </tr>
@@ -262,7 +280,7 @@ const Inmueble = () => {
             </div>
             <Footer />
         </>
+    );
+};
 
-    )
-}
 export default Inmueble;
