@@ -35,7 +35,7 @@ function App() {
           <Route path='/Ingresar' element={<Ingresar />} />
           <Route path='/Mapa-Sitio' element={<MapaSitio />} />
           <Route path='/Menu' element={<Menu />} />
-          <Route path='/Dashboard' element={<Dashboard />} />
+          <Route path='/Dashboard' element={<Dashboard /> } />
           <Route path='/Usuario' element={<Usuario />} />
           <Route path='/Inmueble' element={<Inmueble />} />
           <Route path='/Cartera' element={<Cartera />} />

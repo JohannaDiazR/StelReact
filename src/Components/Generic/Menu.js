@@ -1,15 +1,17 @@
 import React from 'react';
 import './Menu.css'
 import { Link } from 'react-router-dom';
-import imagen from './imagen/logoblanco.png';
+import imagen from './imagen/logoblanco.PNG';
 
 const Menu = () => {
   return (
     <>
       <nav className="navbar navbar-expand-lg ">
         <div className='logo'>
-          <img src={imagen} alt="logoblanco" id='LogoSTEL' />
-          <p className='stel'>STEL</p>
+          <Link to="/Dashboard" className="d-flex align-items-center">
+            <img src={imagen} alt="logoblanco" id='LogoSTEL' />
+            
+          </Link>
         </div>
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
           <span className="navbar-toggler-icon"></span>
@@ -35,13 +37,13 @@ const Menu = () => {
               </ul>
             </li>
             <li className="nav-item dropdown align-self-center">
-              <a className="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Alquiler Parqueaderos <i className="bi bi-car-front-fill"></i></a>
+              <a className="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Parqueadero<i className="bi bi-car-front-fill"></i></a>
               <ul className="dropdown-menu">
                 <li><Link className="dropdown-item centered-text" to="/parqueadero">Parqueadero</Link></li>
               </ul>
             </li>
             <li className="nav-item dropdown align-self-center">
-              <a className="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Comunicación <i className="bi bi-broadcast"></i></a>
+              <a className="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Comunicación <i className="bi bi-chat-left-text"></i></a>
               <ul className="dropdown-menu">
                 <li><Link className="dropdown-item centered-text" to="/correspondencia">Correspondencia</Link></li>
                 <li><Link className="dropdown-item centered-text" to="/novedades">Novedades</Link></li>
@@ -49,7 +51,10 @@ const Menu = () => {
             </li>
 
             <li className="nav-item align-self-center">
-              <Link className="nav-link active text-white d-flex justify-content-end" to="/cerrar-sesion">Cerrar sesión</Link>
+              <Link className="nav-link active text-white d-flex justify-content-end" to="/">
+                Salir 
+                <span className="ml-2"><i className="bi bi-door-closed"></i></span>
+              </Link>
             </li>
           </ul>
         </div>

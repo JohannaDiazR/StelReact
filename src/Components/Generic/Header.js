@@ -1,5 +1,5 @@
 import React from 'react';
-import imagen from './imagen/logoblanco.png'
+import imagen from './imagen/logoblanco.PNG';
 import './Header.css'
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 const Header = () => {
@@ -9,8 +9,9 @@ const Header = () => {
 
                 <ul className="navbar">
                     <div className='logo'>
+                    <Link to="/" className="d-flex align-items-center">
                         <img src={imagen} alt="logoblanco" id='LogoSTEL' />
-                        <p>STEL</p>
+                    </Link>
                     </div>
                     <li><Link to="/" className="style-li">Inicio</Link></li>
                     <li><Link to="/sobre-nosotros" className='style-li'>Sobre nosotros</Link></li>

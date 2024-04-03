@@ -25,13 +25,19 @@
     text-align: center;
     align-items: center;
     z-index: 2000;
+    margin-left: auto;
     
 }
+.navbar-nav {
+    margin-left: auto; /* Esto moverá el menú hacia la izquierda */
+  }
+  
 
 .navbar-nav .nav-item .nav-link {
     color: white !important;
     padding: 10px 15px;
     font-size: 1.0rem;
+    margin-left: 40px;
 
 }
 
@@ -42,9 +48,14 @@
 .logo{
     display: flex;
     align-items: center;
-    margin-right: 50px;
-    
+    margin-right: 5px;
 }
+.logo a {
+    display: flex;
+    align-items: center;
+    text-decoration: none; /* Elimina el subrayado del enlace */
+    color: #fff;
+  }
 
 #LogoSTEL {
     height: 80px;
@@ -54,6 +65,7 @@
     font-size: 1.9rem;
     font-weight: 350;
     margin-right: 60px;
+    text-decoration: none;
 }
 
 .dropdown-menu {
@@ -88,11 +100,12 @@
     margin-right: -1rem; /* Adjust margin as needed */
   }
 
-.cerrar-sesion .nav-link {
+.Salir .nav-link {
     display: flex;
     align-items: center;
 }
 
-.cerrar-sesion .nav-link:hover {
+.Salir .nav-link:hover {
     background-color: var(--main-color);
+    font-size: 14px;
 }

@@ -84,6 +84,13 @@ header {
     margin-right: 50px;
     
 }
+.logo a {
+    display: flex;
+    align-items: center;
+    text-decoration: none; /* Elimina el subrayado del enlace */
+    color: #fff;
+  }
+
 
 #LogoSTEL {
     height: 80px;
