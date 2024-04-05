@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import Footer from '../../Generic/Footer';
 import Menu from '../../Generic/Menu';
 import './css/Residente.css';
-import Footer from '../../Generic/Footer';
 
 const Residente = () => {
     const [residents, setResidents] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [residentsPerPage] = useState(10); // Cantidad de residentes por página
     const [roles, setRoles] = useState([]);
     const [parkings, setParkings] = useState([]);
     const [message, setMessage] = useState('');
@@ -204,6 +206,16 @@ const Residente = () => {
         }
     };
 
+    // Función para manejar el cambio de página
+    const paginate = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
+
+    // Calcular los residentes a mostrar en la página actual
+    const indexOfLastResident = currentPage * residentsPerPage;
+    const indexOfFirstResident = indexOfLastResident - residentsPerPage;
+    const currentResidents = residents.slice(indexOfFirstResident, indexOfLastResident);
+
     return (
         <>
             <Menu />
@@ -211,9 +223,9 @@ const Residente = () => {
                 <h2>Lista Residentes <i className="bi bi-person-bounding-box"></i></h2>
 
                 <button
-                    className="btn btn-success mb-3"
-                    onClick={showCreateForm}
-                    style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
+                   className="btn btn-success mb-3 smaller-button" 
+                   onClick={showCreateForm}
+                   style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
                 >
                     <i className="bi bi-person-square"></i>
                     <span className="ms-2">Crear Residente</span>
@@ -361,7 +373,7 @@ const Residente = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {residents.map((resident) => (
+                        {currentResidents.map((resident) => (
                             <tr key={resident.id}>
                                 <td>{resident.id}</td>
                                 <td>{resident.nomResidente}</td>
@@ -394,6 +406,19 @@ const Residente = () => {
                         ))}
                     </tbody>
                 </table>
+
+                <div className="pagination">
+                    {residents.length > 0 && (
+                        <ul className="pagination-list">
+                            {Array(Math.ceil(residents.length / residentsPerPage)).fill().map((_, i) => (
+                                <li key={i + 1} className={`pagination-item ${currentPage === i + 1 ? 'active' : ''}`}>
+                                    <button onClick={() => paginate(i + 1)} className="pagination-link">{i + 1}</button>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
+
                 {message && <p>{message}</p>}
             </div>
             <Footer />
@@ -402,3 +427,4 @@ const Residente = () => {
 }
 
 export default Residente;
+

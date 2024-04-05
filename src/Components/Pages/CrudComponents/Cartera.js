@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import Menu from '../../Generic/Menu';
+import React, { useEffect, useState } from 'react';
 import Footer from '../../Generic/Footer';
+import Menu from '../../Generic/Menu';
 import './css/Cartera.css';
 
 const Cartera = () => {
@@ -25,6 +25,27 @@ const Cartera = () => {
             nomTrabajador: ''
         }
     });
+
+    const estadosCartera = [
+        { id: 1, nombre: 'Mora' },
+        { id: 2, nombre: 'Paz y Salvo' }
+    ];
+
+    const tiposAcceso = [
+        { id: 1, nombre: 'Permitido' },
+        { id: 2, nombre: 'Bloqueado' }
+    ];
+
+    const opcionesNotificar = [
+        { id: 1, nombre: 'Notificar residente' },
+        { id: 2, nombre: 'Enviar certificado' }
+    ];
+
+    useEffect(() => {
+        fetchWallets();
+        fetchProperties();
+        fetchWorkers();
+    }, []);
 
     const fetchWallets = async () => {
         try {
@@ -55,29 +76,23 @@ const Cartera = () => {
         }
     };
 
-    useEffect(() => {
-        fetchWallets();
-        fetchProperties();
-        fetchWorkers();
-    }, []);
-
     const handleInputChange = (e) => {
         const { name, value } = e.target;
 
-        if (name === 'property.id') {
+        if (name === 'property.id' || name === 'property.numInmueble') {
             setWalletStatus({
                 ...walletStatus,
                 property: {
                     ...walletStatus.property,
-                    id: value
+                    [name.split('.')[1]]: value
                 }
             });
-        } else if (name === 'worker.id') {
+        } else if (name === 'worker.id' || name === 'worker.nomTrabajador') {
             setWalletStatus({
                 ...walletStatus,
                 worker: {
                     ...walletStatus.worker,
-                    id: value
+                    [name.split('.')[1]]: value
                 }
             });
         } else {
@@ -101,14 +116,8 @@ const Cartera = () => {
                 estcartera: walletStatus.estcartera,
                 taccestcartera: walletStatus.taccestcartera,
                 notiestcartera: walletStatus.notiestcartera,
-                property: {
-                    id: walletStatus.property.id,
-                    numInmueble: walletStatus.property.numInmueble
-                },
-                worker: {
-                    id: walletStatus.worker.id,
-                    nomTrabajador: walletStatus.worker.nomTrabajador
-                }
+                property: walletStatus.property,
+                worker: walletStatus.worker
             });
             setShowForm(false);
             fetchWallets();
@@ -125,14 +134,8 @@ const Cartera = () => {
                 estcartera: walletStatus.estcartera,
                 taccestcartera: walletStatus.taccestcartera,
                 notiestcartera: walletStatus.notiestcartera,
-                property: {
-                    id: walletStatus.property.id,
-                    numInmueble: walletStatus.property.numInmueble
-                },
-                worker: {
-                    id: walletStatus.worker.id,
-                    nomTrabajador: walletStatus.worker.nomTrabajador
-                }
+                property: walletStatus.property,
+                worker: walletStatus.worker
             });
 
             setShowForm(false);
@@ -183,18 +186,24 @@ const Cartera = () => {
                 estcartera: selectedWalletStatus.estcartera,
                 taccestcartera: selectedWalletStatus.taccestcartera,
                 notiestcartera: selectedWalletStatus.notiestcartera,
-                property: {
-                    id:selectedWalletStatus.property ? selectedWalletStatus.property.id : '',
-                    numInmueble: selectedWalletStatus.property? selectedWalletStatus.property.numInmueble : ''
-                },
-                worker: {
-                    id:selectedWalletStatus.worker ? selectedWalletStatus.worker.id : '',
-                    nomTrabajador: selectedWalletStatus.worker ? selectedWalletStatus.worker.nomTrabajador : ''
-                }
+                property: selectedWalletStatus.property,
+                worker: selectedWalletStatus.worker
             });
         } else {
             console.error('Error: selectedWalletStatus is null');
         }
+    };
+
+    const itemsPerPage = 10;
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const lastIndex = currentPage * itemsPerPage;
+    const firstIndex = lastIndex - itemsPerPage;
+    const currentItems = wallets.slice(firstIndex, lastIndex);
+    const totalPages = Math.ceil(wallets.length / itemsPerPage);
+
+    const changePage = (page) => {
+        setCurrentPage(page);
     };
 
     return (
@@ -204,7 +213,7 @@ const Cartera = () => {
                 <h2>Lista Cartera <i className="bi bi-wallet"></i></h2>
 
                 <button
-                    className="btn btn-success mb-3"
+                    className="btn btn-success mb-3 smaller-button" 
                     onClick={showCreateForm}
                     style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
                 >
@@ -240,36 +249,51 @@ const Cartera = () => {
                             <form onSubmit={handleSubmit}>
                                 <div className='mb-3'>
                                     <label className='form-label'>Estado</label>
-                                    <input
-                                        type='text'
-                                        className='form-control'
-                                        placeholder='Estado'
+                                    <select
+                                        className='form-select'
                                         name='estcartera'
                                         value={walletStatus.estcartera}
                                         onChange={handleInputChange}
-                                    />
+                                    >
+                                        <option value="">Seleccionar estado</option>
+                                        {estadosCartera.map((estado) => (
+                                            <option key={estado.id} value={estado.nombre}>
+                                                {estado.nombre}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
                                 <div className='mb-3'>
                                     <label className='form-label'>Tipo Acceso</label>
-                                    <input
-                                        type='text'
-                                        className='form-control'
-                                        placeholder='Tipo Acceso'
+                                    <select
+                                        className='form-select'
                                         name='taccestcartera'
                                         value={walletStatus.taccestcartera}
                                         onChange={handleInputChange}
-                                    />
+                                    >
+                                        <option value="">Seleccionar tipo de acceso</option>
+                                        {tiposAcceso.map((tipo) => (
+                                            <option key={tipo.id} value={tipo.nombre}>
+                                                {tipo.nombre}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
                                 <div className='mb-3'>
                                     <label className='form-label'>Notificar</label>
-                                    <input
-                                        type='text'
-                                        className='form-control'
-                                        placeholder='Notificar'
+                                    <select
+                                        className='form-select'
                                         name='notiestcartera'
                                         value={walletStatus.notiestcartera}
                                         onChange={handleInputChange}
-                                    />
+                                    >
+                                        <option value="">Seleccionar opción de notificación</option>
+                                        {opcionesNotificar.map((opcion) => (
+                                            <option key={opcion.id} value={opcion.nombre}>
+                                                {opcion.nombre}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
                                 <div className='mb-3'>
                                     <label className='form-label'>Property</label>
@@ -295,10 +319,10 @@ const Cartera = () => {
                                         value={walletStatus.worker.id}
                                         onChange={handleInputChange}
                                     >
-                                        <option value="">Seleccione un trabajador</option>  {/* Agregar opción por defecto */}
+                                        <option value="">Seleccione un trabajador</option>  
                                         {workers.map((worker) => (
                                             <option key={worker.id} value={worker.id}>
-                                                {worker.nomtrabajador}
+                                                {worker.nomTrabajador}
                                             </option>
                                         ))}
                                     </select>
@@ -328,7 +352,7 @@ const Cartera = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {wallets.map((walletStatus) => (
+                        {currentItems.map((walletStatus) => (
                             <tr key={walletStatus.id}>
                                 <td>{walletStatus.id}</td>
                                 <td>{walletStatus.estcartera}</td>
@@ -358,6 +382,25 @@ const Cartera = () => {
                         ))}
                     </tbody>    
                 </table>
+
+                <div className="pagination">
+                    <ul className="pagination-list">
+                        {Array.from({ length: totalPages }, (_, index) => (
+                            <li
+                                key={index}
+                                className={`pagination-item ${currentPage === index + 1 ? 'active' : ''}`}
+                            >
+                                <button
+                                    className="pagination-link"
+                                    onClick={() => changePage(index + 1)}
+                                >
+                                    {index + 1}
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+
                 {message && <p>{message}</p>}
             </div>
             <Footer />

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import Menu from '../../Generic/Menu';
+import React, { useEffect, useState } from 'react';
 import Footer from '../../Generic/Footer';
+import Menu from '../../Generic/Menu';
 import './css/Trabajador.css';
 
 const Trabajador = () => {
@@ -24,10 +24,12 @@ const Trabajador = () => {
             nombreRol: ''
         }
     });
+    const [currentPage, setCurrentPage] = useState(1);
+    const [workersPerPage] = useState(10); // Cantidad de trabajadores por página
 
     const fetchWorkers = async () => {
         try {
-            const response = await axios.get('http://localhost:8085/api/worker/all');
+            const response = await axios.get(`http://localhost:8085/api/worker/all`);
             setWorkers(response.data.data);
             setMessage('');
         } catch (error) {
@@ -166,22 +168,30 @@ const Trabajador = () => {
                 }
             });
         } else {
-            console.error('Error: selectedWorker is null'); 
+            console.error('Error: selectedWorker is null');
         }
-        
+    };
+
+    // Paginación
+    const indexOfLastWorker = currentPage * workersPerPage;
+    const indexOfFirstWorker = indexOfLastWorker - workersPerPage;
+    const currentWorkers = workers.slice(indexOfFirstWorker, indexOfLastWorker);
+
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
     };
 
     return (
         <>
             <Menu />
             <div className='Worker'>
-                <h2>Lista Trabajadores <i class="bi bi-universal-access-circle"></i></h2>
+                <h2>Lista Trabajadores <i className="bi bi-universal-access-circle"></i></h2>
                 <button
-                    className="btn btn-success mb-3"
+                    className="btn btn-success mb-3 smaller-button" 
                     onClick={showCreateForm}
                     style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
                 >
-                    <i class="bi bi-universal-access-circle"></i>
+                    <i className="bi bi-universal-access-circle"></i>
                     <span className='ms-2'>Crear Trabajador</span>
                 </button>
 
@@ -191,12 +201,12 @@ const Trabajador = () => {
                             <h3 className='card-title'>
                                 {formType === 'create' ? (
                                     <>
-                                        <i class="bi bi-person-lines-fill"></i>
+                                        <i className="bi bi-person-lines-fill"></i>
                                         <span className='ms-2'>Crear Trabajador</span>
                                     </>
                                 ) : (
                                     <>
-                                        <i class="bi bi-wrench-adjustable"></i>
+                                        <i className="bi bi-wrench-adjustable"></i>
                                         <span className='ms-2'>Editar Trabajador</span>
                                     </>
                                 )}
@@ -326,7 +336,7 @@ const Trabajador = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {workers.map((worker) => (
+                        {currentWorkers.map((worker) => (
                             <tr key={worker.id}>
                                 <td>{worker.id}</td>
                                 <td>{worker.nomTrabajador}</td>
@@ -359,11 +369,20 @@ const Trabajador = () => {
                         ))}
                     </tbody>    
                 </table>
+                <div className="pagination">
+                    <ul className="pagination-list">
+                        {Array(Math.ceil(workers.length / workersPerPage)).fill().map((_, i) => (
+                            <li key={i + 1} className={`pagination-item ${currentPage === i + 1 ? 'active' : ''}`}>
+                                <button onClick={() => handlePageChange(i + 1)} className="pagination-link">{i + 1}</button>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
                 {message && <p>{message}</p>}
             </div>
             <Footer />
         </>
-    )
+    );
 }
 
 export default Trabajador;

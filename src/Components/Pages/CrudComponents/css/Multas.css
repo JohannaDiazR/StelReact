@@ -1,20 +1,4 @@
-
-*{
-    padding: 0; 
-    margin: 0;
-    box-sizing: border-box;
-    font-family: 'Varela', sans-serif;
-    text-decoration: none;
-    list-style: none;
-    
- }
- :root {
-    --bg-color: #FDF3CD;
-    --text-color: #ffffff;
-    --main-color:  #1E4C40;
-    --error-color: #a11129;
-    --correcto-color: #1ed12d;
-}
+/* Estilos para la sección de Multas */
 .Multas h2 {
     color: var(--main-color);
     text-align: center;
@@ -23,26 +7,90 @@
     margin-bottom: 50px;
     margin-top: 150px; /* Ajustamos el margen inferior del h1 */
 }
-.table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    
+
+.Multas .table {
+    max-width: none; /* Elimina el ancho máximo */
+    width: 80%; /* Reducir el ancho de la tabla */
+    margin: 20px auto; /* Centrar la tabla */
+    border-collapse: collapse; /* Combina los bordes de las celdas */
 }
 
-.table th, .table td {
-    border: 1px solid var(--main-color);
-    text-align: left;
-    padding: 8px;
+/* Ajustes para las celdas de la tabla */
+.Multas .table th,
+.Multas .table td {
+    padding: 6px; /* Reducir el relleno de las celdas */
+    font-size: 14px; /* Reducir el tamaño de la fuente */
 }
 
-.table th {
-    background-color:var(--main-color);
+.Multas .table th {
+    background-color: var(--main-color);
     color: var(--text-color);
     text-align: center;
 }
 
-.table-title {
+.Multas .table-title {
     margin-top: 20px;
     font-size: 24px;
 }
+
+/* Estilos para la paginación en la sección de Multas */
+.Multas .pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.Multas .pagination-list {
+    display: flex;
+}
+
+.Multas .pagination-item {
+    margin: 0 5px;
+}
+
+.Multas .pagination-link {
+    padding: 5px 10px;
+    background-color: var(--main-color);
+    color: var(--text-color);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.Multas .pagination-item.active .pagination-link {
+    background-color: var(--correcto-color);
+}
+
+/* Multas.css */
+
+.pagination {
+    display: inline-block;
+  }
+  
+  .pagination .page-link {
+    color: #1E4C40;
+    background-color: transparent;
+    border: 1px solid #1E4C40;
+    padding: 8px 16px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+  }
+  
+  .pagination .page-link:hover {
+    background-color: #1E4C40;
+    color: #fff;
+  }
+  
+  .pagination .page-item.active .page-link {
+    background-color: #1E4C40;
+    border-color: #1E4C40;
+    color: #fff;
+  }
+  
+  .pagination .page-item.disabled .page-link {
+    color: #6c757d;
+    pointer-events: none;
+    background-color: transparent;
+    border-color: #6c757d;
+  }
+  

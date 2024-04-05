@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import Footer from '../../Generic/Footer';
 import Menu from '../../Generic/Menu';
 import './css/Visitante.css';
-import Footer from '../../Generic/Footer';
 
 const Visitante = () => {
     const [visitors, setVisitors] = useState([]);
@@ -34,6 +34,9 @@ const Visitante = () => {
        }
     });
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const [visitorsPerPage] = useState(10);
+
     const fetchVisitors = async () => {
         try {
             const response = await axios.get('http://localhost:8085/api/visitor/all');
@@ -44,6 +47,7 @@ const Visitante = () => {
             setMessage('Error al listar los visitantes');
         }
     };
+
     const fetchWorkers = async () => {
         try {
             const response = await axios.get('http://localhost:8085/api/worker/all');
@@ -52,6 +56,7 @@ const Visitante = () => {
             console.error('Error fetching workers:', error);
         }
     };
+
     const fetchProperties = async () => {
         try {
             const response = await axios.get('http://localhost:8085/api/property/all');
@@ -60,6 +65,7 @@ const Visitante = () => {
             console.error('Error fetching property:', error);
         }
     };
+
     const fetchParkings = async () => {
         try {
             const response = await axios.get('http://localhost:8085/api/parking/all');
@@ -108,7 +114,6 @@ const Visitante = () => {
             setVisitor({ ...visitor, [name]: value });
         }
     };
-    
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -244,6 +249,12 @@ const Visitante = () => {
         }
         
     };
+
+    const indexOfLastVisitor = currentPage * visitorsPerPage;
+    const indexOfFirstVisitor = indexOfLastVisitor - visitorsPerPage;
+    const currentVisitors = visitors.slice(indexOfFirstVisitor, indexOfLastVisitor);
+
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     return (
         <>
@@ -433,7 +444,7 @@ const Visitante = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {visitors.map((visitor) => (
+                        {currentVisitors.map((visitor) => (
                             <tr key={visitor.id}>
                                 <td>{visitor.id}</td>
                                 <td>{visitor.nomVisitante}</td>
@@ -468,6 +479,18 @@ const Visitante = () => {
                     </tbody>  
                 </table>
                 {message && <p>{message}</p>}
+                <nav>
+                    <ul className='pagination'>
+                        {visitorsPerPage &&
+                            Array.from({ length: Math.ceil(visitors.length / visitorsPerPage) }).map((_, index) => (
+                                <li key={index} className='page-item'>
+                                    <button onClick={() => paginate(index + 1)} className='page-link'>
+                                        {index + 1}
+                                    </button>
+                                </li>
+                            ))}
+                    </ul>
+                </nav>
             </div>
             <Footer />
         </>

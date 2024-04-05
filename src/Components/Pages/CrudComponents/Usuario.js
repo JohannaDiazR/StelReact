@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import Footer from '../../Generic/Footer';
 import Menu from '../../Generic/Menu';
 import './css/Usuario.css';
-import Footer from '../../Generic/Footer';
 
 const Usuario = () => {
     const [users, setUsers] = useState([]);
@@ -19,6 +19,8 @@ const Usuario = () => {
             nombreRol: ''
         }
     });
+    const [currentPage, setCurrentPage] = useState(1);
+    const [usersPerPage] = useState(10); // Cantidad de usuarios por página
 
     const fetchUsers = async () => {
         try {
@@ -44,6 +46,13 @@ const Usuario = () => {
         fetchUsers();
         fetchRoles();
     }, []);
+
+    // Paginación - Calcula los usuarios a mostrar en la página actual
+    const indexOfLastUser = currentPage * usersPerPage;
+    const indexOfFirstUser = indexOfLastUser - usersPerPage;
+    const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
+
+    const paginate = pageNumber => setCurrentPage(pageNumber);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -153,18 +162,20 @@ const Usuario = () => {
 
     return (
         <>
-            <Menu />
+           <Menu />
             <div className='Usuarios'> 
                 <h2>Lista Usuarios <i className="bi bi-people-fill"></i></h2>
-                <button 
-                    className="btn btn-success mb-3" 
-                    onClick={showCreateForm}
-                    style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
-                >
-                    <i className="bi bi-person-plus"></i>
-                    <span className="ms-2">Crear Usuario</span>
-                </button>
-
+                <div className="filter-container">
+                    <button 
+                        className="btn btn-success mb-3 smaller-button" 
+                        onClick={showCreateForm}
+                        style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
+                    >
+                        <i className="bi bi-person-plus"></i>
+                        <span className="ms-2">Crear Usuario</span>
+                    </button>
+                </div>
+                
                 {showForm && (
                     <div className="card">
                         <div className="card-header">
@@ -252,7 +263,7 @@ const Usuario = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {users.map((user) => (
+                        {currentUsers.map((user) => (
                             <tr key={user.id}>
                                 <td>{user.id}</td>
                                 <td>{user.usuario}</td>
@@ -280,6 +291,18 @@ const Usuario = () => {
                         ))}
                     </tbody>
                 </table>
+
+                <div className="pagination">
+                    {users.length > 0 && (
+                        <ul className="pagination-list">
+                            {Array(Math.ceil(users.length / usersPerPage)).fill().map((_, i) => (
+                                <li key={i + 1} className={`pagination-item ${currentPage === i + 1 ? 'active' : ''}`}>
+                                    <button onClick={() => paginate(i + 1)} className="pagination-link">{i + 1}</button>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
 
                 {message && <p>{message}</p>}
             </div>

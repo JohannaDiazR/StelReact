@@ -1,20 +1,22 @@
-
-*{
+/* Estilos generales */
+* {
     padding: 0; 
     margin: 0;
     box-sizing: border-box;
     font-family: 'Varela', sans-serif;
     text-decoration: none;
     list-style: none;
-    
- }
- :root {
+}
+
+:root {
     --bg-color: #FDF3CD;
     --text-color: #ffffff;
     --main-color:  #1E4C40;
     --error-color: #a11129;
     --correcto-color: #1ed12d;
 }
+
+/* Estilos para la sección de Trabajador */
 .Worker h2 {
     color: var(--main-color);
     text-align: center;
@@ -23,25 +25,28 @@
     margin-bottom: 50px;
     margin-top: 150px; /* Ajustamos el margen inferior del h1 */
 }
-.table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    
-}
-.table th, .table td {
-    border: 1px solid var(--main-color);
-    text-align: left;
-    padding: 8px;
+
+.Worker .table {
+    max-width: none; /* Elimina el ancho máximo */
+    width: 80%; /* Reducir el ancho de la tabla */
+    margin: 20px auto; /* Centrar la tabla */
+    border-collapse: collapse; /* Combina los bordes de las celdas */
 }
 
-.table th {
-    background-color:var(--main-color);
+/* Ajustes para las celdas de la tabla */
+.Worker .table th,
+.Worker .table td {
+    padding: 6px; /* Reducir el relleno de las celdas */
+    font-size: 14px; /* Reducir el tamaño de la fuente */
+}
+
+.Worker .table th {
+    background-color: var(--main-color);
     color: var(--text-color);
     text-align: center;
 }
 
-.table-title {
+.Worker .table-title {
     margin-top: 20px;
     font-size: 24px;
 }
