@@ -8,6 +8,7 @@ const Usuario = () => {
     const [users, setUsers] = useState([]);
     const [roles, setRoles] = useState([]);
     const [message, setMessage] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
     const [showForm, setShowForm] = useState(false);
     const [formType, setFormType] = useState('create'); // 'create' o 'edit'
     const [user, setUser] = useState({
@@ -19,6 +20,9 @@ const Usuario = () => {
             nombreRol: ''
         }
     });
+
+    const [errors, setErrors] = useState({});
+
     const [currentPage, setCurrentPage] = useState(1);
     const [usersPerPage] = useState(10); // Cantidad de usuarios por página
 
@@ -69,13 +73,34 @@ const Usuario = () => {
         }
     };
 
+    const validateForm = () => {
+        let isValid = true;
+        const newErrors = {};
+
+        const emailPattern = /^[a-zA-Z0-9._%+-]+@(gmail\.com|hotmail\.com|yahoo\.com)$/i;
+        if (!emailPattern.test(user.usuario)) {
+            newErrors.usuario = 'El usuario debe ser un correo electrónico válido';
+            isValid = false;
+        }
+
+        const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (!passwordPattern.test(user.contrasena)) {
+            newErrors.contrasena = 'La contraseña debe tener al menos 8 caracteres, incluyendo al menos una mayúscula, una minúscula, un número y un carácter especial';
+            isValid = false;
+        }
+        setErrors(newErrors);
+        return isValid;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (formType === 'create') {
-            await createUser();
-        } else {
-            await updateUser();
+        if (validateForm()) {
+            if (formType === 'create') {
+                await createUser();
+            } else {
+                await updateUser();
+            }
         }
     };
 
@@ -159,21 +184,44 @@ const Usuario = () => {
             console.error('Error: selectedUser is null');
         }
     };
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+    };
+
+    const filteredUsers = users.filter(user =>
+        user.usuario.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    
 
     return (
         <>
            <Menu />
             <div className='Usuarios'> 
                 <h2>Lista Usuarios <i className="bi bi-people-fill"></i></h2>
-                <div className="filter-container">
+                <div className="d-flex justify-content-between align-items-center">
                     <button 
                         className="btn btn-success mb-3 smaller-button" 
                         onClick={showCreateForm}
-                        style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
+                        style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40', marginLeft:'150px' }}
                     >
                         <i className="bi bi-person-plus"></i>
                         <span className="ms-2">Crear Usuario</span>
                     </button>
+                        <div className="input-group" style={{ width: '33%' }}>
+                            <div className="input-group-prepend">
+                                <span className="input-group-text" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40'}}>
+                                        <i className="bi bi-search" style={{ fontSize: '0.8rem', color: 'white'}}></i>
+                                    </span>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="Buscar Usuario"
+                                    onChange={handleSearchChange}
+                                    style={{ paddingLeft: '0.5rem', width:'300px' }}
+                                />
+                            
+                            </div>
+                        </div>
                 </div>
                 
                 {showForm && (
@@ -192,12 +240,7 @@ const Usuario = () => {
                                     </>
                                 )}
                             </h3>
-                            <button 
-                                type="button" 
-                                className="btn-close" 
-                                aria-label="Close" 
-                                onClick={() => setShowForm(false)}
-                            ></button>
+                            
                         </div>
                         <div className="card-body">
                             <form onSubmit={handleSubmit}>
@@ -224,7 +267,7 @@ const Usuario = () => {
                                     />
                                 </div>
                                 <div className='mb-3'>
-                                    <label className='form-label'>Role</label>
+                                    <label className='form-label'>Rol</label>
                                     <select
                                         className='form-select'
                                         name='role.id'
@@ -258,12 +301,12 @@ const Usuario = () => {
                             <th>ID</th>
                             <th>Usuario</th>
                             <th>Contraseña</th>
-                            <th>Role</th>
+                            <th>Rol</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {currentUsers.map((user) => (
+                        {filteredUsers.map((user) => (
                             <tr key={user.id}>
                                 <td>{user.id}</td>
                                 <td>{user.usuario}</td>

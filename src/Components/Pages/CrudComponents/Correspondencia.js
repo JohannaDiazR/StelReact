@@ -8,6 +8,7 @@ const Correspondencia = () => {
     const [correspondences, setCorrespondences] = useState([]);
     const [workers, setWorkers] = useState([]);
     const [message, setMessage] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
     const [showForm, setShowForm] = useState(false);
     const [formType, setFormType] = useState('create');
     const [correspondence, setCorrespondence] = useState({
@@ -230,7 +231,7 @@ const Correspondencia = () => {
                                 
                                 </div>
                                 <div className='mb-3'>
-                                    <label className='form-label'>Worker</label>
+                                    <label className='form-label'>Trabajador</label>
                                     <select
                                         className='form-select'
                                         name='worker.id'
@@ -264,7 +265,7 @@ const Correspondencia = () => {
                             <th>FechaCorrespondencia</th>
                             <th>EstadadoCorrespondencia</th>
                             <th>FechaEntrega</th>
-                            <th>Worker</th>
+                            <th>Trabajador</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>

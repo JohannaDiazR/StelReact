@@ -437,9 +437,9 @@ const Visitante = () => {
                             <th>¿Carro?</th>
                             <th>¿Ingreso?</th>
                             <th>Fecha Visita</th>
-                            <th>Worker</th>
-                            <th>Parking</th>        
-                            <th>Property</th>
+                            <th>Trabajador</th>
+                            <th>Parqueadero</th>        
+                            <th>Inmueble</th>
                             <th>Acciones</th>   
                         </tr>
                     </thead>

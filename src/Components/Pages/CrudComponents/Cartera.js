@@ -9,6 +9,7 @@ const Cartera = () => {
     const [properties, setProperties] = useState([]);
     const [workers, setWorkers] = useState([]);
     const [message, setMessage] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
     const [showForm, setShowForm] = useState(false);
     const [formType, setFormType] = useState('create');
     const [walletStatus, setWalletStatus] = useState({
@@ -25,6 +26,7 @@ const Cartera = () => {
             nomTrabajador: ''
         }
     });
+    const [errors, setErrors] = useState({});
 
     const estadosCartera = [
         { id: 1, nombre: 'Mora' },
@@ -70,7 +72,8 @@ const Cartera = () => {
     const fetchWorkers = async () => {
         try {
             const response = await axios.get('http://localhost:8085/api/worker/all');
-            setWorkers(response.data.data);
+            const filteredWorkers = response.data.data.filter(worker => worker.nomTrabajador === 'Alba Amaya');
+            setWorkers(filteredWorkers);
         } catch (error) {
             console.error('Error fetching workers:', error);
         }
@@ -100,13 +103,48 @@ const Cartera = () => {
         }
     };
 
+    const validateForm = () => {
+        let isValid = true;
+        const newErrors = {};
+
+        if (!walletStatus.estcartera) {
+            newErrors.estcartera = 'El estado es requerido';
+            isValid = false;
+        }
+
+        if (!walletStatus.taccestcartera) {
+            newErrors.taccestcartera = 'El tipo de acceso es requerido';
+            isValid = false;
+        }
+
+        if (!walletStatus.notiestcartera) {
+            newErrors.notiestcartera = 'La opción de notificación es requerida';
+            isValid = false;
+        }
+
+        if (!walletStatus.property.id) {
+            newErrors.property = 'El inmueble es requerido';
+            isValid = false;
+        }
+
+        if (!walletStatus.worker.id) {
+            newErrors.worker = 'El trabajador es requerido';
+            isValid = false;
+        }
+
+        setErrors(newErrors);
+        return isValid;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (formType === 'create') {
-            await createWalletStatus();
-        } else {
-            await updateWalletStatus();
+        if (validateForm()) {
+            if (formType === 'create') {
+                await createWalletStatus();
+            } else {
+                await updateWalletStatus();
+            }
         }
     };
 
@@ -206,20 +244,47 @@ const Cartera = () => {
         setCurrentPage(page);
     };
 
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+    };
+
+    const filteredWallets = wallets.filter(wallet =>
+        wallet.estcartera.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+
     return (
         <>
             <Menu />
             <div className='Wallet'>
                 <h2>Lista Cartera <i className="bi bi-wallet"></i></h2>
 
-                <button
-                    className="btn btn-success mb-3 smaller-button" 
-                    onClick={showCreateForm}
-                    style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
-                >
-                    <i className="bi bi-wallet-fill"></i>
-                    <span className='ms-2'>Crear Cartera</span>
-                </button>
+                <div className="d-flex justify-content-between align-items-center">
+                    <button
+                        className="btn btn-success smaller-button" 
+                        onClick={showCreateForm}
+                        style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40', marginLeft:'200px'}}
+                    >
+                        <i className="bi bi-wallet-fill"></i>
+                        <span className='ms-2'>Crear Cartera</span>
+                    </button>
+                    <div className="input-group" style={{ width: '36%' }}>
+                        <div className="input-group-prepend">
+                        <span className="input-group-text" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40'}}>
+                            <i className="bi bi-search" style={{ fontSize: '0.8rem', color: 'white'}}></i>
+                        </span>
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Buscar estado de cartera"
+                            onChange={handleSearchChange}
+                            style={{ paddingLeft: '0.5rem', width:'300px' }}
+                        />
+                            
+                        </div>
+                        
+                    </div>
+                </div>
 
                 {showForm && (
                     <div className='card'>
@@ -237,20 +302,14 @@ const Cartera = () => {
                                     </>
                                 )}
                             </h3>
-                            <button
-                                type="button"
-                                className="btn-close"
-                                aria-label="Close"
-                                onClick={() => setShowForm(false)}
-                            >
-                            </button>
+                            
                         </div>
                         <div className='card-body'>
                             <form onSubmit={handleSubmit}>
                                 <div className='mb-3'>
                                     <label className='form-label'>Estado</label>
                                     <select
-                                        className='form-select'
+                                        className={`form-select ${errors.estcartera ? 'is-invalid' : ''}`}
                                         name='estcartera'
                                         value={walletStatus.estcartera}
                                         onChange={handleInputChange}
@@ -262,11 +321,12 @@ const Cartera = () => {
                                             </option>
                                         ))}
                                     </select>
+                                    {errors.estcartera && <div className="invalid-feedback">{errors.estcartera}</div>}
                                 </div>
                                 <div className='mb-3'>
                                     <label className='form-label'>Tipo Acceso</label>
                                     <select
-                                        className='form-select'
+                                        className={`form-select ${errors.taccestcartera ? 'is-invalid' : ''}`}
                                         name='taccestcartera'
                                         value={walletStatus.taccestcartera}
                                         onChange={handleInputChange}
@@ -278,11 +338,12 @@ const Cartera = () => {
                                             </option>
                                         ))}
                                     </select>
+                                    {errors.taccestcartera && <div className="invalid-feedback">{errors.taccestcartera}</div>}
                                 </div>
                                 <div className='mb-3'>
                                     <label className='form-label'>Notificar</label>
                                     <select
-                                        className='form-select'
+                                        className={`form-select ${errors.notiestcartera ? 'is-invalid' : ''}`}
                                         name='notiestcartera'
                                         value={walletStatus.notiestcartera}
                                         onChange={handleInputChange}
@@ -294,11 +355,12 @@ const Cartera = () => {
                                             </option>
                                         ))}
                                     </select>
+                                    {errors.notiestcartera && <div className="invalid-feedback">{errors.notiestcartera}</div>}
                                 </div>
                                 <div className='mb-3'>
-                                    <label className='form-label'>Property</label>
+                                    <label className='form-label'>Inmueble</label>
                                     <select
-                                        className='form-select'
+                                        className={`form-select ${errors.property ? 'is-invalid' : ''}`}
                                         name='property.id'
                                         value={walletStatus.property.id}
                                         onChange={handleInputChange}
@@ -310,11 +372,12 @@ const Cartera = () => {
                                             </option>
                                         ))}
                                     </select>
+                                    {errors.property && <div className="invalid-feedback">{errors.property}</div>}
                                 </div>
                                 <div className='mb-3'>
-                                    <label className='form-label'>Worker</label>
+                                    <label className='form-label'>Trabajador</label>
                                     <select
-                                        className='form-select'
+                                        className={`form-select ${errors.worker ? 'is-invalid' : ''}`}
                                         name='worker.id'
                                         value={walletStatus.worker.id}
                                         onChange={handleInputChange}
@@ -326,6 +389,7 @@ const Cartera = () => {
                                             </option>
                                         ))}
                                     </select>
+                                    {errors.worker && <div className="invalid-feedback">{errors.worker}</div>}
                                 </div>
                                 <button type="submit" className="btn btn-success me-2" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}>
                                     <i className="bi bi-wallet"></i>
@@ -346,13 +410,13 @@ const Cartera = () => {
                             <th>Estado</th>
                             <th>Tipo Acceso</th>
                             <th>Notificar</th>
-                            <th>Property</th>
-                            <th>Worker</th>
+                            <th>Inmueble</th>
+                            <th>Trabajador</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {currentItems.map((walletStatus) => (
+                        {filteredWallets.map((walletStatus) => (
                             <tr key={walletStatus.id}>
                                 <td>{walletStatus.id}</td>
                                 <td>{walletStatus.estcartera}</td>
@@ -380,7 +444,7 @@ const Cartera = () => {
                                 </td>
                             </tr>
                         ))}
-                    </tbody>    
+                    </tbody>      
                 </table>
 
                 <div className="pagination">
@@ -405,7 +469,7 @@ const Cartera = () => {
             </div>
             <Footer />
         </>
-    )
-}
+    );
+};
 
 export default Cartera;

@@ -11,6 +11,7 @@ const Residente = () => {
     const [roles, setRoles] = useState([]);
     const [parkings, setParkings] = useState([]);
     const [message, setMessage] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
     const [showForm, setShowForm] = useState(false);
     const [formType, setFormType] = useState('create');
     const [resident, setResident] = useState({
@@ -216,20 +217,46 @@ const Residente = () => {
     const indexOfFirstResident = indexOfLastResident - residentsPerPage;
     const currentResidents = residents.slice(indexOfFirstResident, indexOfLastResident);
 
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+    };
+
+    const filteredResidents = residents.filter(resident =>
+        resident.cedResidente.toString().includes(searchTerm)
+    );
     return (
         <>
             <Menu />
             <div className='Residente'>
                 <h2>Lista Residentes <i className="bi bi-person-bounding-box"></i></h2>
+                <div className='d-flex justify-content-between align-items-center'>
+                    <button
+                    className="btn btn-success smaller-button" 
+                    onClick={showCreateForm}
+                    style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40', marginLeft:'150px' }}
+                    >
+                        <i className="bi bi-person-square"></i>
+                        <span className="ms-2">Crear Residente</span>
+                    </button>
+                    <div className="input-group" style={{ width: '36%' }}>
+                        <div className="input-group-prepend">
+                        <span className="input-group-text" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40'}}>
+                            <i className="bi bi-search" style={{ fontSize: '0.8rem', color: 'white'}}></i>
+                        </span>
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Buscar identificacion"
+                            onChange={handleSearchChange}
+                            style={{ paddingLeft: '0.8rem', width:'350px' }}
+                        />
+                            
+                        </div>
+                        
+                    </div>
 
-                <button
-                   className="btn btn-success mb-3 smaller-button" 
-                   onClick={showCreateForm}
-                   style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
-                >
-                    <i className="bi bi-person-square"></i>
-                    <span className="ms-2">Crear Residente</span>
-                </button>
+                </div>
+                
 
                 {showForm && (
                     <div className='card'>
@@ -313,7 +340,7 @@ const Residente = () => {
                                     />
                                 </div>
                                 <div className='mb-3'>
-                                    <label className='form-label'>Role</label>
+                                    <label className='form-label'>Rol</label>
                                     <select
                                         className='form-select'
                                         name='role.id'
@@ -329,7 +356,7 @@ const Residente = () => {
                                     </select>
                                 </div>
                                 <div className="mb-3">
-                                    <label className="form-label">Parking</label>
+                                    <label className="form-label">Parqueadero</label>
                                     <select
                                         className='form-select'
                                         name='parking.id'
@@ -367,13 +394,13 @@ const Residente = () => {
                             <th>Correo</th>
                             <th>Celular</th>
                             <th>Número de integrantes</th>
-                            <th>Role</th>
-                            <th>Parking</th>
+                            <th>Rol</th>
+                            <th>Parqueadero</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {currentResidents.map((resident) => (
+                        {filteredResidents.map((resident) => (
                             <tr key={resident.id}>
                                 <td>{resident.id}</td>
                                 <td>{resident.nomResidente}</td>

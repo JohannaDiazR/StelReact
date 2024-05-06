@@ -8,6 +8,7 @@ const Inmueble = () => {
     const [properties, setProperties] = useState([]);
     const [residents, setResidents] = useState([]);
     const [message, setMessage] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
     const [showForm, setShowForm] = useState(false);
     const [formType, setFormType] = useState('create');
     const [property, setProperty] = useState({
@@ -156,21 +157,44 @@ const Inmueble = () => {
             console.error('Error: selectedProperty is null');
         }
     };
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+    };
+
+    const filteredProperties = properties.filter(property =>
+        property.andInmueble.toString().includes(searchTerm)
+    );
 
     return (
         <>
             <Menu />
             <div className='Usuarios'> 
                 <h2>Lista Inmuebles <i className="bi bi-people-fill"></i></h2>
-                <div className="filter-container">
+                <div className="d-flex justify-content-between align-items-center">
                     <button 
-                        className="btn btn-success mb-3 smaller-button" 
+                        className="btn btn-success smaller-button" 
                         onClick={showCreateForm}
-                        style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
+                        style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40', marginLeft:'200px' }}
                     >
                         <i className="bi bi-person-plus"></i>
                         <span className="ms-2">Crear Inmueble</span>
                     </button>
+                    <div className="input-group" style={{ width: '36%' }}>
+                        <div className="input-group-prepend">
+                        <span className="input-group-text" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40'}}>
+                            <i className="bi bi-search" style={{ fontSize: '0.8rem', color: 'white'}}></i>
+                        </span>
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Buscar Anden"
+                            onChange={handleSearchChange}
+                            style={{ paddingLeft: '0.5rem', width:'300px' }}
+                        />
+                            
+                        </div>
+                        
+                    </div>
                 </div>
                 {showForm && (
                     <div className='card'>
@@ -259,7 +283,7 @@ const Inmueble = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {currentProperties.map((property) => (
+                        {filteredProperties.map((property) => (
                             <tr key={property.id}>
                                 <td>{property.id}</td>
                                 <td>{property.andInmueble}</td>

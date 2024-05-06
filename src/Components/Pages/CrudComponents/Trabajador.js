@@ -293,7 +293,7 @@ const Trabajador = () => {
                                     />
                                 </div>
                                 <div className='mb-3'>
-                                    <label className='form-label'>Role</label>
+                                    <label className='form-label'>Rol</label>
                                     <select
                                         className='form-select'
                                         name='role.id'
@@ -331,7 +331,7 @@ const Trabajador = () => {
                             <th>Tipo de Contrato</th>
                             <th>Cargo</th>
                             <th>Empresa</th>
-                            <th>Role</th>
+                            <th>Rol</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
