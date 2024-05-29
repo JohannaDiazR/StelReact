@@ -8,6 +8,7 @@ const Trabajador = () => {
     const [workers, setWorkers] = useState([]);
     const [roles, setRoles] = useState([]);
     const [message, setMessage] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
     const [showForm, setShowForm] = useState(false);
     const [formType, setFormType] = useState('create');
     const [worker, setWorker] = useState({
@@ -25,7 +26,7 @@ const Trabajador = () => {
         }
     });
     const [currentPage, setCurrentPage] = useState(1);
-    const [workersPerPage] = useState(10); // Cantidad de trabajadores por página
+    const [workersPerPage] = useState(8); // Cantidad de trabajadores por página
 
     const fetchWorkers = async () => {
         try {
@@ -69,7 +70,6 @@ const Trabajador = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         if (formType === 'create') {
             await createWorker();
         } else {
@@ -171,29 +171,52 @@ const Trabajador = () => {
             console.error('Error: selectedWorker is null');
         }
     };
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+        setCurrentPage(1);
+    };
 
+    const filteredWorkers = workers.filter(worker =>
+        worker.ccTrabajador.toString().includes(searchTerm)
+    );
     // Paginación
     const indexOfLastWorker = currentPage * workersPerPage;
     const indexOfFirstWorker = indexOfLastWorker - workersPerPage;
-    const currentWorkers = workers.slice(indexOfFirstWorker, indexOfLastWorker);
+    const currentWorkers = filteredWorkers.slice(indexOfFirstWorker, indexOfLastWorker);
 
-    const handlePageChange = (pageNumber) => {
-        setCurrentPage(pageNumber);
-    };
-
+    const paginate = pageNumber => setCurrentPage(pageNumber);
+    
     return (
         <>
             <Menu />
             <div className='Worker'>
                 <h2>Lista Trabajadores <i className="bi bi-universal-access-circle"></i></h2>
-                <button
-                    className="btn btn-success mb-3 smaller-button" 
-                    onClick={showCreateForm}
-                    style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
-                >
-                    <i className="bi bi-universal-access-circle"></i>
-                    <span className='ms-2'>Crear Trabajador</span>
-                </button>
+                <div className="d-flex justify-content-between align-items-center"> 
+                    <button
+                        className="btn btn-success mb-3 smaller-button" 
+                        onClick={showCreateForm}
+                        style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40', marginLeft:'150px' }}
+                    >
+                        <i className="bi bi-universal-access-circle"></i>
+                        <span className='ms-2'>Crear Trabajador</span>
+                    </button>
+                    <div className="input-group" style={{ width: '36%' }}>
+                        <div className="input-group-prepend">
+                            <span className="input-group-text" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40'}}>
+                                <i className="bi bi-search" style={{ fontSize: '0.8rem', color: 'white'}}></i>
+                            </span>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Buscar Identificación Trabajador"
+                                onChange={handleSearchChange}
+                                style={{ paddingLeft: '0.5rem', width:'350px' }}
+                            />  
+                        </div>
+                        
+                    </div>
+                </div>
+                
 
                 {showForm && (
                     <div className='card'>
@@ -370,13 +393,15 @@ const Trabajador = () => {
                     </tbody>    
                 </table>
                 <div className="pagination">
-                    <ul className="pagination-list">
-                        {Array(Math.ceil(workers.length / workersPerPage)).fill().map((_, i) => (
-                            <li key={i + 1} className={`pagination-item ${currentPage === i + 1 ? 'active' : ''}`}>
-                                <button onClick={() => handlePageChange(i + 1)} className="pagination-link">{i + 1}</button>
-                            </li>
-                        ))}
-                    </ul>
+                    {filteredWorkers.length > workersPerPage && (
+                        <ul className="pagination-list">
+                            {Array(Math.ceil(filteredWorkers.length / workersPerPage)).fill().map((_, i) => (
+                                <li key={i + 1} className={`pagination-item ${currentPage === i + 1 ? 'active' : ''}`}>
+                                    <button onClick={() => paginate(i + 1)} className="pagination-link">{i + 1}</button>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
                 </div>
                 {message && <p>{message}</p>}
             </div>

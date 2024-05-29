@@ -26,11 +26,15 @@ const Cartera = () => {
             nomTrabajador: ''
         }
     });
+    const [currentPage, setCurrentPage] = useState(1);
+    const [walletsPerPage] = useState(13);
+
     const [errors, setErrors] = useState({});
 
     const estadosCartera = [
         { id: 1, nombre: 'Mora' },
-        { id: 2, nombre: 'Paz y Salvo' }
+        { id: 2, nombre: 'Paz y Salvo' },
+        { id: 3, nombre: 'Proceso Jurídico' }
     ];
 
     const tiposAcceso = [
@@ -40,14 +44,9 @@ const Cartera = () => {
 
     const opcionesNotificar = [
         { id: 1, nombre: 'Notificar residente' },
-        { id: 2, nombre: 'Enviar certificado' }
+        { id: 2, nombre: 'Enviar certificado' },
+        { id: 3, nombre: 'Enviar proceso' }
     ];
-
-    useEffect(() => {
-        fetchWallets();
-        fetchProperties();
-        fetchWorkers();
-    }, []);
 
     const fetchWallets = async () => {
         try {
@@ -78,6 +77,12 @@ const Cartera = () => {
             console.error('Error fetching workers:', error);
         }
     };
+    useEffect(() => {
+        fetchWallets();
+        fetchProperties();
+        fetchWorkers();
+    }, []);
+
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -232,26 +237,19 @@ const Cartera = () => {
         }
     };
 
-    const itemsPerPage = 10;
-    const [currentPage, setCurrentPage] = useState(1);
-
-    const lastIndex = currentPage * itemsPerPage;
-    const firstIndex = lastIndex - itemsPerPage;
-    const currentItems = wallets.slice(firstIndex, lastIndex);
-    const totalPages = Math.ceil(wallets.length / itemsPerPage);
-
-    const changePage = (page) => {
-        setCurrentPage(page);
-    };
-
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
+        setCurrentPage(1);
     };
-
     const filteredWallets = wallets.filter(wallet =>
         wallet.estcartera.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    const indexOfLastWallet = currentPage * walletsPerPage;
+    const indexOfFirstWallets = indexOfLastWallet - walletsPerPage;
+    const currentWallets = filteredWallets.slice(indexOfFirstWallets, indexOfLastWallet);
+
+    const paginate = pageNumber => setCurrentPage(pageNumber);
 
     return (
         <>
@@ -270,17 +268,16 @@ const Cartera = () => {
                     </button>
                     <div className="input-group" style={{ width: '36%' }}>
                         <div className="input-group-prepend">
-                        <span className="input-group-text" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40'}}>
-                            <i className="bi bi-search" style={{ fontSize: '0.8rem', color: 'white'}}></i>
-                        </span>
-                        <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Buscar estado de cartera"
-                            onChange={handleSearchChange}
-                            style={{ paddingLeft: '0.5rem', width:'300px' }}
-                        />
-                            
+                            <span className="input-group-text" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40'}}>
+                                <i className="bi bi-search" style={{ fontSize: '0.8rem', color: 'white'}}></i>
+                            </span>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Buscar estado de cartera"
+                                onChange={handleSearchChange}
+                                style={{ paddingLeft: '0.5rem', width:'300px' }}
+                            />
                         </div>
                         
                     </div>
@@ -416,7 +413,7 @@ const Cartera = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredWallets.map((walletStatus) => (
+                        {currentWallets.map((walletStatus) => (
                             <tr key={walletStatus.id}>
                                 <td>{walletStatus.id}</td>
                                 <td>{walletStatus.estcartera}</td>
@@ -448,21 +445,15 @@ const Cartera = () => {
                 </table>
 
                 <div className="pagination">
-                    <ul className="pagination-list">
-                        {Array.from({ length: totalPages }, (_, index) => (
-                            <li
-                                key={index}
-                                className={`pagination-item ${currentPage === index + 1 ? 'active' : ''}`}
-                            >
-                                <button
-                                    className="pagination-link"
-                                    onClick={() => changePage(index + 1)}
-                                >
-                                    {index + 1}
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
+                    {filteredWallets.length > walletsPerPage && (
+                        <ul className="pagination-list">
+                            {Array(Math.ceil(filteredWallets.length / walletsPerPage)).fill().map((_, i) => (
+                                <li key={i + 1} className={`pagination-item ${currentPage === i + 1 ? 'active' : ''}`}>
+                                    <button onClick={() => paginate(i + 1)} className="pagination-link">{i + 1}</button>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
                 </div>
 
                 {message && <p>{message}</p>}

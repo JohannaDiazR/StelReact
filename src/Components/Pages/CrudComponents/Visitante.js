@@ -10,8 +10,9 @@ const Visitante = () => {
     const [properties, setProperties] = useState([]);
     const [parkings, setParkings] = useState([]);
     const [message, setMessage] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
     const [showForm, setShowForm] = useState(false);
-    const [formType, setFormType] = useState('create'); // 'create' o 'edit'
+    const [formType, setFormType] = useState('create'); 
     const [visitor, setVisitor] = useState({
         id: '',
         nomVisitante: '',
@@ -35,7 +36,7 @@ const Visitante = () => {
     });
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [visitorsPerPage] = useState(10);
+    const [visitorsPerPage] = useState(8);
 
     const fetchVisitors = async () => {
         try {
@@ -250,25 +251,50 @@ const Visitante = () => {
         
     };
 
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+        setCurrentPage(1);
+    };
+
+    const filteredVisitors = visitors.filter(visitor =>
+        visitor.cedVisitante.toString().includes(searchTerm)
+    );
+
     const indexOfLastVisitor = currentPage * visitorsPerPage;
     const indexOfFirstVisitor = indexOfLastVisitor - visitorsPerPage;
-    const currentVisitors = visitors.slice(indexOfFirstVisitor, indexOfLastVisitor);
-
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
+    const currentVisitors = filteredVisitors.slice(indexOfFirstVisitor, indexOfLastVisitor);
+    const paginate = pageNumber => setCurrentPage(pageNumber);
+    
     return (
         <>
             <Menu />
             <div className='Visitantes'>
                 <h2>Lista Visitantes <i class="bi bi-people-fill"></i></h2>
-                <button 
-                    className="btn btn-success mb-3" 
-                    onClick={showCreateForm}
-                    style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
-                >
-                    <i className="bi bi-person-add"></i>
-                    <span className="ms-2">Crear Visitante</span>
-                </button>
+                <div className="d-flex justify-content-between align-items-center">
+                    <button 
+                        className="btn btn-success smaller-button" 
+                        onClick={showCreateForm}
+                        style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40', marginLeft:'200px' }}
+                    >
+                        <i className="bi bi-person-add"></i>
+                        <span className="ms-2">Crear Visitante</span>
+                    </button>
+                    <div className="input-group" style={{ width: '36%' }}>
+                        <div className="input-group-prepend">
+                            <span className="input-group-text" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40'}}>
+                                <i className="bi bi-search" style={{ fontSize: '0.8rem', color: 'white'}}></i>
+                            </span>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Buscar Identificación Visitante"
+                                onChange={handleSearchChange}
+                                style={{ paddingLeft: '0.5rem', width:'300px' }}
+                            />
+                        </div>
+                    </div>
+                </div>
+                
 
                 {showForm && (
                     <div className='card'>
@@ -458,12 +484,12 @@ const Visitante = () => {
                                 <td>{visitor.parking ? visitor.parking.cupParqueadero : 'N/A'}</td>
                                 <td>
                                     <button 
-                                        className="btn btn-primary btn-sm me-2" 
+                                        className="btn btn-primary btn-sm" 
                                         onClick={() => showEditForm(visitor)}
                                         style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
                                     >
                                         <i className="bi bi-person-fill-exclamation"></i>
-                                        <span className="ms-2">Editar</span>
+                                        
                                     </button>
                                     <button 
                                         className="btn btn-danger btn-sm" 
@@ -471,26 +497,25 @@ const Visitante = () => {
                                         style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
                                     >
                                         <i className="bi bi-person-x"></i>
-                                        <span className="ms-2">Eliminar</span>
+                                        
                                     </button>
                                 </td>
                             </tr>
                         ))}
                     </tbody>  
                 </table>
-                {message && <p>{message}</p>}
-                <nav>
-                    <ul className='pagination'>
-                        {visitorsPerPage &&
-                            Array.from({ length: Math.ceil(visitors.length / visitorsPerPage) }).map((_, index) => (
-                                <li key={index} className='page-item'>
-                                    <button onClick={() => paginate(index + 1)} className='page-link'>
-                                        {index + 1}
-                                    </button>
-                                </li>
-                            ))}
+                <div className="pagination">
+                    {filteredVisitors.length > visitorsPerPage && (
+                    <ul className="pagination-list">
+                        {Array(Math.ceil(filteredVisitors.length / visitorsPerPage)).fill().map((_, i) => (
+                        <li key={i + 1} className={`pagination-item ${currentPage === i + 1 ? 'active' : ''}`}>
+                            <button onClick={() => paginate(i + 1)} className="pagination-link">{i + 1}</button>
+                        </li>
+                        ))}
                     </ul>
-                </nav>
+                    )}
+                </div>
+                {message && <p>{message}</p>}
             </div>
             <Footer />
         </>

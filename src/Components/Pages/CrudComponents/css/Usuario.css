@@ -27,17 +27,24 @@
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
+    height: 20px;
+
 }
 
-.table th, .table td {
+.td {
     border: 1px solid var(--main-color);
     text-align: center;
-    padding: 8px;
-}
+    /*padding: 8px;*/
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
 .table th {
     background-color: var(--main-color);
     color: var(--text-color);
+    text-align: center;
 }
 
 .pagination {
@@ -70,15 +77,6 @@
 }
 
 
-/* Estilos adicionales */
-
-/* Ajustes de ancho para la tabla */
-.table {
-    max-width: 1200px; /* Define el ancho máximo para la tabla */
-    width: 100%;
-    margin: 20px auto; /* Ajusta el margen para centrar la tabla */
-}
-
 /* Ajustes para los botones */
 .btn-create-user {
     padding: 5px 10px; /* Reduce el relleno del botón */
@@ -86,9 +84,6 @@
 }
 
 /* Ajustes para hacer la tabla más compacta */
-.table th, .table td {
-    padding: 6px 8px; /* Reduce el relleno de las celdas */
-}
 
 /* Otros ajustes opcionales */
 .card-body {

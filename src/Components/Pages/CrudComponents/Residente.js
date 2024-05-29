@@ -6,8 +6,6 @@ import './css/Residente.css';
 
 const Residente = () => {
     const [residents, setResidents] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [residentsPerPage] = useState(10); // Cantidad de residentes por página
     const [roles, setRoles] = useState([]);
     const [parkings, setParkings] = useState([]);
     const [message, setMessage] = useState('');
@@ -30,12 +28,8 @@ const Residente = () => {
             cupParqueadero: ''
         }
     });
-
-    useEffect(() => {
-        fetchResidents();
-        fetchRoles();
-        fetchParkings();
-    }, []);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [residentsPerPage] = useState(8);
 
     const fetchResidents = async () => {
         try {
@@ -65,6 +59,11 @@ const Residente = () => {
             console.error('Error fetching parkings:', error);
         }
     };
+    useEffect(() => {
+        fetchResidents();
+        fetchRoles();
+        fetchParkings();
+    }, []);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -206,24 +205,21 @@ const Residente = () => {
             console.error('Error: selectedResident is null');
         }
     };
-
-    // Función para manejar el cambio de página
-    const paginate = (pageNumber) => {
-        setCurrentPage(pageNumber);
-    };
-
-    // Calcular los residentes a mostrar en la página actual
-    const indexOfLastResident = currentPage * residentsPerPage;
-    const indexOfFirstResident = indexOfLastResident - residentsPerPage;
-    const currentResidents = residents.slice(indexOfFirstResident, indexOfLastResident);
-
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
+        setCurrentPage(1);
     };
 
     const filteredResidents = residents.filter(resident =>
         resident.cedResidente.toString().includes(searchTerm)
     );
+
+    // Calcular los residentes a mostrar en la página actual
+    const indexOfLastResident = currentPage * residentsPerPage;
+    const indexOfFirstResident = indexOfLastResident - residentsPerPage;
+    const currentResidents = filteredResidents.slice(indexOfFirstResident, indexOfLastResident);
+    
+    const paginate = pageNumber => setCurrentPage(pageNumber);
     return (
         <>
             <Menu />
@@ -240,16 +236,16 @@ const Residente = () => {
                     </button>
                     <div className="input-group" style={{ width: '36%' }}>
                         <div className="input-group-prepend">
-                        <span className="input-group-text" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40'}}>
-                            <i className="bi bi-search" style={{ fontSize: '0.8rem', color: 'white'}}></i>
-                        </span>
-                        <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Buscar identificacion"
-                            onChange={handleSearchChange}
-                            style={{ paddingLeft: '0.8rem', width:'350px' }}
-                        />
+                            <span className="input-group-text" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40'}}>
+                                <i className="bi bi-search" style={{ fontSize: '0.8rem', color: 'white'}}></i>
+                            </span>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Buscar identificacion"
+                                onChange={handleSearchChange}
+                                style={{ paddingLeft: '0.8rem', width:'350px' }}
+                            />
                             
                         </div>
                         
@@ -400,7 +396,7 @@ const Residente = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredResidents.map((resident) => (
+                        {currentResidents.map((resident) => (
                             <tr key={resident.id}>
                                 <td>{resident.id}</td>
                                 <td>{resident.nomResidente}</td>
@@ -435,14 +431,14 @@ const Residente = () => {
                 </table>
 
                 <div className="pagination">
-                    {residents.length > 0 && (
-                        <ul className="pagination-list">
-                            {Array(Math.ceil(residents.length / residentsPerPage)).fill().map((_, i) => (
-                                <li key={i + 1} className={`pagination-item ${currentPage === i + 1 ? 'active' : ''}`}>
-                                    <button onClick={() => paginate(i + 1)} className="pagination-link">{i + 1}</button>
-                                </li>
-                            ))}
-                        </ul>
+                    {filteredResidents.length > residentsPerPage && (
+                    <ul className="pagination-list">
+                        {Array(Math.ceil(filteredResidents.length / residentsPerPage)).fill().map((_, i) => (
+                        <li key={i + 1} className={`pagination-item ${currentPage === i + 1 ? 'active' : ''}`}>
+                            <button onClick={() => paginate(i + 1)} className="pagination-link">{i + 1}</button>
+                        </li>
+                        ))}
+                    </ul>
                     )}
                 </div>
 

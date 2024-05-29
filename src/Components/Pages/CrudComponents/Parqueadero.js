@@ -8,6 +8,7 @@ const Parqueadero = () => {
 
     const [parkings, setParkings] = useState([]);
     const [message, setMessage] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
     const [showForm, setShowForm] = useState(false);
     const [formType, setFormType] = useState('create');
     const [parking, setParking] = useState({
@@ -20,6 +21,9 @@ const Parqueadero = () => {
       horaSalida: '',
       tarParqueadero: ''
     });
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [parkingsPerPage] = useState(5);
   
     const fetchParkings = async () => {
       try {
@@ -35,9 +39,10 @@ const Parqueadero = () => {
     useEffect(() => {
         fetchParkings();
       }, []);
-  
+
+
     const handleInputChange = (e) => {
-      const { name, value } = e.target;
+    const { name, value } = e.target;
       setParking({ ...parking, [name]: value });
     };
   
@@ -104,20 +109,52 @@ const Parqueadero = () => {
       setFormType('edit');
       setParking(parking);
     };
+
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+        setCurrentPage(1);
+    };
+
+    const filteredParkings = parkings.filter(parking =>
+        parking.cupParqueadero.toString().includes(searchTerm)
+    );
+    const indexOfLastParking = currentPage * parkingsPerPage;
+    const indexOfFirstParking = indexOfLastParking - parkingsPerPage;
+    const currentParkings = filteredParkings.slice(indexOfFirstParking, indexOfLastParking);
+
+    const paginate = pageNumber => setCurrentPage(pageNumber);
     return (
         <>
            <Menu />
            <div className='Parqueaderos'>
                 <h2>Lista Parqueadero <i className="bi bi-car-front"></i></h2>
-
-                <button 
-                    className="btn btn-success mb-3" 
-                    onClick={showCreateForm}
-                    style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
-                >
-                    <i className="bi bi-ev-front"></i>
-                    <span className="ms-2">Crear Parqueadero</span>
-                </button>
+                <div className="d-flex justify-content-between align-items-center">
+                    <button 
+                        className="btn btn-success smaller-button" 
+                        onClick={showCreateForm}
+                        style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40', marginLeft:'200px'  }}
+                    >
+                        <i className="bi bi-ev-front"></i>
+                        <span className="ms-2">Crear Parqueadero</span>
+                    </button>
+                    <div className="input-group" style={{ width: '36%' }}>
+                        <div className="input-group-prepend">
+                        <span className="input-group-text" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40'}}>
+                            <i className="bi bi-search" style={{ fontSize: '0.8rem', color: 'white'}}></i>
+                        </span>
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Buscar Cupo Parqueadero"
+                            onChange={handleSearchChange}
+                            style={{ paddingLeft: '0.5rem', width:'300px' }}
+                        />
+                            
+                        </div>
+                        
+                    </div>
+                </div>
+               
                 {showForm && (
                     <div className='card'>
                         <div className='card-header'>
@@ -251,7 +288,7 @@ const Parqueadero = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {parkings.map((parking) => (
+                        {currentParkings.map((parking) => (
                             <tr key={parking.id}>
                                 <td>{parking.id}</td>
                                 <td>{parking.tipoParqueadero}</td>
@@ -263,7 +300,7 @@ const Parqueadero = () => {
                                 <td>{parking.tarParqueadero}</td>
                                 <td>
                                     <button 
-                                        className="btn btn-primary btn-sm" 
+                                        className="btn btn-primary btn-md" 
                                         onClick={() => showEditForm(parking)}
                                         style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
                                     >
@@ -271,7 +308,7 @@ const Parqueadero = () => {
                                         <span className="ms-2">Editar</span>
                                     </button>
                                     <button 
-                                        className="btn btn-danger btn-sm ms-2" 
+                                        className="btn btn-danger btn-sm " 
                                         onClick={() => deleteParking(parking.id)}
                                         style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
                                     >
@@ -283,6 +320,18 @@ const Parqueadero = () => {
                         ))}
                     </tbody>
                 </table>
+
+                <div className="pagination">
+                    {filteredParkings.length > parkingsPerPage && (
+                    <ul className="pagination-list">
+                        {Array(Math.ceil(filteredParkings.length / parkingsPerPage)).fill().map((_, i) => (
+                        <li key={i + 1} className={`pagination-item ${currentPage === i + 1 ? 'active' : ''}`}>
+                            <button onClick={() => paginate(i + 1)} className="pagination-link">{i + 1}</button>
+                        </li>
+                        ))}
+                    </ul>
+                    )}
+                </div>
 
                 {message && <p>{message}</p>}
            </div>

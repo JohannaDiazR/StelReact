@@ -21,7 +21,7 @@ const Inmueble = () => {
         }
     });
     const [currentPage, setCurrentPage] = useState(1);
-    const [propertiesPerPage] = useState(13); // Máximo de propiedades por página
+    const [propertiesPerPage] = useState(13);
 
     const fetchProperties = async () => {
         try {
@@ -47,13 +47,6 @@ const Inmueble = () => {
         fetchProperties();
         fetchResidents();
     }, []);
-
-    // Paginación - Calcula las propiedades a mostrar en la página actual
-    const indexOfLastProperty = currentPage * propertiesPerPage;
-    const indexOfFirstProperty = indexOfLastProperty - propertiesPerPage;
-    const currentProperties = properties.slice(indexOfFirstProperty, indexOfLastProperty);
-
-    const paginate = pageNumber => setCurrentPage(pageNumber);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -157,18 +150,28 @@ const Inmueble = () => {
             console.error('Error: selectedProperty is null');
         }
     };
+
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
+        setCurrentPage(1); // Resetear a la primera página en cada búsqueda
     };
 
+    // Filtrar propiedades basadas en el término de búsqueda
     const filteredProperties = properties.filter(property =>
         property.andInmueble.toString().includes(searchTerm)
     );
 
+    // Paginación - Calcula las propiedades a mostrar en la página actual
+    const indexOfLastProperty = currentPage * propertiesPerPage;
+    const indexOfFirstProperty = indexOfLastProperty - propertiesPerPage;
+    const currentProperties = filteredProperties.slice(indexOfFirstProperty, indexOfLastProperty);
+
+    const paginate = pageNumber => setCurrentPage(pageNumber);
+
     return (
         <>
             <Menu />
-            <div className='Usuarios'> 
+            <div className='Usuarios'>
                 <h2>Lista Inmuebles <i className="bi bi-people-fill"></i></h2>
                 <div className="d-flex justify-content-between align-items-center">
                     <button 
@@ -283,7 +286,7 @@ const Inmueble = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredProperties.map((property) => (
+                        {currentProperties.map((property) => (
                             <tr key={property.id}>
                                 <td>{property.id}</td>
                                 <td>{property.andInmueble}</td>
@@ -313,9 +316,9 @@ const Inmueble = () => {
                 </table>
 
                 <div className="pagination">
-                    {properties.length > 0 && (
+                    {filteredProperties.length > propertiesPerPage && (
                         <ul className="pagination-list">
-                            {Array(Math.ceil(properties.length / propertiesPerPage)).fill().map((_, i) => (
+                            {Array(Math.ceil(filteredProperties.length / propertiesPerPage)).fill().map((_, i) => (
                                 <li key={i + 1} className={`pagination-item ${currentPage === i + 1 ? 'active' : ''}`}>
                                     <button onClick={() => paginate(i + 1)} className="pagination-link">{i + 1}</button>
                                 </li>

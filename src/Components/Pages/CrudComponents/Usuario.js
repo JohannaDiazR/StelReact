@@ -51,13 +51,6 @@ const Usuario = () => {
         fetchRoles();
     }, []);
 
-    // Paginación - Calcula los usuarios a mostrar en la página actual
-    const indexOfLastUser = currentPage * usersPerPage;
-    const indexOfFirstUser = indexOfLastUser - usersPerPage;
-    const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
-
-    const paginate = pageNumber => setCurrentPage(pageNumber);
-
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         if (name === 'role.id'){
@@ -184,44 +177,51 @@ const Usuario = () => {
             console.error('Error: selectedUser is null');
         }
     };
+
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
+        setCurrentPage(1);
     };
 
     const filteredUsers = users.filter(user =>
         user.usuario.toLowerCase().includes(searchTerm.toLowerCase())
     );
-    
+
+    // Paginación - Calcula los usuarios a mostrar en la página actual
+    const indexOfLastUser = currentPage * usersPerPage;
+    const indexOfFirstUser = indexOfLastUser - usersPerPage;
+    const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+
+    const paginate = pageNumber => setCurrentPage(pageNumber);
 
     return (
         <>
-           <Menu />
+            <Menu />
             <div className='Usuarios'> 
                 <h2>Lista Usuarios <i className="bi bi-people-fill"></i></h2>
                 <div className="d-flex justify-content-between align-items-center">
                     <button 
                         className="btn btn-success mb-3 smaller-button" 
                         onClick={showCreateForm}
-                        style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40', marginLeft:'150px' }}
+                        style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40', marginLeft:'200px' }}
                     >
                         <i className="bi bi-person-plus"></i>
                         <span className="ms-2">Crear Usuario</span>
                     </button>
-                        <div className="input-group" style={{ width: '33%' }}>
-                            <div className="input-group-prepend">
-                                <span className="input-group-text" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40'}}>
-                                        <i className="bi bi-search" style={{ fontSize: '0.8rem', color: 'white'}}></i>
-                                    </span>
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    placeholder="Buscar Usuario"
-                                    onChange={handleSearchChange}
-                                    style={{ paddingLeft: '0.5rem', width:'300px' }}
-                                />
-                            
-                            </div>
+                    <div className="input-group" style={{ width: '33%' }}>
+                        <div className="input-group-prepend">
+                            <span className="input-group-text" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40'}}>
+                                <i className="bi bi-search" style={{ fontSize: '0.8rem', color: 'white'}}></i>
+                            </span>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Buscar Usuario"
+                                onChange={handleSearchChange}
+                                style={{ paddingLeft: '0.5rem', width:'258px' }}
+                            />
                         </div>
+                    </div>
                 </div>
                 
                 {showForm && (
@@ -240,7 +240,6 @@ const Usuario = () => {
                                     </>
                                 )}
                             </h3>
-                            
                         </div>
                         <div className="card-body">
                             <form onSubmit={handleSubmit}>
@@ -254,6 +253,7 @@ const Usuario = () => {
                                         value={user.usuario}
                                         onChange={handleInputChange}
                                     />
+                                    {errors.usuario && <div className="text-danger">{errors.usuario}</div>}
                                 </div>
                                 <div className="mb-3">
                                     <label className="form-label">Contraseña</label>
@@ -265,6 +265,7 @@ const Usuario = () => {
                                         value={user.contrasena}
                                         onChange={handleInputChange}
                                     />
+                                    {errors.contrasena && <div className="text-danger">{errors.contrasena}</div>}
                                 </div>
                                 <div className='mb-3'>
                                     <label className='form-label'>Rol</label>
@@ -306,7 +307,7 @@ const Usuario = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredUsers.map((user) => (
+                        {currentUsers.map((user) => (
                             <tr key={user.id}>
                                 <td>{user.id}</td>
                                 <td>{user.usuario}</td>
@@ -336,9 +337,9 @@ const Usuario = () => {
                 </table>
 
                 <div className="pagination">
-                    {users.length > 0 && (
+                    {filteredUsers.length > usersPerPage && (
                         <ul className="pagination-list">
-                            {Array(Math.ceil(users.length / usersPerPage)).fill().map((_, i) => (
+                            {Array(Math.ceil(filteredUsers.length / usersPerPage)).fill().map((_, i) => (
                                 <li key={i + 1} className={`pagination-item ${currentPage === i + 1 ? 'active' : ''}`}>
                                     <button onClick={() => paginate(i + 1)} className="pagination-link">{i + 1}</button>
                                 </li>
@@ -350,7 +351,7 @@ const Usuario = () => {
                 {message && <p>{message}</p>}
             </div>
             <Footer />
-        </> 
+        </>
     );
 }
 

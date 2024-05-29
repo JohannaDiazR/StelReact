@@ -22,6 +22,8 @@ const Correspondencia = () => {
             cargTrabajador: ''
         }
     });
+    const [currentPage, setCurrentPage] = useState(1);
+    const [correspondencesPerPage] = useState(7);
 
     const fetchCorrespondences = async () => {
         try {
@@ -151,19 +153,53 @@ const Correspondencia = () => {
         setCorrespondence(correspondence);
     };
 
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+        setCurrentPage(1);
+    };
+
+    const filteredCorrespondences = correspondences.filter(correspondence =>
+        correspondence.tipoCorrespondencia.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const indexOfLastCorrespondence= currentPage * correspondencesPerPage;
+    const indexOfFirstCorrespondence = indexOfLastCorrespondence - correspondencesPerPage;
+    const currentCorrespondences = filteredCorrespondences.slice(indexOfFirstCorrespondence, indexOfLastCorrespondence);
+    
+    const paginate = pageNumber => setCurrentPage(pageNumber);
     return (
         <>
             <Menu />
             <div className='Correspondence'>
                 <h2>Lista correspondencias <i className="bi bi-universal-access-circle"></i></h2>
-                <button
-                    className="btn btn-success mb-3"
-                    onClick={showCreateForm}
-                    style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
-                >
-                    <i className="bi bi-universal-access-circle"></i>
-                    <span className='ms-2'>Crear Correspondencia</span>
-                </button>
+                <div className='d-flex justify-content-between align-items-center'>
+                    <button
+                        className="btn btn-success smaller-button"
+                        onClick={showCreateForm}
+                        style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40', marginLeft:'200px' }}
+                    >
+                        <i className="bi bi-universal-access-circle"></i>
+                        <span className='ms-2'>Crear Correspondencia</span>
+                    </button>
+                    <div className="input-group" style={{ width: '36%' }}>
+                        <div className="input-group-prepend">
+                            <span className="input-group-text" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40'}}>
+                                <i className="bi bi-search" style={{ fontSize: '0.8rem', color: 'white'}}></i>
+                            </span>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Buscar tipo Correspondencia"
+                                onChange={handleSearchChange}
+                                style={{ paddingLeft: '0.8rem', width:'302px' }}
+                            />
+                            
+                        </div>
+                        
+                    </div>
+
+                </div>
+                
 
                 {showForm && (
                     <div className='card'>
@@ -270,7 +306,7 @@ const Correspondencia = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {correspondences.map((correspondence) => (
+                        {currentCorrespondences.map((correspondence) => (
                             <tr key={correspondence.id}>
                                 <td>{correspondence.id}</td>
                                 <td>{correspondence.tipoCorrespondencia}</td>
@@ -285,21 +321,32 @@ const Correspondencia = () => {
                                         style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
                                     >
                                         <i className="bi bi-wallet"></i>
-                                        <span className="ms-2">Editar</span>
+                                        
                                     </button>
                                     <button 
-                                        className="btn btn-danger btn-sm ms-2" 
+                                        className="btn btn-danger btn-sm" 
                                         onClick={() => deleteCorrespondence(correspondence.id)}
                                         style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
                                     >
                                         <i className="bi bi-trash"></i>
-                                        <span className="ms-2">Eliminar</span>
+                                        
                                     </button>
                                 </td>
                             </tr>
                         ))}
                     </tbody>    
                 </table>
+                <div className="pagination">
+                    {filteredCorrespondences.length > correspondencesPerPage && (
+                    <ul className="pagination-list">
+                        {Array(Math.ceil(filteredCorrespondences.length / correspondencesPerPage)).fill().map((_, i) => (
+                        <li key={i + 1} className={`pagination-item ${currentPage === i + 1 ? 'active' : ''}`}>
+                            <button onClick={() => paginate(i + 1)} className="pagination-link">{i + 1}</button>
+                        </li>
+                        ))}
+                    </ul>
+                    )}
+                </div>
                 {message && <p>{message}</p>}
             </div>
             <Footer />

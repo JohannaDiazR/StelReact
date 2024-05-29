@@ -9,6 +9,7 @@ const Multas = () => {
     const [workers, setWorkers] = useState([]);
     const [properties, setProperties] = useState([]);
     const [message, setMessage] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
     const [showForm, setShowForm] = useState(false);
     const [formType, setFormType] = useState('create');
     const [multa, setMulta] = useState({
@@ -28,7 +29,7 @@ const Multas = () => {
     });
 
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 5;
+    const [multasPerPage] = useState(5);
 
     // Definición de los posibles tipos de multas
     const tiposMulta = [
@@ -199,29 +200,51 @@ const Multas = () => {
         setMulta(multa);
     };
 
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = multas.slice(indexOfFirstItem, indexOfLastItem);
-    const totalPages = Math.ceil(multas.length / itemsPerPage);
-
-    const changePage = (pageNumber) => {
-        setCurrentPage(pageNumber);
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+        setCurrentPage(1);
     };
+
+    const filteredMultas = multas.filter(multa =>
+        multa.property.numInmueble.toString().includes(searchTerm)
+    );
+    const indexOfLastMulta = currentPage * multasPerPage;
+    const indexOfFirstMulta = indexOfLastMulta - multasPerPage;
+    const currentMultas = filteredMultas.slice(indexOfFirstMulta, indexOfLastMulta);
+    
+    const paginate = pageNumber => setCurrentPage(pageNumber);
+    
 
     return (
         <>
             <Menu />
             <div className='Multas'>
                 <h2>Lista de Multas <i className="bi bi-cash-coin"></i></h2>
-                <button
-                    className="btn btn-success mb-3 smaller-button"
-                    onClick={showCreateForm}
-                    style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
-                >
-                    <i className="bi bi-cash-coin"></i>
-                    <span className='ms-2'>Crear Multa</span>
-                </button>
-
+                <div className="d-flex justify-content-between align-items-center">
+                    <button
+                        className="btn btn-success mb-3 smaller-button"
+                        onClick={showCreateForm}
+                        style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40', marginLeft:'150px' }}
+                    >
+                        <i className="bi bi-cash-coin"></i>
+                        <span className='ms-2'>Crear Multa</span>
+                    </button>
+                    <div className="input-group" style={{ width: '36%' }}>
+                        <div className="input-group-prepend">
+                            <span className="input-group-text" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40'}}>
+                                <i className="bi bi-search" style={{ fontSize: '0.8rem', color: 'white'}}></i>
+                            </span>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Buscar Inmueble"
+                                onChange={handleSearchChange}
+                                style={{ paddingLeft: '0.5rem', width:'350px' }}
+                            />
+                        </div>
+                    </div>
+                
+                </div>
                 {/* Formulario */}
                 {showForm && (
                     <div className='card'>
@@ -348,7 +371,7 @@ const Multas = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {currentItems.map((multa) => (
+                        {currentMultas.map((multa) => (
                             <tr key={multa.id}>
                                 <td>{multa.id}</td>
                                 <td>{multa.tipoMulta}</td>
@@ -380,20 +403,17 @@ const Multas = () => {
                     </tbody>
                 </table>
 
-                {/* Paginación */}
-                <div className="d-flex justify-content-center mt-4">
-                    <nav aria-label="Page navigation example">
-                        <ul className="pagination">
-                            {Array.from({ length: totalPages }, (_, index) => (
-                                <li className={`page-item ${currentPage === index + 1 ? 'active' : ''}`} key={index + 1}>
-                                    <button className="page-link" onClick={() => changePage(index + 1)}>{index + 1}</button>
-                                </li>
-                            ))}
-                        </ul>
-                    </nav>
+                <div className="pagination">
+                    {filteredMultas.length > multasPerPage && (
+                    <ul className="pagination-list">
+                        {Array(Math.ceil(filteredMultas.length / multasPerPage)).fill().map((_, i) => (
+                        <li key={i + 1} className={`pagination-item ${currentPage === i + 1 ? 'active' : ''}`}>
+                            <button onClick={() => paginate(i + 1)} className="pagination-link">{i + 1}</button>
+                        </li>
+                        ))}
+                    </ul>
+                    )}
                 </div>
-
-                {/* Mensaje */}
                 {message && <p>{message}</p>}
             </div>
             <Footer />

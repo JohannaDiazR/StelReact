@@ -8,6 +8,7 @@ const Novedades = () => {
     const [data, setData] = useState([]);
     const [workers, setWorkers] = useState([]);
     const [message, setMessage] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
     const [showForm, setShowForm] = useState(false);
     const [formType, setFormType] = useState('create');
     const [form, setForm] = useState({
