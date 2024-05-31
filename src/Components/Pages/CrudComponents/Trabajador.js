@@ -361,32 +361,33 @@ const Trabajador = () => {
                     <tbody>
                         {currentWorkers.map((worker) => (
                             <tr key={worker.id}>
-                                <td>{worker.id}</td>
-                                <td>{worker.nomTrabajador}</td>
-                                <td>{worker.ccTrabajador}</td>
-                                <td>{worker.celTrabajador}</td>
-                                <td>{worker.emaTrabajador}</td>
-                                <td>{worker.tpcoTrabajador}</td>
-                                <td>{worker.cargTrabajador}</td>
-                                <td>{worker.empTrabajador}</td>
-                                <td>{worker.role ? worker.role.nombreRol : 'N/A'}</td>
-                                <td>
-                                    <button 
-                                        className="btn btn-primary btn-sm" 
-                                        onClick={() => showEditForm(worker)}
-                                        style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
-                                    >
-                                        <i className="bi bi-wallet"></i>
-                                        <span className="ms-2">Editar</span>
-                                    </button>
-                                    <button 
-                                        className="btn btn-danger btn-sm" 
-                                        onClick={() => deleteWorker(worker.id)}
-                                        style={{ backgroundColor: '#a11129', borderColor: '#a11129', marginLeft: '5px' }}
-                                    >
-                                        <i className="bi bi-trash"></i>
-                                        <span className="ms-2">Eliminar</span>
-                                    </button>
+                                <td style={{textAlign: 'center'}}>{worker.id}</td>
+                                <td style={{textAlign: 'center'}}>{worker.nomTrabajador}</td>
+                                <td style={{textAlign: 'center'}}>{worker.ccTrabajador}</td>
+                                <td style={{textAlign: 'center'}}>{worker.celTrabajador}</td>
+                                <td style={{textAlign: 'center'}}>{worker.emaTrabajador}</td>
+                                <td style={{textAlign: 'center'}}>{worker.tpcoTrabajador}</td>
+                                <td style={{textAlign: 'center'}}>{worker.cargTrabajador}</td>
+                                <td style={{textAlign: 'center'}}>{worker.empTrabajador}</td>
+                                <td style={{textAlign: 'center'}}>{worker.role ? worker.role.nombreRol : 'N/A'}</td>
+                                <td className='text-center'>
+                                    <div className="d-flex justify-content-center">
+                                        <button 
+                                            className="btn btn-primary btn-sm mx-1" 
+                                            onClick={() => showEditForm(worker)}
+                                            style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
+                                        >
+                                            <i className="bi bi-wallet"></i>
+                                        </button>
+                                        <button 
+                                            className="btn btn-danger btn-sm mx-1" 
+                                            onClick={() => deleteWorker(worker.id)}
+                                            style={{ backgroundColor: '#a11129', borderColor: '#a11129', marginLeft: '5px' }}
+                                        >
+                                            <i className="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                    
                                 </td>
                             </tr>
                         ))}

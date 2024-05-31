@@ -288,27 +288,28 @@ const Inmueble = () => {
                     <tbody>
                         {currentProperties.map((property) => (
                             <tr key={property.id}>
-                                <td>{property.id}</td>
-                                <td>{property.andInmueble}</td>
-                                <td>{property.numInmueble}</td>
-                                <td>{property.resident ? property.resident.nomResidente : 'N/A'}</td>
-                                <td>
-                                    <button
-                                        className='btn btn-primary btn-sm'
-                                        onClick={() => showEditForm(property)}
-                                        style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
-                                    >
-                                        <i className="bi bi-pencil"></i>
-                                        <span className='ms-2'>Editar</span>
-                                    </button>
-                                    <button
-                                        className='btn btn-danger btn-sm'
-                                        onClick={() => deleteProperty(property.id)}
-                                        style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
-                                    >
-                                        <i className="bi bi-trash"></i>
-                                        <span className='ms-2'>Eliminar</span>
-                                    </button>
+                                <td style={{textAlign: 'center'}}>{property.id}</td>
+                                <td style={{textAlign: 'center'}}>{property.andInmueble}</td>
+                                <td style={{textAlign: 'center'}}>{property.numInmueble}</td>
+                                <td style={{textAlign: 'center'}}>{property.resident ? property.resident.nomResidente : 'N/A'}</td>
+                                <td className='text-center'>
+                                    <div className="d-flex justify-content-center">
+                                        <button
+                                            className='btn btn-primary btn-sm mx-1'
+                                            onClick={() => showEditForm(property)}
+                                            style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
+                                        >
+                                            <i className="bi bi-pencil"></i>
+                                        </button>
+                                        <button
+                                            className='btn btn-danger btn-sm mx-1'
+                                            onClick={() => deleteProperty(property.id)}
+                                            style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
+                                        >
+                                            <i className="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                    
                                 </td>
                             </tr>
                         ))}

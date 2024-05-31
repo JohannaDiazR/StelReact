@@ -398,32 +398,32 @@ const Residente = () => {
                     <tbody>
                         {currentResidents.map((resident) => (
                             <tr key={resident.id}>
-                                <td>{resident.id}</td>
-                                <td>{resident.nomResidente}</td>
-                                <td>{resident.cedResidente}</td>
-                                <td>{resident.emaResidente}</td>
-                                <td>{resident.celResidente}</td>
-                                <td>{resident.numIntegrantes}</td>
-                                <td>{resident.role ? resident.role.nombreRol : 'N/A'}</td>
-                                <td>{resident.parking ? resident.parking.cupParqueadero : 'N/A'}</td>
-
-                                <td>
-                                    <button
-                                        className="btn btn-primary btn-sm"
-                                        onClick={() => showEditForm(resident)}
-                                        style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
-                                    >
-                                        <i className="bi bi-person-square"></i>
-                                        <span className="ms-2">Editar</span>
-                                    </button>
-                                    <button
-                                        className="btn btn-danger btn-sm"
-                                        onClick={() => deleteResident(resident.id)}
-                                        style={{ backgroundColor: '#a11129', borderColor: '#a11129', marginLeft: '5px' }}
-                                    >
-                                        <i className="bi bi-trash"></i>
-                                        <span className="ms-2">Eliminar</span>
-                                    </button>
+                                <td style={{textAlign: 'center'}}>{resident.id}</td>
+                                <td style={{textAlign: 'center'}}>{resident.nomResidente}</td>
+                                <td style={{textAlign: 'center'}}>{resident.cedResidente}</td>
+                                <td style={{textAlign: 'center'}}>{resident.emaResidente}</td>
+                                <td style={{textAlign: 'center'}}>{resident.celResidente}</td>
+                                <td style={{textAlign: 'center'}}>{resident.numIntegrantes}</td>
+                                <td style={{textAlign: 'center'}}>{resident.role ? resident.role.nombreRol : 'N/A'}</td>
+                                <td style={{textAlign: 'center'}}>{resident.parking ? resident.parking.cupParqueadero : 'N/A'}</td>
+                                <td className='text-center'>
+                                    <div className="d-flex justify-content-center">
+                                        <button
+                                            className="btn btn-primary btn-sm mx-1"
+                                            onClick={() => showEditForm(resident)}
+                                            style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
+                                        >
+                                            <i className="bi bi-person-square"></i>
+                                        </button>
+                                        <button
+                                            className="btn btn-danger btn-sm mx-1"
+                                            onClick={() => deleteResident(resident.id)}
+                                            style={{ backgroundColor: '#a11129', borderColor: '#a11129', marginLeft: '5px' }}
+                                        >
+                                            <i className="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                    
                                 </td>
                             </tr>
                         ))}

@@ -356,7 +356,7 @@ const Multas = () => {
                     </div>
                 )}
 
-                {/* Tabla de multas */}
+             
                 <table className='table mt-4'>
                     <thead>
                         <tr>
@@ -373,30 +373,30 @@ const Multas = () => {
                     <tbody>
                         {currentMultas.map((multa) => (
                             <tr key={multa.id}>
-                                <td>{multa.id}</td>
-                                <td>{multa.tipoMulta}</td>
-                                <td>{multa.fecMulta}</td>
-                                <td>{multa.valMulta}</td>
-                                <td>{multa.fpagMulta}</td>
-                                <td>{multa.worker ? multa.worker.nomTrabajador : 'N/A'}</td>
-                                <td>{multa.property ? multa.property.numInmueble : 'N/A'}</td>
-                                <td>
-                                    <button
-                                        className="btn btn-primary btn-sm"
-                                        onClick={() => showEditForm(multa)}
-                                        style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
-                                    >
-                                        <i className="bi bi-pencil"></i>
-                                        <span className="ms-2">Editar</span>
-                                    </button>
-                                    <button
-                                        className="btn btn-danger btn-sm ms-2"
-                                        onClick={() => deleteMulta(multa.id)}
-                                        style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
-                                    >
-                                        <i className="bi bi-trash"></i>
-                                        <span className="ms-2">Eliminar</span>
-                                    </button>
+                                <td style={{textAlign: 'center'}}>{multa.id}</td>
+                                <td style={{textAlign: 'center'}}>{multa.tipoMulta}</td>
+                                <td style={{textAlign: 'center'}}>{multa.fecMulta}</td>
+                                <td style={{textAlign: 'center'}}>{multa.valMulta}</td>
+                                <td style={{textAlign: 'center'}}>{multa.fpagMulta}</td>
+                                <td style={{textAlign: 'center'}}>{multa.worker ? multa.worker.nomTrabajador : 'N/A'}</td>
+                                <td style={{textAlign: 'center'}}>{multa.property ? multa.property.numInmueble : 'N/A'}</td>
+                                <td className='text-center'>
+                                    <div className="d-flex justify-content-center">
+                                        <button
+                                            className="btn btn-primary btn-sm mx-1"
+                                            onClick={() => showEditForm(multa)}
+                                            style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
+                                        >
+                                            <i className="bi bi-pencil"></i>
+                                        </button>
+                                        <button
+                                            className="btn btn-danger btn-sm mx-1"
+                                            onClick={() => deleteMulta(multa.id)}
+                                            style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
+                                        >
+                                            <i className="bi bi-trash"></i>
+                                        </button>
+                                    </div>   
                                 </td>
                             </tr>
                         ))}

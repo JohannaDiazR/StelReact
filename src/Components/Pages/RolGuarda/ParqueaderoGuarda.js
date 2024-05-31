@@ -1,98 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import Menu from '../../Generic/Menu';
-import './css/Parqueadero.css';
+import Menuguarda from '../../Generic/Menuguarda';
+import '../CrudComponents/css/Visitante.css';
 import Footer from '../../Generic/Footer';
+import TicketVisitante from './TicketVisitante';
 
-const Parqueadero = () => {
-
+const ParqueaderoGuarda = () => {
     const [parkings, setParkings] = useState([]);
     const [message, setMessage] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [showForm, setShowForm] = useState(false);
     const [formType, setFormType] = useState('create');
     const [parking, setParking] = useState({
-      id: '',
-      tipoParqueadero: '',
-      estadoParqueadero: '',
-      fecParqueadero: '',
-      dvteParqueadero: '',
-      cupParqueadero: '',
-      horaSalida: '',
-      tarParqueadero: ''
-    });
-
-    const [currentPage, setCurrentPage] = useState(1);
-    const [parkingsPerPage] = useState(5);
-  
-    const fetchParkings = async () => {
-      try {
-        const response = await axios.get('http://localhost:8085/api/parking/all');
-        setParkings(response.data.data);
-        setMessage('');
-      } catch (error) {
-        console.error('Error fetching parkings:', error);
-        setMessage('No se recibió respuesta del servidor');
-      }
-    };
-
-    useEffect(() => {
-        fetchParkings();
-      }, []);
-
-
-    const handleInputChange = (e) => {
-    const { name, value } = e.target;
-      setParking({ ...parking, [name]: value });
-    };
-  
-    const handleSubmit = async () => {
-      if (formType === 'create') {
-        await createParking();
-      } else {
-        await updateParking();
-      }
-    };
-  
-    const createParking = async () => {
-      try {
-        await axios.post('http://localhost:8085/api/parking/create', parking);
-        setShowForm(false);
-        fetchParkings();
-      } catch (error) {
-        console.error('Error creating parking:', error);
-        setMessage('Error al crear el parqueadero');
-      }
-    };
-  
-    const updateParking = async () => {
-      try {
-        await axios.put(`http://localhost:8085/api/parking/update/${parking.id}`, parking);
-        setShowForm(false);
-        fetchParkings();
-      } catch (error) {
-        console.error('Error updating parking:', error);
-        setMessage('Error al actualizar el Parqueadero');
-      }
-    };
-
-    const deleteParking = async (id) => {
-        if (window.confirm('¿Estás seguro de que deseas eliminar este parqueadero?')) {
-            try {
-                await axios.delete(`http://localhost:8085/api/parking/delete/${id}`);
-                fetchParkings();
-                setMessage('Parqueadero eliminado correctamente');
-            } catch (error) {
-                console.error('Error deleting parking:', error);
-                setMessage('Error al eliminar el parqueadero');
-            }
-        }
-    };
-  
-    const showCreateForm = () => {
-      setShowForm(true);
-      setFormType('create');
-      setParking({
         id: '',
         tipoParqueadero: '',
         estadoParqueadero: '',
@@ -101,13 +20,81 @@ const Parqueadero = () => {
         cupParqueadero: '',
         horaSalida: '',
         tarParqueadero: ''
-      });
+    });
+    const [showTicket, setShowTicket] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [parkingsPerPage] = useState(5);
+
+    const fetchParkings = async () => {
+        try {
+            const response = await axios.get('http://localhost:8085/api/parking/all');
+            setParkings(response.data.data);
+            setMessage('');
+        } catch (error) {
+            console.error('Error fetching parkings:', error);
+            setMessage('No se recibió respuesta del servidor');
+        }
     };
-  
+
+    useEffect(() => {
+        fetchParkings();
+    }, []);
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setParking({ ...parking, [name]: value });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (formType === 'create') {
+            await createParking();
+        } else {
+            await updateParking();
+        }
+    };
+
+    const createParking = async () => {
+        try {
+            await axios.post('http://localhost:8085/api/parking/create', parking);
+            setShowForm(false);
+            fetchParkings();
+        } catch (error) {
+            console.error('Error creating parking:', error);
+            setMessage('Error al crear el parqueadero');
+        }
+    };
+
+    const updateParking = async () => {
+        try {
+            await axios.put(`http://localhost:8085/api/parking/update/${parking.id}`, parking);
+            setShowForm(false);
+            fetchParkings();
+        } catch (error) {
+            console.error('Error updating parking:', error);
+            setMessage('Error al actualizar el Parqueadero');
+        }
+    };
+
+    const showCreateForm = () => {
+        setShowForm(true);
+        setFormType('create');
+        setParking({
+            id: '',
+            tipoParqueadero: '',
+            estadoParqueadero: '',
+            fecParqueadero: '',
+            dvteParqueadero: '',
+            cupParqueadero: '',
+            horaSalida: '',
+            tarParqueadero: ''
+        });
+    };
+
     const showEditForm = (parking) => {
-      setShowForm(true);
-      setFormType('edit');
-      setParking(parking);
+        setShowForm(true);
+        setFormType('edit');
+        setParking(parking);
     };
 
     const handleSearchChange = (e) => {
@@ -115,46 +102,90 @@ const Parqueadero = () => {
         setCurrentPage(1);
     };
 
+    const formatDateTime = (dateTime) => {
+        if (!dateTime) return 'N/A';
+        const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' };
+        return new Date(dateTime).toLocaleString('es-ES', options);
+    };
+
+    const calculateCost = (entrada, salida, tipoParqueadero) => {
+        const entradaDate = new Date(entrada);
+        const salidaDate = new Date(salida);
+        const oneDay = 24 * 60 * 60 * 1000;
+        let totalCost = 0;
+
+        if (tipoParqueadero.toLowerCase().includes('visitante')) {
+            let currentTime = entradaDate;
+
+            while (currentTime < salidaDate) {
+                const nextBoundary = new Date(currentTime);
+                if (currentTime.getHours() >= 6 && currentTime.getHours() < 18) {
+                    // Período de día
+                    nextBoundary.setHours(18, 0, 0, 0);
+                    totalCost += 4000;
+                } else {
+                    // Período de noche
+                    nextBoundary.setHours(6, 0, 0, 0);
+                    if (nextBoundary < currentTime) {
+                        nextBoundary.setDate(nextBoundary.getDate() + 1);
+                    }
+                    totalCost += 6000;
+                }
+
+                currentTime = nextBoundary;
+                if (currentTime > salidaDate) {
+                    break;
+                }
+            }
+        } else if (tipoParqueadero.toLowerCase().includes('carro-propietario')) {
+            totalCost = 50000;
+        } else if (tipoParqueadero.toLowerCase().includes('moto-propietario')) {
+            totalCost = 36000;
+        }
+
+        return totalCost;
+    };
+
     const filteredParkings = parkings.filter(parking =>
         parking.cupParqueadero.toString().includes(searchTerm)
     );
+
     const indexOfLastParking = currentPage * parkingsPerPage;
     const indexOfFirstParking = indexOfLastParking - parkingsPerPage;
     const currentParkings = filteredParkings.slice(indexOfFirstParking, indexOfLastParking);
 
     const paginate = pageNumber => setCurrentPage(pageNumber);
+
     return (
         <>
-           <Menu />
-           <div className='Parqueaderos'>
+            <Menuguarda />
+            <div className='Parqueaderos'>
                 <h2>Lista Parqueadero <i className="bi bi-car-front"></i></h2>
                 <div className="d-flex justify-content-between align-items-center">
                     <button 
                         className="btn btn-success smaller-button" 
                         onClick={showCreateForm}
-                        style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40', marginLeft:'200px'  }}
+                        style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40', marginLeft: '200px'  }}
                     >
                         <i className="bi bi-ev-front"></i>
                         <span className="ms-2">Crear Parqueadero</span>
                     </button>
                     <div className="input-group" style={{ width: '36%' }}>
                         <div className="input-group-prepend">
-                        <span className="input-group-text" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40'}}>
-                            <i className="bi bi-search" style={{ fontSize: '0.8rem', color: 'white'}}></i>
-                        </span>
-                        <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Buscar Cupo Parqueadero"
-                            onChange={handleSearchChange}
-                            style={{ paddingLeft: '0.5rem', width:'300px' }}
-                        />
-                            
+                            <span className="input-group-text" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}>
+                                <i className="bi bi-search" style={{ fontSize: '0.8rem', color: 'white' }}></i>
+                            </span>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Buscar Cupo Parqueadero"
+                                onChange={handleSearchChange}
+                                style={{ paddingLeft: '0.5rem', width: '300px' }}
+                            />
                         </div>
-                        
                     </div>
                 </div>
-               
+
                 {showForm && (
                     <div className='card'>
                         <div className='card-header'>
@@ -163,13 +194,11 @@ const Parqueadero = () => {
                                     <>
                                         <i className="bi bi-ev-front"></i>
                                         <span className="ms-2">Crear Parqueadero</span>
-                                        
                                     </>
                                 ) : (
                                     <>
                                         <i className="bi bi-pencil-square"></i>
                                         <span className="ms-2">Editar Parqueadero</span>
-                                        
                                     </>
                                 )}
                             </h3>
@@ -188,7 +217,7 @@ const Parqueadero = () => {
                                     <input
                                         type="text"
                                         className="form-control"
-                                        placeholder="Carro/Moto Visitante/Propietario"
+                                        placeholder="Carro-Visitante/Propietario, Moto-Visitante/Propietario"
                                         name="tipoParqueadero"
                                         value={parking.tipoParqueadero}
                                         onChange={handleInputChange}
@@ -206,7 +235,7 @@ const Parqueadero = () => {
                                     />
                                 </div>  
                                 <div className="mb-3">
-                                    <label className="form-label">Fecha</label>
+                                    <label className="form-label">Fecha y Hora de Entrada</label>
                                     <input
                                         type="datetime-local"
                                         className="form-control"
@@ -228,7 +257,7 @@ const Parqueadero = () => {
                                     />
                                 </div>
                                 <div className="mb-3">
-                                    <label className="form-label">Número Cupo</label>
+                                    <label className="form-label">Número de Cupo</label>
                                     <input
                                         type="number"
                                         className="form-control"
@@ -239,7 +268,7 @@ const Parqueadero = () => {
                                     />
                                 </div>
                                 <div className="mb-3">
-                                    <label className="form-label">Hora Salida</label>
+                                    <label className="form-label">Hora de Salida</label>
                                     <input
                                         type="datetime-local"
                                         className="form-control"
@@ -249,24 +278,11 @@ const Parqueadero = () => {
                                         onChange={handleInputChange}
                                     />
                                 </div>
-                                <div className="mb-3">
-                                    <label className="form-label">Tarifa de Pago</label>
-                                    <input
-                                        type="number"
-                                        className="form-control"
-                                        placeholder="Valor a pagar"
-                                        name="tarParqueadero"
-                                        value={parking.tarParqueadero}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                                <button type="submit" className="btn btn-success me-2" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}>
-                                    <i className="bi bi-pen"></i>
+                                <button type="submit" className="btn btn-primary me-2">
                                     {formType === 'create' ? 'Crear' : 'Editar'}
-                                    
                                 </button>
                                 <button type="button" className="btn btn-secondary me-2"style={{ backgroundColor: '#a11129'}} onClick={() => setShowForm(false)}>
-                                    <i class="bi bi-x-circle-fill"></i>
+                                    <i className="bi bi-x-circle-fill"></i>
                                     <span className="ms-2">Cancelar</span>
                                 </button>
                             </form>
@@ -279,11 +295,11 @@ const Parqueadero = () => {
                             <th>ID</th>
                             <th>Tipo</th>
                             <th>Estado</th>
-                            <th>Fecha</th>
+                            <th>Fecha y Hora de Entrada</th>
                             <th>Datos Vehículo</th>
                             <th>Número Cupo</th>
-                            <th>Hora Salida</th>
-                            <th>Tarifa</th>
+                            <th>Hora de Salida</th>
+                            <th>Costo Total</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -293,29 +309,27 @@ const Parqueadero = () => {
                                 <td style={{textAlign: 'center'}}>{parking.id}</td>
                                 <td style={{textAlign: 'center'}}>{parking.tipoParqueadero}</td>
                                 <td style={{textAlign: 'center'}}>{parking.estadoParqueadero}</td>
-                                <td style={{textAlign: 'center'}}>{parking.fecParqueadero}</td>
+                                <td style={{textAlign: 'center'}}>{formatDateTime(parking.fecParqueadero)}</td>
                                 <td style={{textAlign: 'center'}}>{parking.dvteParqueadero}</td>
                                 <td style={{textAlign: 'center'}}>{parking.cupParqueadero}</td>
-                                <td style={{textAlign: 'center'}}>{parking.horaSalida}</td>
-                                <td style={{textAlign: 'center'}}>{parking.tarParqueadero}</td>
+                                <td style={{textAlign: 'center'}}>{formatDateTime(parking.horaSalida)}</td>
+                                <td style={{textAlign: 'center'}}>
+                                    {['visitante', 'carro-propietario', 'moto-propietario'].some(type => parking.tipoParqueadero.toLowerCase().includes(type))
+                                        ? calculateCost(parking.fecParqueadero, parking.horaSalida || new Date(), parking.tipoParqueadero).toFixed(2)
+                                        : "N/A"}
+                                </td>
                                 <td>
                                     <div className="d-flex justify-content-center">
                                         <button 
-                                            className="btn btn-primary btn-sm mx-1" 
+                                            className="btn btn-primary btn-sm mx-2" 
                                             onClick={() => showEditForm(parking)}
                                             style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
                                         >
                                             <i className="bi bi-car-front"></i>
                                         </button>
-                                        <button 
-                                            className="btn btn-danger btn-sm mx-1" 
-                                            onClick={() => deleteParking(parking.id)}
-                                            style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
-                                        >
-                                            <i className="bi bi-trash"></i>
-                                        </button>
+                                        <TicketVisitante parking={parking} />
+                                        
                                     </div>
-                                    
                                 </td>
                             </tr>
                         ))}
@@ -336,8 +350,12 @@ const Parqueadero = () => {
 
                 {message && <p>{message}</p>}
            </div>
+            {showTicket && showTicket.id && (
+                <TicketVisitante parking={showTicket} />
+            )}
            <Footer />         
         </>
-    )
+    );
 }
-export default Parqueadero;
+
+export default ParqueaderoGuarda;

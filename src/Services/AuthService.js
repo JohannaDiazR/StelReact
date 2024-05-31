@@ -23,3 +23,8 @@ export const login = async (username, password) => {
         throw new Error(`Error al intentar iniciar sesión: ${error.message}`);
     }
 };
+
+export const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+}

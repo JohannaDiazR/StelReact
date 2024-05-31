@@ -1,9 +1,16 @@
 import React from 'react';
 import './Menu.css'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import imagen from './imagen/logoblanco.PNG';
+import { logout } from '../../Services/AuthService';
 
 const Menu = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/ingresar');
+  };
   return (
     <>
       <nav className="navbar navbar-expand-lg ">
@@ -51,7 +58,7 @@ const Menu = () => {
             </li>
 
             <li className="nav-item align-self-center">
-              <Link className="nav-link active text-white d-flex justify-content-end" to="/">
+              <Link className="nav-link active text-white d-flex justify-content-end" to="/" onClick={handleLogout}>
                 Salir 
                 <span className="ml-2"><i className="bi bi-door-closed"></i></span>
               </Link>

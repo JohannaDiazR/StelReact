@@ -19,6 +19,16 @@ import Trabajador from './Components/Pages/CrudComponents/Trabajador';
 import Multas from './Components/Pages/CrudComponents/Multas';
 import Correspondencia from './Components/Pages/CrudComponents/Correspondencia';
 import Novedades from './Components/Pages/CrudComponents/Novedades';
+import Logout from './Components/Pages/Logout';
+import Menuguarda from './Components/Generic/Menuguarda';
+import DashboardGuarda from './Components/Generic/DashboardGuarda';
+import InmuebleGuarda from './Components/Pages/RolGuarda/InmuebleGuarda';
+import VisitanteGuarda from './Components/Pages/RolGuarda/VisitanteGuarda';
+import ParqueaderoGuarda from './Components/Pages/RolGuarda/ParqueaderoGuarda';
+import CorrespondenciaGuarda from './Components/Pages/RolGuarda/CorrespondenciaGuarda';
+import NovedadesGuarda from './Components/Pages/RolGuarda/NovedadesGuarda';
+import TicektVisitante from './Components/Pages/RolGuarda/TicketVisitante';
+
 
 
 
@@ -46,6 +56,16 @@ function App() {
           <Route path='/Multas' element={<Multas />} />
           <Route path='/Correspondencia' element={<Correspondencia />} />
           <Route path='/Novedades' element={<Novedades />} />
+          <Route path='/Logout' element={<Logout />} />
+          <Route path='/Menuguarda' element={<Menuguarda />} />
+          <Route path='/DashboardGuarda' element={<DashboardGuarda />} />
+          <Route path='/InmuebleGuarda' element={<InmuebleGuarda />} />
+          <Route path='/VisitanteGuarda' element={<VisitanteGuarda />} />
+          <Route path='/ParqueaderoGuarda' element={<ParqueaderoGuarda />} />
+          <Route path='/CorrespondenciaGuarda' element={<CorrespondenciaGuarda />} />
+          <Route path='/NovedadesGuarda' element={<NovedadesGuarda />} />
+          <Route path='/TicketVisitante' element={<TicektVisitante />} />
+          
 
           
           

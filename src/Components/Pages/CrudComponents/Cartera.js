@@ -415,29 +415,30 @@ const Cartera = () => {
                     <tbody>
                         {currentWallets.map((walletStatus) => (
                             <tr key={walletStatus.id}>
-                                <td>{walletStatus.id}</td>
-                                <td>{walletStatus.estcartera}</td>
-                                <td>{walletStatus.taccestcartera}</td>
-                                <td>{walletStatus.notiestcartera}</td>
-                                <td>{walletStatus.property ? walletStatus.property.numInmueble : 'N/A'}</td>
-                                <td>{walletStatus.worker ? walletStatus.worker.nomTrabajador : 'N/A'}</td>
-                                <td>
-                                    <button 
-                                        className="btn btn-primary btn-sm" 
-                                        onClick={() => showEditForm(walletStatus)}
-                                        style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
-                                    >
-                                        <i className="bi bi-wallet"></i>
-                                        <span className="ms-2">Editar</span>
-                                    </button>
-                                    <button 
-                                        className="btn btn-danger btn-sm ms-2" 
-                                        onClick={() => deleteWalletStatus(walletStatus.id)}
-                                        style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
-                                    >
-                                        <i className="bi bi-trash"></i>
-                                        <span className="ms-2">Eliminar</span>
-                                    </button>
+                                <td style={{textAlign: 'center'}}>{walletStatus.id}</td>
+                                <td style={{textAlign: 'center'}}>{walletStatus.estcartera}</td>
+                                <td style={{textAlign: 'center'}}>{walletStatus.taccestcartera}</td>
+                                <td style={{textAlign: 'center'}}>{walletStatus.notiestcartera}</td>
+                                <td style={{textAlign: 'center'}}>{walletStatus.property ? walletStatus.property.numInmueble : 'N/A'}</td>
+                                <td style={{textAlign: 'center'}}>{walletStatus.worker ? walletStatus.worker.nomTrabajador : 'N/A'}</td>
+                                <td className='text-center'>
+                                    <div className='d-flex justify-content-center'>
+                                        <button 
+                                            className="btn btn-primary btn-sm mx-1" 
+                                            onClick={() => showEditForm(walletStatus)}
+                                            style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
+                                        >
+                                            <i className="bi bi-wallet"></i>
+                                        </button>
+                                        <button 
+                                            className="btn btn-danger btn-sm mx-1" 
+                                            onClick={() => deleteWalletStatus(walletStatus.id)}
+                                            style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
+                                        >
+                                            <i className="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                    
                                 </td>
                             </tr>
                         ))}

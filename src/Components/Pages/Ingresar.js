@@ -22,7 +22,9 @@ const Ingresar = () => {
                 case 'Administrador':
                     setRedirectTo('/Dashboard');
                     break;
-                // Agrega más cases para otros roles si es necesario
+                case 'Vigilante':
+                    setRedirectTo('/DashboardGuarda');
+                    break;
                 default:
                     throw new Error('Rol de usuario no válido');
             }

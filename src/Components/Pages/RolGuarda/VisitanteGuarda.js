@@ -1,10 +1,10 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import Footer from '../../Generic/Footer';
-import Menu from '../../Generic/Menu';
-import './css/Visitante.css';
+import Menuguarda from '../../Generic/Menuguarda';
+import '../CrudComponents/css/Visitante.css';
 
-const Visitante = () => {
+const VisitanteGuarda = () => {
     const [visitors, setVisitors] = useState([]);
     const [workers, setWorkers] = useState([]);
     const [properties, setProperties] = useState([]);
@@ -184,17 +184,6 @@ const Visitante = () => {
             setMessage('Error al actualizar el visitante');
         }
     };
-
-    const deleteVisitor = async (id) => {
-        try {
-            await axios.delete(`http://localhost:8085/api/visitor/delete/${id}`);
-            fetchVisitors();
-        } catch (error) {
-            console.error('Error deleting visitor:', error);
-            setMessage('Error al eliminar el visitante');
-        }
-    };
-
     const showCreateForm = () => {
         setShowForm(true);
         setFormType('create');
@@ -267,7 +256,7 @@ const Visitante = () => {
     
     return (
         <>
-            <Menu />
+            <Menuguarda />
             <div className='Visitantes'>
                 <h2>Lista Visitantes <i class="bi bi-people-fill"></i></h2>
                 <div className="d-flex justify-content-between align-items-center">
@@ -480,8 +469,8 @@ const Visitante = () => {
                                 <td style={{textAlign: 'center'}}>{visitor.ingrVisitante ? 'Sí' : 'No'}</td>
                                 <td style={{textAlign: 'center'}}>{visitor.fecVisitante}</td>
                                 <td style={{textAlign: 'center'}}>{visitor.worker ? visitor.worker.nomTrabajador : 'N/A'}</td>
+                                <td style={{textAlign: 'center'}}>{visitor.carVisitante? (visitor.parking? visitor.parking.cupParqueadero : 'N/A') : 'N/A'}</td>
                                 <td style={{textAlign: 'center'}}>{visitor.property ? visitor.property.numInmueble : 'N/A'}</td>
-                                <td style={{textAlign: 'center'}}>{visitor.parking ? visitor.parking.cupParqueadero : 'N/A'}</td>
                                 <td className='text-center'>
                                     <div className="d-flex justify-content-center">
                                         <button 
@@ -490,13 +479,6 @@ const Visitante = () => {
                                             style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
                                         >
                                             <i className="bi bi-person-fill-exclamation"></i>
-                                        </button>
-                                        <button 
-                                            className="btn btn-danger btn-sm" 
-                                            onClick={() => deleteVisitor(visitor.id)}
-                                            style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
-                                        >
-                                            <i className="bi bi-person-x"></i>
                                         </button>
                                     </div>
                                 </td>
@@ -522,4 +504,4 @@ const Visitante = () => {
     );
 }
 
-export default Visitante;
+export default VisitanteGuarda;

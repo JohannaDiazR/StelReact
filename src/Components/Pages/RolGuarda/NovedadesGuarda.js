@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Menu from '../../Generic/Menu'; 
+import Menuguarda from '../../Generic/Menuguarda'; 
 import Footer from '../../Generic/Footer'; 
-import './css/Novedades.css'; 
+import '../CrudComponents/css/Novedades.css'; 
 
-const Novedades = () => {
+const NovedadesGuarda = () => {
     const [novedades, setData] = useState([]); //novedades
     const [workers, setWorkers] = useState([]);
     const [message, setMessage] = useState('');
@@ -22,7 +22,7 @@ const Novedades = () => {
         estNovedades: ''
     });
     const [currentPage, setCurrentPage] = useState(1);
-    const [novedadesPerPage] = useState(4);
+    const [novedadesPerPage] = useState(3);
 
     const fetchNovedades = async () => {
         try {
@@ -88,19 +88,6 @@ const Novedades = () => {
         }
     };
 
-    const deleteNovedad = async (id) => {
-        if (window.confirm('¿Estás seguro de que deseas eliminar esta novedad?')) {
-            try {
-                await axios.delete(`http://localhost:8085/api/news/delete/${id}`);
-                fetchNovedades();
-                setMessage('Novedad eliminada correctamente');
-            } catch (error) {
-                console.error('Error deleting novedad:', error);
-                setMessage('Error al eliminar la novedad');
-            }
-        }
-    };
-
     const showCreateForm = () => {
         setShowForm(true);
         setFormType('create');
@@ -139,7 +126,7 @@ const Novedades = () => {
 
     return (
         <>
-            <Menu /> {/* Componente de menú */}
+            <Menuguarda />
             <div className='Novedades'>
                 <h2>Lista de novedades <i className="bi bi-newspaper"></i></h2>
                 <div className="d-flex justify-content-between align-items-center">
@@ -293,12 +280,8 @@ const Novedades = () => {
                                     <button className="btn btn-primary btn-sm" onClick={() => showEditForm(novedad)}
                                     style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
                                     >
-                                        <i className="bi bi-pencil-square"></i>
-                                    </button>
-                                    <button className="btn btn-danger btn-sm ms-2" onClick={() => deleteNovedad(novedad.id)}
-                                        style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
-                                        >
-                                        <i className="bi bi-trash"></i>
+                                        <i class="bi bi-pen"></i>
+                                        <span className="ms-2">Editar</span>
                                     </button>
                                 </td>
                             </tr>
@@ -318,9 +301,9 @@ const Novedades = () => {
                 </div>
                 {message && <p>{message}</p>}
             </div>
-            <Footer /> {/* Componente de pie de página */}
+            <Footer /> 
         </>
     );
 }
 
-export default Novedades;
+export default NovedadesGuarda;

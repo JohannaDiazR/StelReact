@@ -18,9 +18,10 @@ import imagenes from './Imagenes/gimnasio.PNG'
                     <h1>Sobre Nosotros <i class="bi bi-houses-fill"></i></h1>
                 </div>
                 <div className="card-body">
-                    <blockquote className="blockquote mb-0">
+                    <blockquote className="blockquote mb-0" style={{ textAlign: 'justify' }}>
                         <h2>Conjunto Residencial Quintas del Recreo Primera Etapa</h2>
-                        Quintas del Recreo primera etapa, es un Cojunto de Propiedad Horziontal, 
+
+                        Quintas del Recreo primera etapa, es un Cojunto de Propiedad Horizontal, 
                         entregado a los copropietarios en el año 2001. 
                         Consta de 240 inmuebles distribuidos en 10 andenes.
                         En las zonas comunes la copropiedad cuenta con: 

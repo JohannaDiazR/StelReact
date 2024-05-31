@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import Footer from '../../Generic/Footer';
 import Menu from '../../Generic/Menu';
-import './css/Usuario.css';
+import './css/Usuario.css'
 
 const Usuario = () => {
     const [users, setUsers] = useState([]);
@@ -309,27 +309,27 @@ const Usuario = () => {
                     <tbody>
                         {currentUsers.map((user) => (
                             <tr key={user.id}>
-                                <td>{user.id}</td>
-                                <td>{user.usuario}</td>
-                                <td>{user.contrasena}</td>
-                                <td>{user.role ? user.role.nombreRol : 'N/A'}</td>
-                                <td>
-                                    <button 
-                                        className="btn btn-primary btn-sm" 
-                                        onClick={() => showEditForm(user)}
-                                        style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
-                                    >
-                                        <i className="bi bi-pen"></i>
-                                        <span className="ms-2">Editar</span>
-                                    </button>
-                                    <button 
-                                        className="btn btn-danger btn-sm" 
-                                        onClick={() => deleteUser(user.id)}
-                                        style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
-                                    >
-                                        <i className="bi bi-trash"></i>
-                                        <span className="ms-2">Eliminar</span>
-                                    </button>
+                                <td style={{textAlign: 'center'}}>{user.id}</td>
+                                <td style={{textAlign: 'center'}}>{user.usuario}</td>
+                                <td style={{textAlign: 'center'}}>{user.contrasena}</td>
+                                <td style={{textAlign: 'center'}}>{user.role ? user.role.nombreRol : 'N/A'}</td>
+                                <td className="text-center">
+                                    <div className="d-flex justify-content-center">
+                                        <button 
+                                            className="btn btn-primary btn-sm mx-1" 
+                                            onClick={() => showEditForm(user)}
+                                            style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
+                                        >
+                                            <i className="bi bi-pen"></i>
+                                        </button>
+                                        <button 
+                                            className="btn btn-danger btn-sm mx-1" 
+                                            onClick={() => deleteUser(user.id)}
+                                            style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
+                                        >
+                                            <i className="bi bi-trash"></i>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         ))}

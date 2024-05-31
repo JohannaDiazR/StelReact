@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import Menu from '../../Generic/Menu';
+import Menuguarda from '../../Generic/Menuguarda';
 import Footer from '../../Generic/Footer';
-import './css/Correspondencia.css';
+import '../CrudComponents/css/Correspondencia.css';
 
-const Correspondencia = () => {
+const CorrespondenciaGuarda = () => {
     const [correspondences, setCorrespondences] = useState([]);
     const [workers, setWorkers] = useState([]);
     const [message, setMessage] = useState('');
@@ -19,7 +19,7 @@ const Correspondencia = () => {
         fentrCorrespondencia: '',
         worker: {
             id: '',
-            cargTrabajador: ''
+            nomTrabajador: ''
         }
     });
     const [currentPage, setCurrentPage] = useState(1);
@@ -85,7 +85,7 @@ const Correspondencia = () => {
                 fentrCorrespondencia: correspondence.fentrCorrespondencia,
                 worker: {
                     id: correspondence.worker.id,
-                    cargTrabajador: correspondence.worker.nomTrabajador
+                    nomTrabajador: correspondence.worker.nomTrabajador
                 }
             });
             setShowForm(false);
@@ -106,7 +106,7 @@ const Correspondencia = () => {
                 fentrCorrespondencia: correspondence.fentrCorrespondencia,
                 worker: {
                     id: correspondence.worker.id,
-                    cargTrabajador: correspondence.worker.nomTrabajador
+                    nomTrabajador: correspondence.worker.nomTrabajador
                 }
             });
             setShowForm(false);
@@ -115,19 +115,6 @@ const Correspondencia = () => {
         } catch (error) {
             console.error('Error updating correspondence:', error);
             setMessage('Error al actualizar la correspondencia');
-        }
-    };
-
-    const deleteCorrespondence = async (id) => {
-        if (window.confirm('¿Estás seguro de que deseas eliminar esta correspondencia?')) {
-            try {
-                await axios.delete(`http://localhost:8085/api/correspondence/delete/${id}`);
-                fetchCorrespondences();
-                setMessage('Correspondencia eliminada correctamente');
-            } catch (error) {
-                console.error('Error deleting correspondence:', error);
-                setMessage('Error al eliminar la correspondencia');
-            }
         }
     };
 
@@ -169,7 +156,7 @@ const Correspondencia = () => {
     const paginate = pageNumber => setCurrentPage(pageNumber);
     return (
         <>
-            <Menu />
+            <Menuguarda />
             <div className='Correspondence'>
                 <h2>Lista correspondencias <i className="bi bi-universal-access-circle"></i></h2>
                 <div className='d-flex justify-content-between align-items-center'>
@@ -255,7 +242,7 @@ const Correspondencia = () => {
                                     />
                                 </div>
                                 <div className='mb-3'>
-                                    <label className='form-label'>Fecha de Entrega</label>
+                                    <label className='form-label'>Fecha Entrega</label>
                                     <input
                                         type='date'
                                         className='form-control'
@@ -323,13 +310,6 @@ const Correspondencia = () => {
                                         >
                                             <i className="bi bi-wallet"></i>
                                         </button>
-                                        <button 
-                                            className="btn btn-danger btn-sm mx-1" 
-                                            onClick={() => deleteCorrespondence(correspondence.id)}
-                                            style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
-                                        >
-                                            <i className="bi bi-trash"></i>
-                                        </button>
                                     </div>
                                     
                                 </td>
@@ -355,4 +335,4 @@ const Correspondencia = () => {
     );
 }
 
-export default Correspondencia;
+export default CorrespondenciaGuarda;

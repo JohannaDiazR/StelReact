@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Menu from './Menu'
+import Menuguarda from './Menuguarda'
 import Footer from './Footer'
 import imagen from './imagen/paquetes.PNG'
 import imagenes from './imagen/parquear.PNG'
-import image from './imagen/multa.PNG'
+import imag from './imagen/novedades.jpg'
 import './Dashboard.css'
 
-const Dashboard = () => {
+const DashboardGuarda = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -19,7 +19,7 @@ const Dashboard = () => {
   
     return (
     <>
-        <Menu />
+        <Menuguarda />
         <div className='Dashboard'>
                 <h1>Dashboard <i class="bi bi-collection-fill"></i></h1>
                 <div className="row row-cols-1 row-cols-md-3 g-4">
@@ -43,10 +43,10 @@ const Dashboard = () => {
                     </div>
                     <div className="col">
                         <div className="card-Dashboard">
-                            <img src={image} alt="multa"></img>
+                            <img src={imag} alt="novedad"></img>
                             <div className="card-body">
-                                <h5 className="card-title">Multa <i className="bi bi-file-earmark-text-fill"></i></h5>
-                                <p className="card-text">Infracciones impuestas a un inmueble, faltando al manual de convivencia.</p>
+                                <h5 className="card-title">Novedades <i className="bi bi-bell"></i></h5>
+                                <p className="card-text">Aquellos posibles incidentes que se puedan presentar en la copropiedad.</p>
                             </div>
                         </div>
                     </div>
@@ -59,4 +59,4 @@ const Dashboard = () => {
   )
 }
 
-export default Dashboard
+export default DashboardGuarda
