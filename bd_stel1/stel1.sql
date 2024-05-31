@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 03-04-2024 a las 16:39:25
+-- Tiempo de generación: 29-05-2024 a las 07:52:31
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.2.4
 
@@ -115,7 +115,7 @@ INSERT INTO `tbl_estcartera` (`id`, `est_cartera`, `tacc_estcartera`, `noti_estc
 (1, 'Paz y salvo', 'Permitido', 'Enviar documento', 1, 1),
 (2, 'Paz y Salvo', 'Permitido', 'enviar certificado', 2, 1),
 (4, 'Mora', 'Bloqueado', 'Notificar Residente', 3, 1),
-(5, 'Mora', 'Bloqueado', 'Notificar Residente', 4, 1),
+(5, 'Mora', 'Bloqueado', 'Notificar residente', 4, 1),
 (6, 'Mora', 'Bloqueado', 'Notificar Residente', 5, 1),
 (7, 'Mora', 'Bloqueado', 'Notificar Residente', 6, 1),
 (8, 'Mora', 'Bloqueado', 'enviar carta', 7, 1),
@@ -124,14 +124,17 @@ INSERT INTO `tbl_estcartera` (`id`, `est_cartera`, `tacc_estcartera`, `noti_estc
 (12, 'Acuerdo de pago', 'Bloqueado', 'Notificar residente', 11, 1),
 (13, 'Acuerdo de pago', 'Bloqueado', 'Notificar residente', 12, 1),
 (14, 'Acuerdo de pago', 'Bloqueado', 'Notificar residente', 13, 1),
-(15, 'pazysalvo', 'Permitido', 'Notificar residente', 14, 1),
+(15, 'Paz y Salvo', 'Permitido', 'Notificar residente', 14, 1),
 (16, 'pazysalvo', 'Permitido', 'Notificar residente', 16, 1),
 (17, 'pazysalvo', 'Permitido', 'Notificar residente', 17, 1),
 (18, 'Paz y salvo', 'Permitido', 'Enviar certificado', 18, 1),
-(24, 'mora', 'Bloqueado', 'Notificar residente', 19, 1),
+(24, 'Mora', 'Bloqueado', 'Notificar residente', 19, 1),
 (28, 'Proceso Juridico', 'Bloqueado', 'Enviar proceso', 20, 1),
 (29, 'paz y salvo', 'permitido', 'enviar certificado', 21, 1),
-(30, 'Mora', 'Bloqueado', 'Enviar carta', 49, 1);
+(30, 'Mora', 'Bloqueado', 'Enviar carta', 49, 1),
+(34, 'Paz y Salvo', 'Permitido', 'Enviar certificado', 50, 1),
+(38, 'Mora', 'Bloqueado', 'Notificar residente', 61, 1),
+(39, 'Paz y Salvo', 'Permitido', 'Enviar certificado', 72, 1);
 
 -- --------------------------------------------------------
 
@@ -167,7 +170,7 @@ INSERT INTO `tbl_inmueble` (`id`, `and_inmueble`, `num_inmueble`, `fkid_resident
 (14, 1, 14, NULL),
 (15, 1, 15, NULL),
 (16, 1, 16, NULL),
-(17, 1, 17, NULL),
+(17, 0, 17, NULL),
 (18, 1, 18, NULL),
 (19, 1, 19, NULL),
 (20, 1, 20, NULL),
@@ -415,7 +418,9 @@ INSERT INTO `tbl_multa` (`id`, `tipo_multa`, `fec_multa`, `val_multa`, `fpag_mul
 (1, 'Estacionamiento indebido', '2023-01-10 22:00:00', 250000, '2023-02-10 10:15:00', 3, 3),
 (2, 'Ruido excesivo', '2023-11-11 00:15:00', 100000, '2024-02-10 13:18:00', 4, 3),
 (3, 'Mascota sin correa', '2023-12-11 00:15:00', 100000, '2024-02-10 13:18:00', 1, 3),
-(5, 'Estacionamiento indebido', '2024-03-13 19:00:00', 250000, '2024-03-28 19:00:00', 13, 3);
+(5, 'Estacionamiento indebido', '2024-03-13 19:00:00', 250000, '2024-03-28 19:00:00', 13, 3),
+(12, 'Estacionamiento Indebido', '2024-04-22 19:00:00', 250000, '2024-04-23 19:00:00', 17, 3),
+(15, 'Estacionamiento Indebido', '2024-04-14 19:00:00', 250000, '2024-04-23 19:00:00', 17, 2);
 
 -- --------------------------------------------------------
 
@@ -441,7 +446,7 @@ CREATE TABLE `tbl_novedades` (
 INSERT INTO `tbl_novedades` (`id`, `asunto_novedades`, `desc_novedades`, `est_novedades`, `fec_novedades`, `rem_novedades`, `res_novedades`, `tipo_novedad`) VALUES
 (2, 'Solicitud Camara Seguridad', 'Revisión cámaras de seguridad', 'Solicitud Atendida', '2023-06-12 14:45:00', 'Jose Perez', 'verificar danos', 'Residente'),
 (3, 'Solicitud Zonas Comunes', 'Reporte de danos en las areas comunes', 'Solicitud Atendida', '2023-06-12 14:45:00', 'Dan Casas', 'verificar danos', 'Residente'),
-(4, 'Solicitud Reunion con administrador', 'danos', 'Solicitud Atendida', '2023-06-12 14:45:00', 'Jose Perez', 'programar reunión', 'Residente');
+(6, 'Problemas en el anden 4', 'lampara rota', 'en espera', '2024-04-16 19:00:00', 'Carlos Guzman', 'programar revisión', 'Residente');
 
 -- --------------------------------------------------------
 
@@ -473,7 +478,8 @@ INSERT INTO `tbl_parqueadero` (`id`, `tipo_parqueadero`, `estado_parqueadero`, `
 (6, 'Carro-Propietario', 'Habilitado', '2024-03-28 16:15:00', 'DSA-498 Sail Negro', 3, '2024-03-28 18:19:00', 10000),
 (7, 'Carro-Propietario', 'Inhabilitado', '2024-03-14 01:44:00', 'SDA-458 Logan Azul ', 2, NULL, 50000),
 (8, 'Carro-Propietario', 'Inhabilitado', '2024-03-08 22:49:00', 'LAK-795 Mazda Rojo', 4, NULL, 50000),
-(9, 'Carro-Propietario', 'Inhabilitado', '2024-03-13 19:33:00', 'LAS-489 Logan Rojo', 5, NULL, 50000);
+(9, 'Carro-Propietario', 'Inhabilitado', '2024-03-13 19:33:00', 'LAS-489 Logan Rojo', 5, NULL, 50000),
+(11, 'Carro-Propietario', 'Inhabilitado', '2024-04-15 07:10:00', 'ASD-498 LOGAN NEGRO', 6, NULL, 50000);
 
 -- --------------------------------------------------------
 
@@ -504,7 +510,9 @@ INSERT INTO `tbl_residente` (`id`, `nom_residente`, `ced_residente`, `ema_reside
 (5, 'Pablo Gutierrez', 1114210354, 'padi@gmail.com', 3107543210, 2, NULL, 1),
 (6, 'Ruben Silva', 1014321548, 'rubensi@gmail.com', 3114587984, 3, 8, 1),
 (7, 'Monica Garzon', 120487986, 'monicga@gmail.com', 3114879875, 5, 9, 1),
-(8, 'Miguel Salazar', 1015498765, 'miguelsal@gmail.com', 3158978542, 2, NULL, 1);
+(8, 'Miguel Salazar', 1015498765, 'miguelsal@gmail.com', 3158978542, 2, NULL, 1),
+(50, 'Carla Rojas', 1014369874, 'carlaro@gmail.com', 3119846210, 2, 11, 1),
+(52, 'Juan Delgado', 1013245789, 'juandel@gmail.com', 3124351230, 4, 11, 1);
 
 -- --------------------------------------------------------
 
@@ -524,8 +532,7 @@ CREATE TABLE `tbl_rol` (
 INSERT INTO `tbl_rol` (`id`, `nombre_rol`) VALUES
 (1, 'Residente'),
 (2, 'Administrador'),
-(3, 'Vigilante'),
-(4, 'Todero');
+(3, 'Vigilante');
 
 -- --------------------------------------------------------
 
@@ -551,14 +558,14 @@ CREATE TABLE `tbl_trabajador` (
 
 INSERT INTO `tbl_trabajador` (`id`, `nom_trabajador`, `cc_trabajador`, `cel_trabajador`, `ema_trabajador`, `tpco_trabajador`, `carg_trabajador`, `emp_trabajador`, `fkid_rol`) VALUES
 (1, 'Alba Amaya', 101653218, 3101246879, 'albaamaya@gmail.com', 'Prestación de Servicios', 'Administradora', 'Administradores', 2),
-(2, 'Juan Gonzales', 1032798025, 3114521358, 'Juan1971@gmail.com', 'Indefinido', 'Todero', 'ToderoColombia', 4),
-(3, NULL, 0, 0, NULL, NULL, 'Vigilante', NULL, 3),
+(2, 'Juan Gonzales', 1032798025, 3114521358, 'Juan1971@gmail.com', 'Indefinido', 'Vigilante', 'Vigias', 3),
+(3, 'Samuel Cardenas', 1014521032, 3128134587, 'samucar@gmail.com', 'Prestación de Servicios', 'Vigilante', 'Vigias Colombia', 3),
 (4, 'Ruben Noel', 1045785421, 3114587998, 'rubenno@gmail.com', 'Indefinido', 'Vigilante', 'Vigias Colombia', 3),
 (5, 'Jorge Torres', 1011874213, 3102245876, 'jorgetorres@gmail.com', 'Indefinido', 'Vigilante', 'Prevenir', 3),
 (6, 'Gerardo Cifuentes', 14234875, 3114521879, 'gerardoci@gmail.com', 'Indefinido', 'Vigilante', 'Vigilancia Colombia', 3),
 (7, 'Bruce Rosas', 1010154875, 3114521879, 'bruceros@gmail.com', 'Indefinido', 'Vigilante', 'Vigias Colombia', 3),
 (9, 'Fernando Medina', 14234878, 3114521210, 'fernandomedina@gmail.com', 'Indefinido', 'Vigilante', 'Vigias Colombia', 3),
-(10, 'Jaime Figueroa', 13458794, 3104547870, 'jaimef@gmail.com', 'Indefinido', 'Todero', 'Toderos Colombia', 4),
+(10, 'Jaime Figueroa', 13458794, 3104547870, 'jaimef@gmail.com', 'Indefinido', 'Vigilante', 'Vigias Colombia', 3),
 (11, 'Arturo Ortiz', 1024548764, 3204562130, 'artor@gmail.com', 'Indefinido', 'Vigilante', 'Vigias Colombia', 3),
 (12, 'Enrique Delgado', 100459874, 3128978543, 'enriquedelg@gmail.com', 'Indefinido', 'Vigilante', 'Vigias Colombia', 3),
 (13, 'Carlos Hoyos', 12458795, 3114589875, 'carlosho@gmail.com', 'Indefinido', 'Vigilante', 'Vigias Colombia', 3),
@@ -585,7 +592,6 @@ INSERT INTO `tbl_usuarios` (`id`, `usuario`, `contrasena`, `fkid_rol`) VALUES
 (1, 'pabloguz@gmail.com', 'P@-Gu7m4n.3!', 1),
 (2, 'danmartinez@gmail.com', 'D4n.!123', 2),
 (3, 'bentedder@gmail.com', 'T3d-de!37*8/', 3),
-(4, 'borjavilaseca@gmail.com', 'B0!r2!/1$-3a', 4),
 (5, 'jaimeroque@gmail.com', 'J4im3ro', 1),
 (6, 'bencasas@gmail.com', 'b3nc4s!', 1),
 (7, 'lauraro@gmail.com', 'l4ural@', 1),
@@ -600,7 +606,9 @@ INSERT INTO `tbl_usuarios` (`id`, `usuario`, `contrasena`, `fkid_rol`) VALUES
 (23, 'martharo@gmail.com', 'm2rt@a', 1),
 (24, 'santiagocarrero@gmail.com', 's4ntiagoc5@*', 1),
 (26, 'marina@gmail.com', 'm4r!g', 1),
-(27, 'guillermoriv@gmail.com', 'gus@ald', 1);
+(27, 'guillermoriv@gmail.com', 'gus@ald', 1),
+(29, 'arturomedina@gmail.com', 'art@me!', 3),
+(30, 'julisalamanca@gmail.com', 'jul1as5$', 1);
 
 -- --------------------------------------------------------
 
@@ -747,7 +755,7 @@ ALTER TABLE `tbl_correspondencia`
 -- AUTO_INCREMENT de la tabla `tbl_estcartera`
 --
 ALTER TABLE `tbl_estcartera`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- AUTO_INCREMENT de la tabla `tbl_inmueble`
@@ -759,25 +767,25 @@ ALTER TABLE `tbl_inmueble`
 -- AUTO_INCREMENT de la tabla `tbl_multa`
 --
 ALTER TABLE `tbl_multa`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT de la tabla `tbl_novedades`
 --
 ALTER TABLE `tbl_novedades`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `tbl_parqueadero`
 --
 ALTER TABLE `tbl_parqueadero`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `tbl_residente`
 --
 ALTER TABLE `tbl_residente`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT de la tabla `tbl_rol`
@@ -795,7 +803,7 @@ ALTER TABLE `tbl_trabajador`
 -- AUTO_INCREMENT de la tabla `tbl_usuarios`
 --
 ALTER TABLE `tbl_usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT de la tabla `tbl_visitantes`
