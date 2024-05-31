@@ -27,7 +27,13 @@ import VisitanteGuarda from './Components/Pages/RolGuarda/VisitanteGuarda';
 import ParqueaderoGuarda from './Components/Pages/RolGuarda/ParqueaderoGuarda';
 import CorrespondenciaGuarda from './Components/Pages/RolGuarda/CorrespondenciaGuarda';
 import NovedadesGuarda from './Components/Pages/RolGuarda/NovedadesGuarda';
-import TicektVisitante from './Components/Pages/RolGuarda/TicketVisitante';
+import TicketVisitante from './Components/Pages/RolGuarda/TicketVisitante';
+import MenuResidente from './Components/Generic/MenuResidente';
+import InmuebleResidente from './Components/Pages/RolResidente/InmuebleResidente';
+import CarteraResidente from './Components/Pages/RolResidente/CarteraResidente';
+import DashboardResidente from './Components/Generic/DashboardResidente';
+
+ 
 
 
 
@@ -64,7 +70,11 @@ function App() {
           <Route path='/ParqueaderoGuarda' element={<ParqueaderoGuarda />} />
           <Route path='/CorrespondenciaGuarda' element={<CorrespondenciaGuarda />} />
           <Route path='/NovedadesGuarda' element={<NovedadesGuarda />} />
-          <Route path='/TicketVisitante' element={<TicektVisitante />} />
+          <Route path='/TicketVisitante' element={<TicketVisitante />} />
+          <Route path='/MenuResidente' element={<MenuResidente />} />
+          <Route path='/DashboardResidente' element={<DashboardResidente />} />
+          <Route path='/InmuebleResidente' element={<InmuebleResidente />} />
+          <Route path='/CarteraResidente' element={<CarteraResidente />} />
           
 
           
@@ -72,7 +82,6 @@ function App() {
         </Routes>
         
       </BrowserRouter>
-      
       
     </div>
   );
