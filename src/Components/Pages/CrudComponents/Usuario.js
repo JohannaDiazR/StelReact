@@ -15,6 +15,9 @@ const Usuario = () => {
         id: '',
         usuario: '',
         contrasena: '',
+        nombre: '',
+        cedula: '',
+        celular: '',
         role: {
             id: '',
             nombreRol: ''
@@ -81,6 +84,21 @@ const Usuario = () => {
             newErrors.contrasena = 'La contraseña debe tener al menos 8 caracteres, incluyendo al menos una mayúscula, una minúscula, un número y un carácter especial';
             isValid = false;
         }
+        const nombrePattern = /^[a-zA-Z\s]{1,35}$/;
+        if (!nombrePattern.test(user.nombre)){
+            newErrors.nombre = 'El nombre solo debe contener letras y espacio';
+            isValid = false;
+        } 
+        const cedulaPattern = /^\d{1,10}$/; 
+        if (!cedulaPattern.test(user.cedula)){
+            newErrors.cedula = 'La identificación solo debe contener números y no ser mayor a 10 digitos';
+            isValid = false;
+        }
+        const celularPattern = /^(300|310|311|312|313|315)\d{7}$/;
+        if (!celularPattern.test(user.celular)){
+            newErrors.celular = 'El celular debe ser valido';
+            isValid = false;
+        }
         setErrors(newErrors);
         return isValid;
     };
@@ -102,6 +120,9 @@ const Usuario = () => {
             await axios.post('http://localhost:8085/api/user/create', {
                 usuario: user.usuario,
                 contrasena: user.contrasena,
+                nombre: user.nombre,
+                cedula: user.cedula,
+                celular: user.celular,
                 role: {
                     id: user.role.id,
                     nombreRol: user.role.nombreRol
@@ -121,6 +142,9 @@ const Usuario = () => {
             await axios.put(`http://localhost:8085/api/user/update/${user.id}`, {
                 usuario: user.usuario,
                 contrasena: user.contrasena,
+                nombre: user.nombre,
+                cedula: user.cedula,
+                celular: user.celular,
                 role: {
                     id: user.role.id,
                     nombreRol: user.role.nombreRol
@@ -153,6 +177,9 @@ const Usuario = () => {
             id: '',
             usuario: '',
             contrasena: '',
+            nombre: '',
+            cedula: '',
+            celular: '',
             role: {
                 id: '',
                 nombreRol: ''
@@ -168,6 +195,9 @@ const Usuario = () => {
                 id: selectedUser.id,
                 usuario: selectedUser.usuario,
                 contrasena: selectedUser.contrasena,
+                nombre: selectedUser.nombre,
+                cedula: selectedUser.cedula,
+                celular: selectedUser.celular,
                 role: {
                     id: selectedUser.role ? selectedUser.role.id : '',
                     nombreRol: selectedUser.role ? selectedUser.role.nombreRol : ''
@@ -267,6 +297,42 @@ const Usuario = () => {
                                     />
                                     {errors.contrasena && <div className="text-danger">{errors.contrasena}</div>}
                                 </div>
+                                <div className="mb-3">
+                                    <label className="form-label">Nombre</label>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        placeholder="nombre"
+                                        name="nombre"
+                                        value={user.nombre}
+                                        onChange={handleInputChange}
+                                    />
+                                    {errors.nombre && <div className="text-danger">{errors.nombre}</div>}
+                                </div>
+                                <div className="mb-3">
+                                    <label className="form-label">Cedula</label>
+                                    <input
+                                        type="number"
+                                        className="form-control"
+                                        placeholder="cedula"
+                                        name="cedula"
+                                        value={user.cedula}
+                                        onChange={handleInputChange}
+                                    />
+                                    {errors.cedula && <div className="text-danger">{errors.cedula}</div>}
+                                </div>
+                                <div className="mb-3">
+                                    <label className="form-label">Celular</label>
+                                    <input
+                                        type="number"
+                                        className="form-control"
+                                        placeholder="celular"
+                                        name="celular"
+                                        value={user.celular}
+                                        onChange={handleInputChange}
+                                    />
+                                    {errors.celular && <div className="text-danger">{errors.celular}</div>}
+                                </div>
                                 <div className='mb-3'>
                                     <label className='form-label'>Rol</label>
                                     <select
@@ -283,13 +349,13 @@ const Usuario = () => {
                                         ))}
                                     </select>
                                 </div>
-                                <button type="submit" className="btn btn-success me-2" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}>
+                                <button type="submit" className="btn btn-success smaller-button sm-2" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40',width: '160px'}}>
                                     <i className="bi bi-pen"></i>
                                     {formType === 'create' ? 'Crear' : 'Editar'}
                                 </button>
-                                <button type="button" className="btn btn-secondary me-2" style={{ backgroundColor: '#a11129'}} onClick={() => setShowForm(false)}>
+                                <button type="button" className="btn btn-secondary smaller-button sm-2" style={{ backgroundColor: '#a11129', borderColor: '#a11129',width: '160px'}} onClick={() => setShowForm(false)}>
                                     <i className="bi bi-x-circle-fill"></i>
-                                    <span className="ms-2">Cancelar</span>
+                                    <span className="sm-2">Cancelar</span>
                                 </button>
                             </form>
                         </div>
@@ -302,6 +368,9 @@ const Usuario = () => {
                             <th>ID</th>
                             <th>Usuario</th>
                             <th>Contraseña</th>
+                            <th>Nombre</th>
+                            <th>Cedula</th>
+                            <th>Celular</th>
                             <th>Rol</th>
                             <th>Acciones</th>
                         </tr>
@@ -312,6 +381,9 @@ const Usuario = () => {
                                 <td style={{textAlign: 'center'}}>{user.id}</td>
                                 <td style={{textAlign: 'center'}}>{user.usuario}</td>
                                 <td style={{textAlign: 'center'}}>{user.contrasena}</td>
+                                <td style={{textAlign: 'center'}}>{user.nombre}</td>
+                                <td style={{textAlign: 'center'}}>{user.cedula}</td>
+                                <td style={{textAlign: 'center'}}>{user.celular}</td>
                                 <td style={{textAlign: 'center'}}>{user.role ? user.role.nombreRol : 'N/A'}</td>
                                 <td className="text-center">
                                     <div className="d-flex justify-content-center">

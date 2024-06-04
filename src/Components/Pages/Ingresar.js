@@ -5,13 +5,9 @@ import './css/Ingresar.css';
 import { Link, Navigate } from 'react-router-dom';
 import { login } from '../../Services/AuthService';
 
-
 const Ingresar = () => {
     const [redirectTo, setRedirectTo] = useState(null);
     const [error, setError] = useState(null);
-    
-
-    
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -21,19 +17,18 @@ const Ingresar = () => {
 
         try {
             const role = await login(usuario, contrasena);
+            console.log('Rol recibido:', role);
 
             switch (role) {
                 case 'Administrador':
                     setRedirectTo('/Dashboard');
-                    
                     break;
                 case 'Vigilante':
-                    
                     setRedirectTo('/DashboardGuarda');
                     break;
                 case 'Residente':
-                    
-                    setRedirectTo('/DashboardResidente');    
+                    setRedirectTo('/DashboardResidente');
+                    break;
                 default:
                     throw new Error('Rol de usuario no válido');
             }
@@ -64,7 +59,6 @@ const Ingresar = () => {
                     {error && <p className="text-danger mt-2">{error}</p>}
                 </form>
             </div>
-            
             <Footer />
         </>
     );

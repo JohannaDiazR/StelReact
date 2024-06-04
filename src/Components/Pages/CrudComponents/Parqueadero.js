@@ -173,13 +173,7 @@ const Parqueadero = () => {
                                     </>
                                 )}
                             </h3>
-                            <button 
-                                type="button" 
-                                className="btn-close" 
-                                aria-label="Close" 
-                                onClick={() => setShowForm(false)}
-                            >    
-                            </button>
+                            
                         </div>
                         <div className='card-body'>
                             <form onSubmit={handleSubmit}>

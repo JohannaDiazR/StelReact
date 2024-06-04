@@ -7,8 +7,8 @@ import './css/Visitante.css';
 const Visitante = () => {
     const [visitors, setVisitors] = useState([]);
     const [workers, setWorkers] = useState([]);
-    const [properties, setProperties] = useState([]);
     const [parkings, setParkings] = useState([]);
+    const [properties, setProperties] = useState([]);
     const [message, setMessage] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [showForm, setShowForm] = useState(false);
@@ -18,26 +18,30 @@ const Visitante = () => {
         nomVisitante: '',
         cedVisitante: '',
         nomResidente: '',
-        carVisitante: false,
-        ingrVisitante: false,
-        fecVisitante: '',
+        carVisitante: '',
+        ingrVisitante: '',
+        fecVisitante: getCurrentDate(),
         worker: {
             id: '',
             nomTrabajador: ''
         },
-        property: {
-            id: '',
-            numInmueble: ''
-        },
         parking: {
             id: '',
             cupParqueadero: ''
-       }
+       },
+        property: {
+            id: '',
+            numInmueble: ''
+        }
     });
 
     const [currentPage, setCurrentPage] = useState(1);
     const [visitorsPerPage] = useState(8);
 
+    function getCurrentDate() {
+        const today = new Date();
+        return today.toISOString().split('T')[0]; // Formato 'DD-MM-YYYY'
+    }
     const fetchVisitors = async () => {
         try {
             const response = await axios.get('http://localhost:8085/api/visitor/all');
@@ -57,6 +61,14 @@ const Visitante = () => {
             console.error('Error fetching workers:', error);
         }
     };
+    const fetchParkings = async () => {
+        try {
+            const response = await axios.get('http://localhost:8085/api/parking/all');
+            setParkings(response.data.data);
+        } catch (error) {
+            console.error('Error fetching parkings:', error);
+        }
+    };
 
     const fetchProperties = async () => {
         try {
@@ -67,31 +79,30 @@ const Visitante = () => {
         }
     };
 
-    const fetchParkings = async () => {
-        try {
-            const response = await axios.get('http://localhost:8085/api/parking/all');
-            setParkings(response.data.data);
-        } catch (error) {
-            console.error('Error fetching parkings:', error);
-        }
-    };
-
     useEffect(() => {
         fetchVisitors();
         fetchWorkers();
-        fetchProperties();
         fetchParkings();
+        fetchProperties();
     }, []);
 
     const handleInputChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        if (type === 'checkbox') {
-            setVisitor({ ...visitor, [name]: checked });
-        } else if (name === 'worker.id') {
+        const { name, value} = e.target;
+        
+        if (name === 'worker.id') {
             setVisitor({
                 ...visitor,
                 worker: {
                     ...visitor.worker,
+                    id: value
+                }
+            });
+       
+        } else if (name === 'parking.id'){
+            setVisitor({
+                ...visitor,
+                parking: {
+                    ...visitor.parking,
                     id: value
                 }
             });
@@ -100,14 +111,6 @@ const Visitante = () => {
                 ...visitor,
                 property: {
                     ...visitor.property,
-                    id: value
-                }
-            });
-        } else if (name === 'parking.id'){
-            setVisitor({
-                ...visitor,
-                parking: {
-                    ...visitor.parking,
                     id: value
                 }
             });
@@ -136,19 +139,21 @@ const Visitante = () => {
                 fecVisitante: visitor.fecVisitante,
                 worker: {
                     id: visitor.worker.id,
-                    nomTrabajador: visitor.worker.nomTrabajador
-                },
-                property: {
-                    id: visitor.property.id,
-                    numInmueble: visitor.property.numInmueble
+                    cargTrabajador: visitor.worker.nomTrabajador
                 },
                 parking: {
                     id: visitor.parking.id,
                     cupParqueadero: visitor.parking.cupParqueadero
-               }  
+               },  
+                property: {
+                    id: visitor.property.id,
+                    numInmueble: visitor.property.numInmueble
+                }
+                
             });
             setShowForm(false);
             fetchVisitors();
+            setMessage('Visitante creado correctamente');
         } catch (error) {    
             console.error('Error creating visitor:', error);
             setMessage('Error al crear el visitante');
@@ -166,19 +171,20 @@ const Visitante = () => {
                 fecVisitante: visitor.fecVisitante,
                 worker: {
                     id: visitor.worker.id,
-                    nomTrabajador: visitor.worker.nomTrabajador
-                },
-                property: {
-                    id: visitor.property.id,
-                    numInmueble: visitor.property.numInmueble
+                    cargTrabajador: visitor.worker.nomTrabajador
                 },
                 parking: {
                     id: visitor.parking.id,
                     cupParqueadero: visitor.parking.cupParqueadero
-               }  
+               },
+               property: {
+                    id: visitor.property.id,
+                    numInmueble: visitor.property.numInmueble
+                },  
             });
             setShowForm(false);
             fetchVisitors();
+            setMessage('Visitante Actualizado Correctamente');
         } catch (error) {
             console.error('Error updating visitor:', error);
             setMessage('Error al actualizar el visitante');
@@ -189,6 +195,7 @@ const Visitante = () => {
         try {
             await axios.delete(`http://localhost:8085/api/visitor/delete/${id}`);
             fetchVisitors();
+            setMessage('Visitante Eliminado Correctamente');
         } catch (error) {
             console.error('Error deleting visitor:', error);
             setMessage('Error al eliminar el visitante');
@@ -203,52 +210,28 @@ const Visitante = () => {
             nomVisitante: '',
             cedVisitante: '',
             nomResidente: '',
-            carVisitante: false,
-            ingrVisitante: false,
+            carVisitante: '',
+            ingrVisitante: '',
             fecVisitante: '',
             worker: {
                 id: '',
                 nomTrabajador: ''
             },
-            property: {
-                id: '',
-                numInmueble: ''
-            },
             parking: {
                 id: '',
                 cupParqueadero: ''
-           }
+           },
+            property: {
+                id: '',
+                numInmueble: ''
+            }
         });
     };
 
-    const showEditForm = (selectedVisitor) => {
-        if (selectedVisitor) {
-            setShowForm(true);
-            setFormType('edit');
-            setVisitor({
-                id: selectedVisitor.id,
-                nomVisitante: selectedVisitor.nomVisitante,
-                cedVisitante: selectedVisitor.cedVisitante,
-                nomResidente: selectedVisitor.nomResidente,
-                carVisitante: selectedVisitor.carVisitante,
-                ingrVisitante: selectedVisitor.ingrVisitante,
-                fecVisitante: selectedVisitor.fecVisitante,
-                worker: {
-                    id: selectedVisitor.worker ? selectedVisitor.worker.id : '',
-                    nomTrabajador: selectedVisitor.worker ? selectedVisitor.worker.nomTrabajador : ''
-                },
-                property: {
-                    id: selectedVisitor.property ? selectedVisitor.property.id : '',
-                    numInmueble: selectedVisitor.property ? selectedVisitor.property.numInmueble : ''
-                },
-                parking: {
-                    id: selectedVisitor.parking ? selectedVisitor.parking.id : '',
-                    cupParqueadero: selectedVisitor.parking? selectedVisitor.parking.cupParqueadero : ''
-                }
-
-            });
-        }
-        
+    const showEditForm = (visitor) => {
+        setShowForm(true);
+        setFormType('edit');
+        setVisitor(visitor);   
     };
 
     const handleSearchChange = (e) => {
@@ -312,13 +295,7 @@ const Visitante = () => {
                                 </>
                             )}
                         </h3>
-                        <button 
-                            type="button" 
-                            className="btn-close" 
-                            aria-label="Close" 
-                            onClick={() => setShowForm(false)}
-                        >
-                        </button>
+                        
                         </div>
                         <div className='card-body'>
                             <form onSubmit={handleSubmit}>
@@ -355,31 +332,33 @@ const Visitante = () => {
                                         onChange={handleInputChange}
                                     />
                                 </div>   
-                                <div className="mb-3">
-                                    <label className="form-label">Vehículo</label>
-                                    <div>
-                                        <input 
-                                            type="checkbox" 
-                                            id="carVisitante" 
-                                            name="carVisitante" 
-                                            checked={visitor.carVisitante} 
-                                            onChange={handleInputChange} 
-                                        />
-                                        <label htmlFor="carVisitante">¿Tiene vehículo?</label>
-                                    </div>
+                                <div className='form-group'>
+                                    <label htmlFor='carVisitante'>Carro Visitante</label>
+                                    <select
+                                        className='form-control'
+                                        id='carVisitante'
+                                        name='carVisitante'
+                                        value={visitor.carVisitante}
+                                        onChange={handleInputChange}
+                                    >
+                                        <option value=''>Seleccione...</option>
+                                        <option value='si'>Si</option>
+                                        <option value='no'>No</option>
+                                    </select>
                                 </div>
-                                <div className="mb-3">
-                                    <label className="form-label">Ingreso</label>
-                                    <div>
-                                        <input 
-                                            type="checkbox" 
-                                            id="ingrVisitante" 
-                                            name="ingrVisitante" 
-                                            checked={visitor.ingrVisitante} 
-                                            onChange={handleInputChange} 
-                                        />
-                                        <label htmlFor="ingrVisitante">¿Autoriza el ingreso?</label>
-                                    </div>
+                                <div className='form-group'>
+                                    <label htmlFor='ingrVisitante'>Ingreso Permitido</label>
+                                    <select
+                                        className='form-control'
+                                        id='ingrVisitante'
+                                        name='ingrVisitante'
+                                        value={visitor.ingrVisitante}
+                                        onChange={handleInputChange}
+                                    >
+                                        <option value=''>Seleccione...</option>
+                                        <option value='si'>Si</option>
+                                        <option value='no'>No</option>
+                                    </select>
                                 </div>
                                 <div className="mb-3">
                                     <label className="form-label">Fecha</label>
@@ -393,7 +372,7 @@ const Visitante = () => {
                                     />
                                 </div>
                                 <div className="mb-3">
-                                    <label className="form-label">Worker</label>
+                                    <label className="form-label">Trabajador</label>
                                     <select
                                         className='form-select'
                                         name='worker.id'
@@ -409,7 +388,25 @@ const Visitante = () => {
                                     </select>
                                 </div>
                                 <div className="mb-3">
-                                    <label className="form-label">Property</label>
+                                    <label className="form-label">Parqueadero</label>
+                                    <select
+                                        className='form-select'
+                                        name='parking.id'
+                                        value={visitor.parking.id}
+                                        onChange={handleInputChange}
+                                    >
+                                        <option value="">Seleccione un cupo de parqueadero</option>
+                                        <option value="sin-carro">Sin carro</option>
+                                        {parkings.map((parking) => (
+                                            <option key={parking.id} value={parking.id}>
+                                                {parking.cupParqueadero}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                
+                                <div className="mb-3">
+                                    <label className="form-label">Inmueble</label>
                                     <select
                                         className='form-select'
                                         name='property.id'
@@ -424,22 +421,7 @@ const Visitante = () => {
                                         ))}
                                     </select>
                                 </div>
-                                <div className="mb-3">
-                                    <label className="form-label">Parking</label>
-                                    <select
-                                        className='form-select'
-                                        name='parking.id'
-                                        value={visitor.parking.id}
-                                        onChange={handleInputChange}
-                                    >
-                                        <option value="">Seleccione un cupo de parqueadero</option>
-                                        {parkings.map((parking) => (
-                                            <option key={parking.id} value={parking.id}>
-                                                {parking.cupParqueadero}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
+                                
                                 <button type="submit" className="btn btn-success me-2" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}>
                                     <i className="bi bi-person-fill-exclamation"></i>
                                     {formType === 'create' ? 'Crear' : 'Editar'}
@@ -470,39 +452,46 @@ const Visitante = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {currentVisitors.map((visitor) => (
-                            <tr key={visitor.id}>
-                                <td style={{textAlign: 'center'}}>{visitor.id}</td>
-                                <td style={{textAlign: 'center'}}>{visitor.nomVisitante}</td>
-                                <td style={{textAlign: 'center'}}>{visitor.cedVisitante}</td>
-                                <td style={{textAlign: 'center'}}>{visitor.nomResidente}</td>
-                                <td style={{textAlign: 'center'}}>{visitor.carVisitante ? 'Sí' : 'No'}</td>
-                                <td style={{textAlign: 'center'}}>{visitor.ingrVisitante ? 'Sí' : 'No'}</td>
-                                <td style={{textAlign: 'center'}}>{visitor.fecVisitante}</td>
-                                <td style={{textAlign: 'center'}}>{visitor.worker ? visitor.worker.nomTrabajador : 'N/A'}</td>
-                                <td style={{textAlign: 'center'}}>{visitor.property ? visitor.property.numInmueble : 'N/A'}</td>
-                                <td style={{textAlign: 'center'}}>{visitor.parking ? visitor.parking.cupParqueadero : 'N/A'}</td>
-                                <td className='text-center'>
-                                    <div className="d-flex justify-content-center">
-                                        <button 
-                                            className="btn btn-primary btn-sm" 
-                                            onClick={() => showEditForm(visitor)}
-                                            style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
-                                        >
-                                            <i className="bi bi-person-fill-exclamation"></i>
-                                        </button>
-                                        <button 
-                                            className="btn btn-danger btn-sm" 
-                                            onClick={() => deleteVisitor(visitor.id)}
-                                            style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
-                                        >
-                                            <i className="bi bi-person-x"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>  
+    {currentVisitors.map((visitor) => {
+        console.log(visitor.carVisitante, visitor.property);  // Verifica los valores
+        return (
+            <tr key={visitor.id}>
+                <td style={{ textAlign: 'center' }}>{visitor.id}</td>
+                <td style={{ textAlign: 'center' }}>{visitor.nomVisitante}</td>
+                <td style={{ textAlign: 'center' }}>{visitor.cedVisitante}</td>
+                <td style={{ textAlign: 'center' }}>{visitor.nomResidente}</td>
+                <td style={{ textAlign: 'center' }}>{visitor.carVisitante}</td>
+                <td style={{ textAlign: 'center' }}>{visitor.ingrVisitante}</td>
+                <td style={{ textAlign: 'center' }}>{visitor.fecVisitante}</td>
+                <td style={{ textAlign: 'center' }}>{visitor.worker ? visitor.worker.nomTrabajador : 'N/A'}</td>
+                <td style={{ textAlign: 'center' }}>{visitor.parking ? visitor.parking.cupParqueadero : 'N/A'}</td>
+                <td style={{ textAlign: 'center' }}>
+                    {['si', 'no'].includes(visitor.carVisitante.toLowerCase()) && visitor.property
+                        ? visitor.property.numInmueble
+                        : 'N/A'}
+                </td>
+                <td className='text-center'>
+                    <div className="d-flex justify-content-center">
+                        <button
+                            className="btn btn-primary btn-sm"
+                            onClick={() => showEditForm(visitor)}
+                            style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
+                        >
+                            <i className="bi bi-person-fill-exclamation"></i>
+                        </button>
+                        <button
+                            className="btn btn-danger btn-sm"
+                            onClick={() => deleteVisitor(visitor.id)}
+                            style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
+                        >
+                            <i className="bi bi-person-x"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        );
+    })}
+</tbody>
                 </table>
                 <div className="pagination">
                     {filteredVisitors.length > visitorsPerPage && (

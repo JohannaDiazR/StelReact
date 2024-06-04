@@ -1,4 +1,5 @@
 import axios from 'axios';
+
 export const login = async (username, password) => {
     try {
         const response = await axios.get('http://localhost:8085/api/user/all');
@@ -27,4 +28,4 @@ export const login = async (username, password) => {
 export const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
-}
+};
