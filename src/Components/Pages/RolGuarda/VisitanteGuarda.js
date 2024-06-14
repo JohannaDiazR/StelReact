@@ -186,18 +186,7 @@ const VisitanteGuarda = () => {
         }
     };*/
 
-    // Delete a visitor
-    const deleteVisitor = async (id) => {
-        try {
-            const response = await axios.delete(`http://localhost:8085/api/visitor/delete/${id}`);
-            console.log('Delete Response:', response.data);
-            fetchVisitors(); // Refresh the list after deletion
-            setMessage('Visitante eliminado correctamente');
-        } catch (error) {
-            console.error('Error deleting visitor:', error);
-            setMessage('Error al eliminar el visitante');
-        }
-    };
+    
 
     // Filter visitors based on the search term
     const filteredVisitors = visitors.filter((visitor) =>
@@ -382,22 +371,22 @@ const VisitanteGuarda = () => {
                                     </select>
                                 </div>
                                 <div className="mb-3">
-    <label className="form-label">Parqueadero</label>
-    <select
-        className='form-select'
-        name='parking.id'
-        value={visitor.parking.id || ''}
-        onChange={handleInputChange}
-    >
-        <option value="">N/A</option> {/* Agregar opción para "N/A" */}
-        <option value="">0</option> 
-        {parkings.map((parking) => (
-            <option key={parking.id} value={parking.id}>
-                {parking.cupParqueadero}
-            </option>
-        ))}
-    </select>
-</div>
+                                    <label className="form-label">Parqueadero</label>
+                                    <select
+                                        className='form-select'
+                                        name='parking.id'
+                                        value={visitor.parking.id || ''}
+                                        onChange={handleInputChange}
+                                    >
+                                        <option value="">N/A</option> {/* Agregar opción para "N/A" */}
+                                        <option value="">0</option> 
+                                        {parkings.map((parking) => (
+                                            <option key={parking.id} value={parking.id}>
+                                                {parking.cupParqueadero}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
                                 
                                 <div className="mb-3">
                                     <label className="form-label">Inmueble</label>
@@ -446,46 +435,40 @@ const VisitanteGuarda = () => {
                         </tr>
                     </thead>
                     <tbody>
-    {currentVisitors.map((visitor) => {
-        console.log(visitor.carVisitante, visitor.property);  // Verifica los valores
-        return (
-            <tr key={visitor.id}>
-                <td style={{ textAlign: 'center' }}>{visitor.id}</td>
-                <td style={{ textAlign: 'center' }}>{visitor.nomVisitante}</td>
-                <td style={{ textAlign: 'center' }}>{visitor.cedula}</td>
-                <td style={{ textAlign: 'center' }}>{visitor.nomResidente}</td>
-                <td style={{ textAlign: 'center' }}>{visitor.carVisitante}</td>
-                <td style={{ textAlign: 'center' }}>{visitor.ingrVisitante}</td>
-                <td style={{ textAlign: 'center' }}>{visitor.fecVisitante}</td>
-                <td style={{ textAlign: 'center' }}>{visitor.worker ? visitor.worker.userName : 'N/A'}</td>
-                <td style={{ textAlign: 'center' }}>{visitor.parking ? visitor.parking.cupParqueadero : 'N/A'}</td>
-                <td style={{ textAlign: 'center' }}>
-                    {['si', 'no'].includes(visitor.carVisitante.toLowerCase()) && visitor.property
-                        ? visitor.property.numInmueble
-                        : 'N/A'}
-                </td>
-                <td className='text-center'>
-                    <div className="d-flex justify-content-center">
-                        <button
-                            className="btn btn-primary btn-sm"
-                            onClick={() => showEditForm(visitor)}
-                            style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
-                        >
-                            <i className="bi bi-person-fill-exclamation"></i>
-                        </button>
-                        <button
-                            className="btn btn-danger btn-sm"
-                            onClick={() => deleteVisitor(visitor.id)}
-                            style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
-                        >
-                            <i className="bi bi-person-x"></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
-        );
-    })}
-</tbody>
+                        {currentVisitors.map((visitor) => {
+                            console.log(visitor.carVisitante, visitor.property);  // Verifica los valores
+                            return (
+                                <tr key={visitor.id}>
+                                    <td style={{ textAlign: 'center' }}>{visitor.id}</td>
+                                    <td style={{ textAlign: 'center' }}>{visitor.nomVisitante}</td>
+                                    <td style={{ textAlign: 'center' }}>{visitor.cedula}</td>
+                                    <td style={{ textAlign: 'center' }}>{visitor.nomResidente}</td>
+                                    <td style={{ textAlign: 'center' }}>{visitor.carVisitante}</td>
+                                    <td style={{ textAlign: 'center' }}>{visitor.ingrVisitante}</td>
+                                    <td style={{ textAlign: 'center' }}>{visitor.fecVisitante}</td>
+                                    <td style={{ textAlign: 'center' }}>{visitor.worker ? visitor.worker.userName : 'N/A'}</td>
+                                    <td style={{ textAlign: 'center' }}>{visitor.parking ? visitor.parking.cupParqueadero : 'N/A'}</td>
+                                    <td style={{ textAlign: 'center' }}>
+                                        {['si', 'no'].includes(visitor.carVisitante.toLowerCase()) && visitor.property
+                                            ? visitor.property.numInmueble
+                                            : 'N/A'}
+                                    </td>
+                                    <td className='text-center'>
+                                        <div className="d-flex justify-content-center">
+                                            <button
+                                                className="btn btn-primary btn-sm"
+                                                onClick={() => showEditForm(visitor)}
+                                                style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
+                                            >
+                                                <i className="bi bi-person-fill-exclamation"></i>
+                                            </button>
+                                            
+                                        </div>
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
                 </table>
                 <div className="pagination">
                     {filteredVisitors.length > visitorsPerPage && (
