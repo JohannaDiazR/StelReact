@@ -34,6 +34,14 @@ const VisitanteGuarda = () => {
         return today.toISOString().split('T')[0];
     }
 
+    // Fetching initial data for visitors, workers, parkings, and properties
+    useEffect(() => {
+        fetchVisitors();
+        fetchWorkers();
+        fetchParkings();
+        fetchProperties();
+    }, []);
+
     const fetchVisitors = async () => {
         try {
             const response = await axios.get('http://localhost:8085/api/visitor/all');
@@ -72,50 +80,91 @@ const VisitanteGuarda = () => {
         }
     };
 
-    useEffect(() => {
-        fetchVisitors();
-        fetchWorkers();
-        fetchParkings();
-        fetchProperties();
-    }, []);
-
+    // Handle input changes for the form
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-
-        if (name === 'worker.id') {
-            setVisitor(prevVisitor => ({
-                ...prevVisitor,
-                worker: { ...prevVisitor.worker, id: value }
-            }));
+      
+        if (name === 'worker.id' && visitor.worker) {
+          setVisitor((prevVisitor) => ({
+           ...prevVisitor,
+            worker: {...prevVisitor.worker, id: value }
+          }));
         } else if (name === 'parking.id') {
-            setVisitor(prevVisitor => ({
-                ...prevVisitor,
-                parking: { ...prevVisitor.parking, id: value }
+          if (value === 'N/A') {
+            setVisitor((prevVisitor) => ({
+             ...prevVisitor,
+              parking: { id: 'N/A', cupParqueadero: '' }
             }));
-        } else if (name === 'property.id') {
-            setVisitor(prevVisitor => ({
-                ...prevVisitor,
-                property: { ...prevVisitor.property, id: value }
+          } else {
+            setVisitor((prevVisitor) => ({
+             ...prevVisitor,
+              parking: { id: value, cupParqueadero: '' }
             }));
+          }
+        } else if (name === 'property.id' && visitor.property) {
+          if (value === 'N/A') {
+            setVisitor((prevVisitor) => ({
+             ...prevVisitor,
+              property: { id: 'N/A', numInmueble: '' }
+            }));
+          } else {
+            setVisitor((prevVisitor) => ({
+             ...prevVisitor,
+              property: { id: value, numInmueble: '' }
+            }));
+          }
         } else {
-            setVisitor(prevVisitor => ({ ...prevVisitor, [name]: value }));
+          setVisitor((prevVisitor) => ({...prevVisitor, [name]: value }));
         }
-    };
+      };    
+    
+    
 
+    // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (formType === 'create') {
-            await createVisitor();
-        } else {
-            await updateVisitor();
+    
+        // Add basic validation to ensure required fields are not empty
+        if (!visitor.nomVisitante || !visitor.cedula) {
+            setMessage('Por favor complete los campos requeridos.');
+            return;
+        }
+    
+        let updatedVisitor = { ...visitor }; // Crear una copia del visitante
+
+        if (updatedVisitor.parking && updatedVisitor.parking.id === 'in-carro') {
+            updatedVisitor.parking = { id: 'in-carro', cupParqueadero: 0 }; // Establecer cupParqueadero en 0 si es "sin carro"
+          } else if (updatedVisitor.parking && updatedVisitor.parking.id === '') {
+            updatedVisitor.parking = { id: '', cupParqueadero: '' }; // Limpiar cupParqueadero si es ''
+          }
+    
+        try {
+            if (formType === 'create') {
+                const response = await axios.post('http://localhost:8085/api/visitor/create', updatedVisitor);
+                console.log('Create Response:', response.data);
+                setShowForm(false);
+                fetchVisitors(); // Refresh the list after creation
+                setMessage('Visitante creado correctamente');
+            } else {
+                const response = await axios.put(`http://localhost:8085/api/visitor/update/${updatedVisitor.id}`, updatedVisitor);
+                console.log('Update Response:', response.data);
+                setShowForm(false);
+                fetchVisitors(); // Refresh the list after update
+                setMessage('Visitante actualizado correctamente');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            setMessage('Error al procesar la solicitud');
         }
     };
 
-    const createVisitor = async () => {
+    // Create a new visitor
+    /*const createVisitor = async () => {
         try {
-            await axios.post('http://localhost:8085/api/visitor/create', visitor);
+            const response = await axios.post('http://localhost:8085/api/visitor/create', visitor);
+            console.log('Create Response:', response.data);
             setShowForm(false);
-            fetchVisitors();
+            fetchVisitors(); // Refresh the list after creation
             setMessage('Visitante creado correctamente');
         } catch (error) {
             console.error('Error creating visitor:', error);
@@ -123,22 +172,26 @@ const VisitanteGuarda = () => {
         }
     };
 
+    // Update an existing visitor
     const updateVisitor = async () => {
         try {
-            await axios.put(`http://localhost:8085/api/visitor/update/${visitor.id}`, visitor);
+            const response = await axios.put(`http://localhost:8085/api/visitor/update/${visitor.id}`, visitor);
+            console.log('Update Response:', response.data);
             setShowForm(false);
-            fetchVisitors();
+            fetchVisitors(); // Refresh the list after update
             setMessage('Visitante actualizado correctamente');
         } catch (error) {
             console.error('Error updating visitor:', error);
             setMessage('Error al actualizar el visitante');
         }
-    };
+    };*/
 
+    // Delete a visitor
     const deleteVisitor = async (id) => {
         try {
-            await axios.delete(`http://localhost:8085/api/visitor/delete/${id}`);
-            fetchVisitors();
+            const response = await axios.delete(`http://localhost:8085/api/visitor/delete/${id}`);
+            console.log('Delete Response:', response.data);
+            fetchVisitors(); // Refresh the list after deletion
             setMessage('Visitante eliminado correctamente');
         } catch (error) {
             console.error('Error deleting visitor:', error);
@@ -146,9 +199,22 @@ const VisitanteGuarda = () => {
         }
     };
 
+    // Filter visitors based on the search term
+    const filteredVisitors = visitors.filter((visitor) =>
+        visitor.property && visitor.property.numInmueble &&
+        visitor.property.numInmueble.toString().includes(searchTerm)
+    );
+
+    // Pagination logic
+    const indexOfLastVisitor = currentPage * visitorsPerPage;
+    const indexOfFirstVisitor = indexOfLastVisitor - visitorsPerPage;
+    const currentVisitors = filteredVisitors.slice(indexOfFirstVisitor, indexOfLastVisitor);
+    const totalPages = Math.ceil(filteredVisitors.length / visitorsPerPage);
+
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+    // Show the form for creating a new visitor
     const showCreateForm = () => {
-        setShowForm(true);
-        setFormType('create');
         setVisitor({
             id: '',
             nomVisitante: '',
@@ -161,42 +227,21 @@ const VisitanteGuarda = () => {
             parking: { id: '', cupParqueadero: '' },
             property: { id: '', numInmueble: '' }
         });
+        setFormType('create');
+        setShowForm(true);
     };
 
-    const showEditForm = (selectedVisitor) => {
-        if (selectedVisitor) {
-            setShowForm(true);
-            setFormType('edit');
-            setVisitor({
-                ...selectedVisitor,
-                worker: selectedVisitor.worker ? { id: selectedVisitor.worker.id, userName: selectedVisitor.worker.userName } : { id: '', userName: '' },
-                parking: selectedVisitor.parking ? { id: selectedVisitor.parking.id, cupParqueadero: selectedVisitor.parking.cupParqueadero } : { id: '', cupParqueadero: '' },
-                property: selectedVisitor.property ? { id: selectedVisitor.property.id, numInmueble: selectedVisitor.property.numInmueble } : { id: '', numInmueble: '' }
-            });
-        } else {
-            console.error('Error: selectedVisitor is null');
-        }
+    // Show the form for editing an existing visitor
+    const showEditForm = (visitor) => {
+        setVisitor(visitor);
+        setFormType('edit');
+        setShowForm(true);
     };
 
+    // Handle search term change
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
-        setCurrentPage(1);
-    };
-
-    const filteredVisitors = visitors.filter(visitor =>
-        visitor.cedula.toString().includes(searchTerm) ||
-        visitor.nomVisitante.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    const indexOfLastVisitor = currentPage * visitorsPerPage;
-    const indexOfFirstVisitor = indexOfLastVisitor - visitorsPerPage;
-    const currentVisitors = filteredVisitors.slice(indexOfFirstVisitor, indexOfLastVisitor);
-
-    const totalPages = Math.ceil(filteredVisitors.length / visitorsPerPage);
-
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-    return (
+    };    return (
         <>
             <Menuguarda />
             <div className='Visitantes'>
@@ -337,22 +382,22 @@ const VisitanteGuarda = () => {
                                     </select>
                                 </div>
                                 <div className="mb-3">
-                                    <label className="form-label">Parqueadero</label>
-                                    <select
-                                        className='form-select'
-                                        name='parking.id'
-                                        value={visitor.parking.id}
-                                        onChange={handleInputChange}
-                                    >
-                                        <option value="">Seleccione un cupo de parqueadero</option>
-                                        <option value="sin-carro">Sin carro</option>
-                                        {parkings.map((parking) => (
-                                            <option key={parking.id} value={parking.id}>
-                                                {parking.cupParqueadero}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
+    <label className="form-label">Parqueadero</label>
+    <select
+        className='form-select'
+        name='parking.id'
+        value={visitor.parking.id || ''}
+        onChange={handleInputChange}
+    >
+        <option value="">N/A</option> {/* Agregar opción para "N/A" */}
+        <option value="">0</option> 
+        {parkings.map((parking) => (
+            <option key={parking.id} value={parking.id}>
+                {parking.cupParqueadero}
+            </option>
+        ))}
+    </select>
+</div>
                                 
                                 <div className="mb-3">
                                     <label className="form-label">Inmueble</label>
