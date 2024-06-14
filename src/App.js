@@ -32,17 +32,17 @@ import MenuResidente from './Components/Generic/MenuResidente';
 import InmuebleResidente from './Components/Pages/RolResidente/InmuebleResidente';
 import CarteraResidente from './Components/Pages/RolResidente/CarteraResidente';
 import DashboardResidente from './Components/Generic/DashboardResidente';
-
- 
-
-
-
+import ResidenteResidente from './Components/Pages/RolResidente/ResidenteResidente';
+import CorrespondenciaResidente from './Components/Pages/RolResidente/CorrespondenciaResidente';
+import NovedadesResidente from './Components/Pages/RolResidente/NovedadesResidente';
+import MultasResidente from './Components/Pages/RolResidente/MultasResidente';
+import ParqueaderoResidente from './Components/Pages/RolResidente/ParqueaderoResidente';
 
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        
+      
         <Routes>
           <Route path='/' element={<Inicio />} />
           <Route path='/Sobre-Nosotros' element={<SobreNosotros />} />
@@ -75,9 +75,11 @@ function App() {
           <Route path='/DashboardResidente' element={<DashboardResidente />} />
           <Route path='/InmuebleResidente' element={<InmuebleResidente />} />
           <Route path='/CarteraResidente' element={<CarteraResidente />} />
-          
-
-          
+          <Route path='/ResidenteResidente' element={<ResidenteResidente />} />
+          <Route path='/CorrespondenciaResidente' element={<CorrespondenciaResidente />} />
+          <Route path='/NovedadesResidente' element={<NovedadesResidente />} />
+          <Route path='/MultasResidente' element={<MultasResidente />} />
+          <Route path='/ParqueaderoResidente' element={<ParqueaderoResidente />} />
           
         </Routes>
         

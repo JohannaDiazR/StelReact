@@ -19,11 +19,12 @@ const ParqueaderoGuarda = () => {
         dvteParqueadero: '',
         cupParqueadero: '',
         horaSalida: '',
-        tarParqueadero: ''
+        
     });
     const [showTicket, setShowTicket] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [parkingsPerPage] = useState(5);
+    const [errors, setErrors] = useState({});
 
     const fetchParkings = async () => {
         try {
@@ -44,14 +45,50 @@ const ParqueaderoGuarda = () => {
         const { name, value } = e.target;
         setParking({ ...parking, [name]: value });
     };
+    const validateParking = () => {
+        let  isValid = true;
+        const newErrors = {};
+
+        if (!parking.tipoParqueadero) {
+            newErrors.tipoParqueadero = 'Tipo parqueadero es requerido';
+            isValid = false;
+        }
+        
+        if (!parking.estadoParqueadero) {
+            newErrors.estadoParqueadero = 'Estado es requerido';
+            isValid = false;
+        }
+        if (!parking.fecParqueadero) {
+            newErrors.fecParqueadero = 'fecha es requerida';
+            isValid = false;
+        }
+        if (!parking.dvteParqueadero) {
+            newErrors.dvteParqueadero = 'Los datos del vehículo son requeridos';
+            isValid = false;
+        }
+        
+        if (!parking.cupParqueadero) {
+            errors.cupParqueadero = 'Número es requerido';
+            isValid = false;
+        }
+        if (!parking.horaSalida) {
+            newErrors.horaSalida = 'Hora salida es requerida';
+            isValid = false;
+        }
+        setErrors(newErrors);
+        return isValid;
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (formType === 'create') {
-            await createParking();
-        } else {
-            await updateParking();
+        if (validateParking()){
+            if (formType === 'create') {
+                await createParking();
+            } else {
+                await updateParking();
+            }
         }
+        
     };
 
     const createParking = async () => {
@@ -202,13 +239,7 @@ const ParqueaderoGuarda = () => {
                                     </>
                                 )}
                             </h3>
-                            <button 
-                                type="button" 
-                                className="btn-close" 
-                                aria-label="Close" 
-                                onClick={() => setShowForm(false)}
-                            >    
-                            </button>
+                            
                         </div>
                         <div className='card-body'>
                             <form onSubmit={handleSubmit}>
@@ -222,6 +253,7 @@ const ParqueaderoGuarda = () => {
                                         value={parking.tipoParqueadero}
                                         onChange={handleInputChange}
                                     />
+                                    {errors.tipoParqueadero && <div className="text-danger">{errors.tipoParqueadero}</div>}
                                 </div>
                                 <div className="mb-3">
                                     <label className="form-label">Estado</label>
@@ -233,6 +265,7 @@ const ParqueaderoGuarda = () => {
                                         value={parking.estadoParqueadero}
                                         onChange={handleInputChange}
                                     />
+                                    {errors.estadoParqueadero && <div className="text-danger">{errors.estadoParqueadero}</div>}
                                 </div>  
                                 <div className="mb-3">
                                     <label className="form-label">Fecha y Hora de Entrada</label>
@@ -244,6 +277,7 @@ const ParqueaderoGuarda = () => {
                                         value={parking.fecParqueadero}
                                         onChange={handleInputChange}
                                     />
+                                    {errors.fecParqueadero && <div className="text-danger">{errors.fecParqueadero}</div>}
                                 </div>
                                 <div className="mb-3">
                                     <label className="form-label">Datos Vehículo</label>
@@ -255,17 +289,21 @@ const ParqueaderoGuarda = () => {
                                         value={parking.dvteParqueadero}
                                         onChange={handleInputChange}
                                     />
+                                    {errors.dvteParqueadero && <div className="text-danger">{errors.dvteParqueadero}</div>}
                                 </div>
                                 <div className="mb-3">
                                     <label className="form-label">Número de Cupo</label>
                                     <input
                                         type="number"
                                         className="form-control"
+                                        min={1}
+                                        max={parking.tipoParqueadero.includes('carro') ? 55 : 46} // Limitar según el tipo de vehículo
                                         placeholder="Número de Cupo"
                                         name="cupParqueadero"
                                         value={parking.cupParqueadero}
                                         onChange={handleInputChange}
                                     />
+                                    {errors.cupParqueadero && <div className="text-danger">{errors.cupParqueadero}</div>}
                                 </div>
                                 <div className="mb-3">
                                     <label className="form-label">Hora de Salida</label>
@@ -277,8 +315,10 @@ const ParqueaderoGuarda = () => {
                                         value={parking.horaSalida}
                                         onChange={handleInputChange}
                                     />
+                                    {errors.horaSalida && <div className="text-danger">{errors.horaSalida}</div>}
                                 </div>
-                                <button type="submit" className="btn btn-primary me-2">
+                                <button type="submit" className="btn btn-success smaller-button sm-2" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40',width: '160px', margin: 'auto' }}>
+                                    <i class="bi bi-car-front-fill"></i>
                                     {formType === 'create' ? 'Crear' : 'Editar'}
                                 </button>
                                 <button type="button" className="btn btn-secondary me-2"style={{ backgroundColor: '#a11129'}} onClick={() => setShowForm(false)}>

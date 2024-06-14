@@ -27,7 +27,7 @@ const Usuario = () => {
     const [errors, setErrors] = useState({});
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [usersPerPage] = useState(10); // Cantidad de usuarios por página
+    const [usersPerPage] = useState(8); // Cantidad de usuarios por página
 
     const fetchUsers = async () => {
         try {
@@ -97,6 +97,10 @@ const Usuario = () => {
         const celularPattern = /^(300|310|311|312|313|315)\d{7}$/;
         if (!celularPattern.test(user.celular)){
             newErrors.celular = 'El celular debe ser valido';
+            isValid = false;
+        }
+        if (!user.role.id) {
+            newErrors.role = 'Seleccione un rol';
             isValid = false;
         }
         setErrors(newErrors);
@@ -348,15 +352,18 @@ const Usuario = () => {
                                             </option>
                                         ))}
                                     </select>
+                                    {errors.role && <div className="text-danger">{errors.role}</div>}
                                 </div>
-                                <button type="submit" className="btn btn-success smaller-button sm-2" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40',width: '160px'}}>
-                                    <i className="bi bi-pen"></i>
-                                    {formType === 'create' ? 'Crear' : 'Editar'}
-                                </button>
-                                <button type="button" className="btn btn-secondary smaller-button sm-2" style={{ backgroundColor: '#a11129', borderColor: '#a11129',width: '160px'}} onClick={() => setShowForm(false)}>
-                                    <i className="bi bi-x-circle-fill"></i>
-                                    <span className="sm-2">Cancelar</span>
-                                </button>
+                                <div className="d-flex justify-content-between">
+                                    <button type="submit" className="btn btn-success smaller-button sm-2" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40',width: '160px', margin: 'auto'}}>
+                                        <i className="bi bi-pen"></i>
+                                        {formType === 'create' ? 'Crear' : 'Editar'}
+                                    </button>
+                                    <button type="button" className="btn btn-secondary smaller-button sm-2" style={{ backgroundColor: '#a11129', borderColor: '#a11129',width: '160px', margin: 'auto'}} onClick={() => setShowForm(false)}>
+                                        <i className="bi bi-x-circle-fill"></i>
+                                        <span className="sm-2">Cancelar</span>
+                                    </button>
+                                </div>
                             </form>
                         </div>
                     </div>

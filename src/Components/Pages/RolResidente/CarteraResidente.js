@@ -58,7 +58,7 @@ const Cartera = () => {
             <div className='Wallet'>
                 <h2>Lista Cartera <i className="bi bi-wallet"></i></h2>
 
-                
+                <div className="d-flex justify-content-end align-items-center"> 
                     <div className="input-group" style={{ width: '36%' }}>
                         <div className="input-group-prepend">
                             <span className="input-group-text" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40'}}>
@@ -74,6 +74,7 @@ const Cartera = () => {
                         </div>
                         
                     </div>
+                </div>
                 </div>
                 <table className='table mt-4'>
                     <thead>

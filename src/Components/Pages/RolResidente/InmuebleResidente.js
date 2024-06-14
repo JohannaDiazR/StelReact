@@ -92,7 +92,7 @@ const InmuebleResidente = () => {
                                     <td style={{textAlign: 'center'}}>{property.id}</td>
                                     <td style={{textAlign: 'center'}}>{property.andInmueble}</td>
                                     <td style={{textAlign: 'center'}}>{property.numInmueble}</td>
-                                    <td style={{textAlign: 'center'}}>{property.resident ? property.resident.nomResidente : 'N/A'}</td>
+                                    <td style={{ textAlign: 'center' }}>{property.resident ? property.resident.userName : 'N/A'}</td>
                                 </tr>
                             ))}
                         </tbody>

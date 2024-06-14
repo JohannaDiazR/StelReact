@@ -29,28 +29,28 @@ const Menu = () => {
               <a className="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Usuarios <i className="bi bi-people-fill"></i></a>
               <ul className="dropdown-menu">
                 <li><Link className="dropdown-item centered-text" to="/InmuebleResidente">Inmuebles</Link></li>
-                <li><Link className="dropdown-item centered-text" to="/residente">Residentes</Link></li>
+                <li><Link className="dropdown-item centered-text" to="/ResidenteResidente">Residentes</Link></li>
               </ul>
             </li>
             <li className="nav-item dropdown align-self-center">
               <a className="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Administración <i className="bi bi-house"></i></a>
               <ul className="dropdown-menu">
-                <li><Link className="dropdown-item centered-text" to="/multas">Multas</Link></li>
+                <li><Link className="dropdown-item centered-text" to="/multasResidente">Multas</Link></li>
                 <li><Link className="dropdown-item centered-text" to="/carteraResidente">Cartera</Link></li>
-                <li><Link className="dropdown-item centered-text" to="/visitante">Visitantes</Link></li>
+                
               </ul>
             </li>
             <li className="nav-item dropdown align-self-center">
               <a className="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Parqueadero<i className="bi bi-car-front-fill"></i></a>
               <ul className="dropdown-menu">
-                <li><Link className="dropdown-item centered-text" to="/parqueadero">Parqueadero</Link></li>
+                <li><Link className="dropdown-item centered-text" to="/parqueaderoResidente">Parqueadero</Link></li>
               </ul>
             </li>
             <li className="nav-item dropdown align-self-center">
               <a className="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Comunicación <i className="bi bi-chat-left-text"></i></a>
               <ul className="dropdown-menu">
-                <li><Link className="dropdown-item centered-text" to="/correspondencia">Correspondencia</Link></li>
-                <li><Link className="dropdown-item centered-text" to="/novedades">Novedades</Link></li>
+                <li><Link className="dropdown-item centered-text" to="/CorrespondenciaResidente">Correspondencia</Link></li>
+                <li><Link className="dropdown-item centered-text" to="/NovedadesResidente">Novedades</Link></li>
               </ul>
             </li>
 

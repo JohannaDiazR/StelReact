@@ -15,7 +15,7 @@ const Cartera = () => {
     const [walletStatus, setWalletStatus] = useState({
         id: '',
         estcartera: '',
-        taccestcartera: '',
+        fecestcartera: '',
         notiestcartera: '',
         property: {
             id: '',
@@ -23,7 +23,8 @@ const Cartera = () => {
         },
         worker: {
             id: '',
-            nomTrabajador: ''
+            userName: '',
+            userCedula: ''
         }
     });
     const [currentPage, setCurrentPage] = useState(1);
@@ -35,11 +36,6 @@ const Cartera = () => {
         { id: 1, nombre: 'Mora' },
         { id: 2, nombre: 'Paz y Salvo' },
         { id: 3, nombre: 'Proceso Jurídico' }
-    ];
-
-    const tiposAcceso = [
-        { id: 1, nombre: 'Permitido' },
-        { id: 2, nombre: 'Bloqueado' }
     ];
 
     const opcionesNotificar = [
@@ -71,8 +67,9 @@ const Cartera = () => {
     const fetchWorkers = async () => {
         try {
             const response = await axios.get('http://localhost:8085/api/worker/all');
-            const filteredWorkers = response.data.data.filter(worker => worker.nomTrabajador === 'Alba Amaya');
-            setWorkers(filteredWorkers);
+            //const filteredWorkers = response.data.data.filter(worker => worker.nomTrabajador === 'Alba Amaya');
+            //setWorkers(filteredWorkers);
+            setWorkers(response.data.data);
         } catch (error) {
             console.error('Error fetching workers:', error);
         }
@@ -87,84 +84,93 @@ const Cartera = () => {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
 
-        if (name === 'property.id' || name === 'property.numInmueble') {
-            setWalletStatus({
-                ...walletStatus,
+        if (name === 'property.id') {
+            setWalletStatus(prevWalletStatus => ({
+                ...prevWalletStatus,
                 property: {
-                    ...walletStatus.property,
-                    [name.split('.')[1]]: value
+                    ...prevWalletStatus.property,
+                    id: value
                 }
-            });
-        } else if (name === 'worker.id' || name === 'worker.nomTrabajador') {
-            setWalletStatus({
-                ...walletStatus,
-                worker: {
-                    ...walletStatus.worker,
-                    [name.split('.')[1]]: value
-                }
-            });
+            }));
+        } else if (name === 'worker.id') {
+            const selectedWorker = workers.find(worker => worker.id === parseInt(value));
+            if (selectedWorker && selectedWorker.user) {
+                setWalletStatus(prevState => ({
+                    ...prevState,
+                    worker: {
+                        ...prevState.worker,
+                        id: value,
+                        userName: selectedWorker.user.nombre,
+                        userCedula: selectedWorker.user.cedula,
+                    }
+                }));
+            } else {
+                setWalletStatus(prevState => ({
+                    ...prevState,
+                    worker: {
+                        ...prevState.worker,
+                        id: value,
+                        userName: 'N/A',
+                        userCedula: 'N/A',
+                    }
+                }));
+            }    
         } else {
-            setWalletStatus({ ...walletStatus, [name]: value });
-        }
-    };
-
-    const validateForm = () => {
-        let isValid = true;
-        const newErrors = {};
-
-        if (!walletStatus.estcartera) {
-            newErrors.estcartera = 'El estado es requerido';
-            isValid = false;
-        }
-
-        if (!walletStatus.taccestcartera) {
-            newErrors.taccestcartera = 'El tipo de acceso es requerido';
-            isValid = false;
-        }
-
-        if (!walletStatus.notiestcartera) {
-            newErrors.notiestcartera = 'La opción de notificación es requerida';
-            isValid = false;
-        }
-
-        if (!walletStatus.property.id) {
-            newErrors.property = 'El inmueble es requerido';
-            isValid = false;
-        }
-
-        if (!walletStatus.worker.id) {
-            newErrors.worker = 'El trabajador es requerido';
-            isValid = false;
-        }
-
-        setErrors(newErrors);
-        return isValid;
+            setWalletStatus({...walletStatus, [name]: value});
+        }     
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setErrors({});
 
-        if (validateForm()) {
-            if (formType === 'create') {
-                await createWalletStatus();
-            } else {
-                await updateWalletStatus();
-            }
+        const validationErrors = {};
+        const today = new Date().toISOString().split('T')[0];
+        
+    
+        if (!walletStatus.estcartera) {
+            validationErrors.estcartera = 'El estado es requerido';
+        }
+
+        if (!walletStatus.fecestcartera){
+            validationErrors.fecestcartera = 'La fecha es obligatoria';
+        } else if (walletStatus.fecestcartera !== today) {
+            validationErrors.fecestcartera = 'La fecha del estado debe ser la actual';  
+        };
+        
+
+        if (!walletStatus.notiestcartera) {
+            validationErrors.notiestcartera = 'La opción de notificación es requerida';
+        }
+
+        if (!walletStatus.property.id) {
+            validationErrors.property = 'El inmueble es requerido';
+        }
+
+        if (!walletStatus.worker.id) {
+            validationErrors.worker = 'El trabajador es requerido';
+        }
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            return;
+        }
+        
+        if (formType === 'create'){
+            await createWalletStatus();
+    
+        } else {
+            await updateWalletStatus();
         }
     };
+    
 
     const createWalletStatus = async () => {
         try {
-            await axios.post('http://localhost:8085/api/walletStatus/create', {
-                estcartera: walletStatus.estcartera,
-                taccestcartera: walletStatus.taccestcartera,
-                notiestcartera: walletStatus.notiestcartera,
-                property: walletStatus.property,
-                worker: walletStatus.worker
-            });
+            await axios.post('http://localhost:8085/api/walletStatus/create', walletStatus); 
             setShowForm(false);
             fetchWallets();
             setMessage('Estado de cartera creado correctamente');
+            
         } catch (error) {
             console.error('Error creating Wallet', error);
             setMessage('Error al crear el estado de cartera');
@@ -173,14 +179,7 @@ const Cartera = () => {
 
     const updateWalletStatus = async () => {
         try {
-            await axios.put(`http://localhost:8085/api/walletStatus/update/${walletStatus.id}`, {
-                estcartera: walletStatus.estcartera,
-                taccestcartera: walletStatus.taccestcartera,
-                notiestcartera: walletStatus.notiestcartera,
-                property: walletStatus.property,
-                worker: walletStatus.worker
-            });
-
+            await axios.put(`http://localhost:8085/api/walletStatus/update/${walletStatus.id}`, walletStatus);
             setShowForm(false);
             fetchWallets();
             setMessage('Estado de cartera actualizado correctamente');
@@ -191,14 +190,16 @@ const Cartera = () => {
     };
 
     const deleteWalletStatus = async (id) => {
-        try {
-            await axios.delete(`http://localhost:8085/api/walletStatus/delete/${id}`);
-            fetchWallets();
-            setMessage('Estado de cartera eliminado correctamente');
-        } catch (error) {
-            console.error('Error deleting wallet:', error);
-            setMessage('Error al eliminar el estado de cartera');
-        }
+        if (window.confirm('¿Estás seguro de que deseas eliminar esta cartera?')) {
+            try {
+                await axios.delete(`http://localhost:8085/api/walletStatus/delete/${id}`);
+                fetchWallets();
+                setMessage('Estado de cartera eliminado correctamente');
+            } catch (error) {
+                console.error('Error deleting wallet:', error);
+                setMessage('Error al eliminar el estado de cartera');
+            }
+        }    
     };
 
     const showCreateForm = () => {
@@ -207,7 +208,7 @@ const Cartera = () => {
         setWalletStatus({
             id: '',
             estcartera: '',
-            taccestcartera: '',
+            fecestcartera: '',
             notiestcartera: '',
             property: {
                 id: '',
@@ -215,7 +216,8 @@ const Cartera = () => {
             },
             worker: {
                 id: '',
-                nomTrabajador: ''
+                userName: '',
+                userCedula: ''
             }
         });
     };
@@ -224,14 +226,7 @@ const Cartera = () => {
         if (selectedWalletStatus) {
             setShowForm(true);
             setFormType('edit');
-            setWalletStatus({
-                id: selectedWalletStatus.id,
-                estcartera: selectedWalletStatus.estcartera,
-                taccestcartera: selectedWalletStatus.taccestcartera,
-                notiestcartera: selectedWalletStatus.notiestcartera,
-                property: selectedWalletStatus.property,
-                worker: selectedWalletStatus.worker
-            });
+            setWalletStatus(selectedWalletStatus);
         } else {
             console.error('Error: selectedWalletStatus is null');
         }
@@ -318,24 +313,20 @@ const Cartera = () => {
                                             </option>
                                         ))}
                                     </select>
-                                    {errors.estcartera && <div className="invalid-feedback">{errors.estcartera}</div>}
+                                    {errors.estcartera && <div className="text-danger">{errors.estcartera}</div>}
                                 </div>
                                 <div className='mb-3'>
-                                    <label className='form-label'>Tipo Acceso</label>
-                                    <select
-                                        className={`form-select ${errors.taccestcartera ? 'is-invalid' : ''}`}
-                                        name='taccestcartera'
-                                        value={walletStatus.taccestcartera}
+                                    <label className='form-label'>Fecha</label>
+                                    <input
+                                        type='date'
+                                        className='form-control'
+                                        placeholder='Fecha de Estado'
+                                        name='fecestcartera'
+                                        value={walletStatus.fecestcartera}
                                         onChange={handleInputChange}
-                                    >
-                                        <option value="">Seleccionar tipo de acceso</option>
-                                        {tiposAcceso.map((tipo) => (
-                                            <option key={tipo.id} value={tipo.nombre}>
-                                                {tipo.nombre}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    {errors.taccestcartera && <div className="invalid-feedback">{errors.taccestcartera}</div>}
+                                    />
+                                    {errors.fecestcartera && <div className="text-danger">{errors.fecestcartera}</div>}
+                                    
                                 </div>
                                 <div className='mb-3'>
                                     <label className='form-label'>Notificar</label>
@@ -357,7 +348,7 @@ const Cartera = () => {
                                 <div className='mb-3'>
                                     <label className='form-label'>Inmueble</label>
                                     <select
-                                        className={`form-select ${errors.property ? 'is-invalid' : ''}`}
+                                        className='form-select' 
                                         name='property.id'
                                         value={walletStatus.property.id}
                                         onChange={handleInputChange}
@@ -369,30 +360,32 @@ const Cartera = () => {
                                             </option>
                                         ))}
                                     </select>
-                                    {errors.property && <div className="invalid-feedback">{errors.property}</div>}
+                                    {errors.property && <div className="text-danger">{errors.property}</div>}
                                 </div>
                                 <div className='mb-3'>
-                                    <label className='form-label'>Trabajador</label>
+                                <label className='form-label'>Trabajador</label>
                                     <select
-                                        className={`form-select ${errors.worker ? 'is-invalid' : ''}`}
+                                        className='form-select'
                                         name='worker.id'
                                         value={walletStatus.worker.id}
                                         onChange={handleInputChange}
                                     >
-                                        <option value="">Seleccione un trabajador</option>  
+                                        <option value=''>Seleccione un Trabajador</option>
                                         {workers.map((worker) => (
-                                            <option key={worker.id} value={worker.id}>
-                                                {worker.nomTrabajador}
-                                            </option>
+                                            worker.user.nombre === 'Alba Amaya' && (
+                                                <option key={worker.id} value={worker.id}>
+                                                    {worker.user.nombre} ({worker.user.cedula})
+                                                </option>
+                                            )
                                         ))}
                                     </select>
-                                    {errors.worker && <div className="invalid-feedback">{errors.worker}</div>}
+                                    {errors.worker && <div className="text-danger">{errors.worker}</div>}
                                 </div>
-                                <button type="submit" className="btn btn-success me-2" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}>
+                                <button type="submit" className="btn btn-success smaller-button sm-2" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40',width: '160px', margin: 'auto'}}>
                                     <i className="bi bi-wallet"></i>
                                     {formType === 'create' ? 'Crear' : 'Editar'}
                                 </button>
-                                <button type="button" className="btn btn-secondary me-2" style={{ backgroundColor: '#a11129' }} onClick={() => setShowForm(false)}>
+                                <button type="button" className="btn btn-secondary smaller-button sm-2" style={{ backgroundColor: '#a11129',width: '160px', margin: 'auto' }} onClick={() => setShowForm(false)}>
                                     <i className="bi bi-x-square-fill"></i>
                                     <span className="ms-2">Cancelar</span>
                                 </button>
@@ -405,10 +398,11 @@ const Cartera = () => {
                         <tr>
                             <th>Id</th>
                             <th>Estado</th>
-                            <th>Tipo Acceso</th>
+                            <th>Fecha</th>
                             <th>Notificar</th>
                             <th>Inmueble</th>
                             <th>Trabajador</th>
+                            <th>Cedula</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -417,10 +411,11 @@ const Cartera = () => {
                             <tr key={walletStatus.id}>
                                 <td style={{textAlign: 'center'}}>{walletStatus.id}</td>
                                 <td style={{textAlign: 'center'}}>{walletStatus.estcartera}</td>
-                                <td style={{textAlign: 'center'}}>{walletStatus.taccestcartera}</td>
+                                <td style={{textAlign: 'center'}}>{walletStatus.fecestcartera}</td>
                                 <td style={{textAlign: 'center'}}>{walletStatus.notiestcartera}</td>
                                 <td style={{textAlign: 'center'}}>{walletStatus.property ? walletStatus.property.numInmueble : 'N/A'}</td>
-                                <td style={{textAlign: 'center'}}>{walletStatus.worker ? walletStatus.worker.nomTrabajador : 'N/A'}</td>
+                                <td style={{textAlign: 'center'}}>{walletStatus.worker ? walletStatus.worker.userName : 'N/A'}</td>
+                                <td style={{textAlign: 'center'}}>{walletStatus.worker ? walletStatus.worker.userCedula : 'N/A'}</td>
                                 <td className='text-center'>
                                     <div className='d-flex justify-content-center'>
                                         <button 

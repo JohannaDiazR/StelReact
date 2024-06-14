@@ -16,23 +16,14 @@ const Visitante = () => {
     const [visitor, setVisitor] = useState({
         id: '',
         nomVisitante: '',
-        cedVisitante: '',
+        cedula: '',
         nomResidente: '',
         carVisitante: '',
         ingrVisitante: '',
         fecVisitante: getCurrentDate(),
-        worker: {
-            id: '',
-            nomTrabajador: ''
-        },
-        parking: {
-            id: '',
-            cupParqueadero: ''
-       },
-        property: {
-            id: '',
-            numInmueble: ''
-        }
+        worker: { id: '', userName: '' },
+        parking: { id: '', cupParqueadero: '' },
+        property: { id: '', numInmueble: '' }
     });
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -40,8 +31,9 @@ const Visitante = () => {
 
     function getCurrentDate() {
         const today = new Date();
-        return today.toISOString().split('T')[0]; // Formato 'DD-MM-YYYY'
+        return today.toISOString().split('T')[0];
     }
+
     const fetchVisitors = async () => {
         try {
             const response = await axios.get('http://localhost:8085/api/visitor/all');
@@ -61,6 +53,7 @@ const Visitante = () => {
             console.error('Error fetching workers:', error);
         }
     };
+
     const fetchParkings = async () => {
         try {
             const response = await axios.get('http://localhost:8085/api/parking/all');
@@ -75,7 +68,7 @@ const Visitante = () => {
             const response = await axios.get('http://localhost:8085/api/property/all');
             setProperties(response.data.data);
         } catch (error) {
-            console.error('Error fetching property:', error);
+            console.error('Error fetching properties:', error);
         }
     };
 
@@ -87,35 +80,25 @@ const Visitante = () => {
     }, []);
 
     const handleInputChange = (e) => {
-        const { name, value} = e.target;
-        
+        const { name, value } = e.target;
+
         if (name === 'worker.id') {
-            setVisitor({
-                ...visitor,
-                worker: {
-                    ...visitor.worker,
-                    id: value
-                }
-            });
-       
-        } else if (name === 'parking.id'){
-            setVisitor({
-                ...visitor,
-                parking: {
-                    ...visitor.parking,
-                    id: value
-                }
-            });
+            setVisitor(prevVisitor => ({
+                ...prevVisitor,
+                worker: { ...prevVisitor.worker, id: value }
+            }));
+        } else if (name === 'parking.id') {
+            setVisitor(prevVisitor => ({
+                ...prevVisitor,
+                parking: { ...prevVisitor.parking, id: value }
+            }));
         } else if (name === 'property.id') {
-            setVisitor({
-                ...visitor,
-                property: {
-                    ...visitor.property,
-                    id: value
-                }
-            });
+            setVisitor(prevVisitor => ({
+                ...prevVisitor,
+                property: { ...prevVisitor.property, id: value }
+            }));
         } else {
-            setVisitor({ ...visitor, [name]: value });
+            setVisitor(prevVisitor => ({ ...prevVisitor, [name]: value }));
         }
     };
 
@@ -130,31 +113,11 @@ const Visitante = () => {
 
     const createVisitor = async () => {
         try {
-            await axios.post('http://localhost:8085/api/visitor/create', {
-                nomVisitante: visitor.nomVisitante,
-                cedVisitante: visitor.cedVisitante,
-                nomResidente: visitor.nomResidente,
-                carVisitante: visitor.carVisitante,
-                ingrVisitante: visitor.ingrVisitante,
-                fecVisitante: visitor.fecVisitante,
-                worker: {
-                    id: visitor.worker.id,
-                    cargTrabajador: visitor.worker.nomTrabajador
-                },
-                parking: {
-                    id: visitor.parking.id,
-                    cupParqueadero: visitor.parking.cupParqueadero
-               },  
-                property: {
-                    id: visitor.property.id,
-                    numInmueble: visitor.property.numInmueble
-                }
-                
-            });
+            await axios.post('http://localhost:8085/api/visitor/create', visitor);
             setShowForm(false);
             fetchVisitors();
             setMessage('Visitante creado correctamente');
-        } catch (error) {    
+        } catch (error) {
             console.error('Error creating visitor:', error);
             setMessage('Error al crear el visitante');
         }
@@ -162,29 +125,10 @@ const Visitante = () => {
 
     const updateVisitor = async () => {
         try {
-            await axios.put(`http://localhost:8085/api/visitor/update/${visitor.id}`, {
-                nomVisitante: visitor.nomVisitante,
-                cedVisitante: visitor.cedVisitante,
-                nomResidente: visitor.nomResidente,
-                carVisitante: visitor.carVisitante,
-                ingrVisitante: visitor.ingrVisitante,
-                fecVisitante: visitor.fecVisitante,
-                worker: {
-                    id: visitor.worker.id,
-                    cargTrabajador: visitor.worker.nomTrabajador
-                },
-                parking: {
-                    id: visitor.parking.id,
-                    cupParqueadero: visitor.parking.cupParqueadero
-               },
-               property: {
-                    id: visitor.property.id,
-                    numInmueble: visitor.property.numInmueble
-                },  
-            });
+            await axios.put(`http://localhost:8085/api/visitor/update/${visitor.id}`, visitor);
             setShowForm(false);
             fetchVisitors();
-            setMessage('Visitante Actualizado Correctamente');
+            setMessage('Visitante actualizado correctamente');
         } catch (error) {
             console.error('Error updating visitor:', error);
             setMessage('Error al actualizar el visitante');
@@ -195,7 +139,7 @@ const Visitante = () => {
         try {
             await axios.delete(`http://localhost:8085/api/visitor/delete/${id}`);
             fetchVisitors();
-            setMessage('Visitante Eliminado Correctamente');
+            setMessage('Visitante eliminado correctamente');
         } catch (error) {
             console.error('Error deleting visitor:', error);
             setMessage('Error al eliminar el visitante');
@@ -208,30 +152,30 @@ const Visitante = () => {
         setVisitor({
             id: '',
             nomVisitante: '',
-            cedVisitante: '',
+            cedula: '',
             nomResidente: '',
             carVisitante: '',
             ingrVisitante: '',
-            fecVisitante: '',
-            worker: {
-                id: '',
-                nomTrabajador: ''
-            },
-            parking: {
-                id: '',
-                cupParqueadero: ''
-           },
-            property: {
-                id: '',
-                numInmueble: ''
-            }
+            fecVisitante: getCurrentDate(),
+            worker: { id: '', userName: '' },
+            parking: { id: '', cupParqueadero: '' },
+            property: { id: '', numInmueble: '' }
         });
     };
 
-    const showEditForm = (visitor) => {
-        setShowForm(true);
-        setFormType('edit');
-        setVisitor(visitor);   
+    const showEditForm = (selectedVisitor) => {
+        if (selectedVisitor) {
+            setShowForm(true);
+            setFormType('edit');
+            setVisitor({
+                ...selectedVisitor,
+                worker: selectedVisitor.worker ? { id: selectedVisitor.worker.id, userName: selectedVisitor.worker.userName } : { id: '', userName: '' },
+                parking: selectedVisitor.parking ? { id: selectedVisitor.parking.id, cupParqueadero: selectedVisitor.parking.cupParqueadero } : { id: '', cupParqueadero: '' },
+                property: selectedVisitor.property ? { id: selectedVisitor.property.id, numInmueble: selectedVisitor.property.numInmueble } : { id: '', numInmueble: '' }
+            });
+        } else {
+            console.error('Error: selectedVisitor is null');
+        }
     };
 
     const handleSearchChange = (e) => {
@@ -240,19 +184,23 @@ const Visitante = () => {
     };
 
     const filteredVisitors = visitors.filter(visitor =>
-        visitor.cedVisitante.toString().includes(searchTerm)
+        visitor.cedula.toString().includes(searchTerm) ||
+        visitor.nomVisitante.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const indexOfLastVisitor = currentPage * visitorsPerPage;
     const indexOfFirstVisitor = indexOfLastVisitor - visitorsPerPage;
     const currentVisitors = filteredVisitors.slice(indexOfFirstVisitor, indexOfLastVisitor);
-    const paginate = pageNumber => setCurrentPage(pageNumber);
-    
+
+    const totalPages = Math.ceil(filteredVisitors.length / visitorsPerPage);
+
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
     return (
         <>
             <Menu />
             <div className='Visitantes'>
-                <h2>Lista Visitantes <i class="bi bi-people-fill"></i></h2>
+                <h2>Lista Visitantes <i className="bi bi-people-fill"></i></h2>
                 <div className="d-flex justify-content-between align-items-center">
                     <button 
                         className="btn btn-success smaller-button" 
@@ -316,8 +264,8 @@ const Visitante = () => {
                                         type="number"
                                         className="form-control"
                                         placeholder="Cedula"
-                                        name="cedVisitante"
-                                        value={visitor.cedVisitante}
+                                        name="cedula"
+                                        value={visitor.cedula}
                                         onChange={handleInputChange}
                                     />
                                 </div>   
@@ -373,6 +321,7 @@ const Visitante = () => {
                                 </div>
                                 <div className="mb-3">
                                     <label className="form-label">Trabajador</label>
+                                    
                                     <select
                                         className='form-select'
                                         name='worker.id'
@@ -382,7 +331,7 @@ const Visitante = () => {
                                         <option value="">Seleccione un trabajador</option>
                                         {workers.map((worker) => (
                                             <option key={worker.id} value={worker.id}>
-                                                {worker.nomTrabajador}
+                                                {worker.user.nombre}  {/* Asegúrate que worker tiene userName */}
                                             </option>
                                         ))}
                                     </select>
@@ -416,17 +365,17 @@ const Visitante = () => {
                                         <option value="">Seleccione un inmueble</option>
                                         {properties.map((property) => (
                                             <option key={property.id} value={property.id}>
-                                                {property.numInmueble}
+                                                {property.numInmueble}  {/* Asegúrate que property tiene numInmueble */}
                                             </option>
                                         ))}
                                     </select>
                                 </div>
                                 
-                                <button type="submit" className="btn btn-success me-2" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}>
+                                <button type="submit" className="btn btn-success smaller-button sm-2" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40',width: '160px', margin: 'auto' }}>
                                     <i className="bi bi-person-fill-exclamation"></i>
                                     {formType === 'create' ? 'Crear' : 'Editar'}
                                 </button>
-                                <button type="button" className="btn btn-secondary me-2" style={{ backgroundColor: '#a11129'}} onClick={() => setShowForm(false)}>
+                                <button type="button" className="btn btn-secondary smaller-button sm-2" style={{ backgroundColor: '#a11129',width: '160px', margin: 'auto'}} onClick={() => setShowForm(false)}>
                                     <i className="bi bi-person-x"></i>
                                     <span className="ms-2">Cancelar</span>
                                 </button>
@@ -458,12 +407,12 @@ const Visitante = () => {
             <tr key={visitor.id}>
                 <td style={{ textAlign: 'center' }}>{visitor.id}</td>
                 <td style={{ textAlign: 'center' }}>{visitor.nomVisitante}</td>
-                <td style={{ textAlign: 'center' }}>{visitor.cedVisitante}</td>
+                <td style={{ textAlign: 'center' }}>{visitor.cedula}</td>
                 <td style={{ textAlign: 'center' }}>{visitor.nomResidente}</td>
                 <td style={{ textAlign: 'center' }}>{visitor.carVisitante}</td>
                 <td style={{ textAlign: 'center' }}>{visitor.ingrVisitante}</td>
                 <td style={{ textAlign: 'center' }}>{visitor.fecVisitante}</td>
-                <td style={{ textAlign: 'center' }}>{visitor.worker ? visitor.worker.nomTrabajador : 'N/A'}</td>
+                <td style={{ textAlign: 'center' }}>{visitor.worker ? visitor.worker.userName : 'N/A'}</td>
                 <td style={{ textAlign: 'center' }}>{visitor.parking ? visitor.parking.cupParqueadero : 'N/A'}</td>
                 <td style={{ textAlign: 'center' }}>
                     {['si', 'no'].includes(visitor.carVisitante.toLowerCase()) && visitor.property

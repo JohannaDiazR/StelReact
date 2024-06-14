@@ -4,9 +4,11 @@ import Menuguarda from '../../Generic/Menuguarda';
 import Footer from '../../Generic/Footer';
 import '../CrudComponents/css/Correspondencia.css';
 
+
 const CorrespondenciaGuarda = () => {
     const [correspondences, setCorrespondences] = useState([]);
     const [workers, setWorkers] = useState([]);
+    const [properties, setProperties] = useState([]);
     const [message, setMessage] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [showForm, setShowForm] = useState(false);
@@ -19,7 +21,12 @@ const CorrespondenciaGuarda = () => {
         fentrCorrespondencia: '',
         worker: {
             id: '',
-            nomTrabajador: ''
+            userName: ''
+        },
+        property: {
+            id: '',
+            numInmueble: ''
+
         }
     });
     const [currentPage, setCurrentPage] = useState(1);
@@ -44,27 +51,58 @@ const CorrespondenciaGuarda = () => {
             console.error('Error fetching workers:', error);
         }
     };
+    const fetchProperties = async () => {
+        try {
+            const response = await axios.get('http://localhost:8085/api/property/all');
+            setProperties(response.data.data);
+        } catch (error) {
+            console.error('Error fetching properties:', error);
+        }
+    };
 
     useEffect(() => {
         fetchCorrespondences();
         fetchWorkers();
+        fetchProperties();
     }, []);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-
+    
         if (name === 'worker.id') {
-            setCorrespondence({
-                ...correspondence,
-                worker: {
-                    ...correspondence.worker,
+            const selectedWorker = workers.find(worker => worker.id === parseInt(value));
+            if (selectedWorker && selectedWorker.user) {
+                setCorrespondence(prevState => ({
+                    ...prevState,
+                    worker: {
+                        ...prevState.worker,
+                        id: value,
+                        userName: selectedWorker.user.nombre,
+                    }
+                }));
+            } else {
+                setCorrespondence(prevState => ({
+                    ...prevState,
+                    worker: {
+                        ...prevState.worker,
+                        id: value,
+                        userName: 'N/A'
+                    }
+                }));
+            }
+        } else if (name === 'property.id') {
+            setCorrespondence(prevCorrespondence => ({
+                ...prevCorrespondence,
+                property: {
+                    ...prevCorrespondence.property,
                     id: value
                 }
-            });
+            }));
         } else {
             setCorrespondence({ ...correspondence, [name]: value });
         }
     };
+    
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -78,16 +116,7 @@ const CorrespondenciaGuarda = () => {
 
     const createCorrespondence = async () => {
         try {
-            await axios.post('http://localhost:8085/api/correspondence/create', {
-                tipoCorrespondencia: correspondence.tipoCorrespondencia,
-                frecCorrespondencia: correspondence.frecCorrespondencia,
-                estCorrespondencia: correspondence.estCorrespondencia,
-                fentrCorrespondencia: correspondence.fentrCorrespondencia,
-                worker: {
-                    id: correspondence.worker.id,
-                    nomTrabajador: correspondence.worker.nomTrabajador
-                }
-            });
+            await axios.post('http://localhost:8085/api/correspondence/create', correspondence);
             setShowForm(false);
             fetchCorrespondences();
             setMessage('Correspondencia creada correctamente');
@@ -99,22 +128,26 @@ const CorrespondenciaGuarda = () => {
 
     const updateCorrespondence = async () => {
         try {
-            await axios.put(`http://localhost:8085/api/correspondence/update/${correspondence.id}`, {
-                tipoCorrespondencia: correspondence.tipoCorrespondencia,
-                frecCorrespondencia: correspondence.frecCorrespondencia,
-                estCorrespondencia: correspondence.estCorrespondencia,
-                fentrCorrespondencia: correspondence.fentrCorrespondencia,
-                worker: {
-                    id: correspondence.worker.id,
-                    nomTrabajador: correspondence.worker.nomTrabajador
-                }
-            });
+            await axios.put(`http://localhost:8085/api/correspondence/update/${correspondence.id}`, correspondence);
             setShowForm(false);
             fetchCorrespondences();
             setMessage('Correspondencia Actualizada Correctamente');
         } catch (error) {
             console.error('Error updating correspondence:', error);
             setMessage('Error al actualizar la correspondencia');
+        }
+    };
+
+    const deleteCorrespondence = async (id) => {
+        if (window.confirm('¿Estás seguro de que deseas eliminar esta correspondencia?')) {
+            try {
+                await axios.delete(`http://localhost:8085/api/correspondence/delete/${id}`);
+                fetchCorrespondences();
+                setMessage('Correspondencia eliminada correctamente');
+            } catch (error) {
+                console.error('Error deleting correspondence:', error);
+                setMessage('Error al eliminar la correspondencia');
+            }
         }
     };
 
@@ -129,15 +162,28 @@ const CorrespondenciaGuarda = () => {
             fentrCorrespondencia: '',
             worker: {
                 id: '',
-                nomTrabajador: ''
+                userName: ''
+            },
+            property: {
+                id: '',
+                numInmueble: ''
             }
         });
     };
 
-    const showEditForm = (correspondence) => {
-        setShowForm(true);
-        setFormType('edit');
-        setCorrespondence(correspondence);
+    const showEditForm = (selectedCorrespondence) => {
+        if (selectedCorrespondence) {
+            setShowForm(true);
+            setFormType('edit');
+            // Inicializamos los campos worker.id y property.id solo si existen en la correspondencia seleccionada
+            setCorrespondence({
+                ...selectedCorrespondence,
+                worker: selectedCorrespondence.worker ? { id: selectedCorrespondence.worker.id, userName: selectedCorrespondence.worker.userName } : { id: '', userName: '' },
+                property: selectedCorrespondence.property ? { id: selectedCorrespondence.property.id, numInmueble: selectedCorrespondence.property.numInmueble } : { id: '', numInmueble: '' }
+            });
+        } else {
+            console.error('Error: selectedCorrespondence is null');
+        }
     };
 
     const handleSearchChange = (e) => {
@@ -242,7 +288,7 @@ const CorrespondenciaGuarda = () => {
                                     />
                                 </div>
                                 <div className='mb-3'>
-                                    <label className='form-label'>Fecha Entrega</label>
+                                    <label className='form-label'>Fecha de Entrega</label>
                                     <input
                                         type='date'
                                         className='form-control'
@@ -263,11 +309,27 @@ const CorrespondenciaGuarda = () => {
                                     >
                                         {workers.map((worker) => (
                                             <option key={worker.id} value={worker.id}>
-                                                {worker.nomTrabajador}
+                                                {worker.user.nombre}
                                             </option>
                                         ))}
                                     </select>
                                 </div>
+                                <div className='mb-3'>
+                                        <label className='form-label'>Inmueble</label>
+                                        <select
+                                            className='form-select'
+                                            name='property.id'
+                                            value={correspondence.property.id}
+                                            onChange={handleInputChange}
+                                        >
+                                            {properties.map((property) => (
+                                                <option key={property.id} value={property.id}>
+                                                    {property.numInmueble}
+                                                </option>
+                                            ))}
+                                        </select>    
+                                        
+                                    </div>  
                                 <button type="submit" className="btn btn-success me-2" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}>
                                     <i className="bi bi-wallet"></i>
                                     {formType === 'create' ? 'Crear' : 'Editar'}
@@ -289,6 +351,7 @@ const CorrespondenciaGuarda = () => {
                             <th>Estado Correspondencia</th>
                             <th>Fecha Entrega</th>
                             <th>Trabajador</th>
+                            <th>Inmueble</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -300,7 +363,8 @@ const CorrespondenciaGuarda = () => {
                                 <td style={{textAlign: 'center'}}>{correspondence.frecCorrespondencia}</td>
                                 <td style={{textAlign: 'center'}}>{correspondence.estCorrespondencia}</td>
                                 <td style={{textAlign: 'center'}}>{correspondence.fentrCorrespondencia}</td>
-                                <td style={{textAlign: 'center'}}>{correspondence.worker ? correspondence.worker.nomTrabajador : 'N/A'}</td>
+                                <td style={{textAlign: 'center'}}>{correspondence.worker ? correspondence.worker.userName : 'N/A'}</td>
+                                <td style={{textAlign: 'center'}}>{correspondence.property ? correspondence.property.numInmueble : 'N/A'}</td>
                                 <td className='text-center'>
                                     <div className='d-flex justify-content-center'>
                                         <button 
@@ -309,6 +373,13 @@ const CorrespondenciaGuarda = () => {
                                             style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
                                         >
                                             <i className="bi bi-wallet"></i>
+                                        </button>
+                                        <button 
+                                            className="btn btn-danger btn-sm mx-1" 
+                                            onClick={() => deleteCorrespondence(correspondence.id)}
+                                            style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
+                                        >
+                                            <i className="bi bi-trash"></i>
                                         </button>
                                     </div>
                                     

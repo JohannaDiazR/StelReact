@@ -12,10 +12,13 @@ const Dashboard = () => {
 
     useEffect(() => {
         const token = localStorage.getItem('token');
+        console.log("Token:", token); // Verificar el token en la consola
         if (!token){
             navigate('/ingresar');
         }
     }, [navigate]);
+
+    console.log("Rendering Dashboard component"); // Verificar que el componente se está renderizando
 
     return (
         <>

@@ -6,18 +6,15 @@ import './css/Residente.css';
 
 const Residente = () => {
     const [residents, setResidents] = useState([]);
-    const [roles, setRoles] = useState([]);
     const [parkings, setParkings] = useState([]);
+    const [roles, setRoles] = useState([]);
+    const [users, setUsers] = useState([]);
     const [message, setMessage] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [showForm, setShowForm] = useState(false);
     const [formType, setFormType] = useState('create');
     const [resident, setResident] = useState({
         id: '',
-        nomResidente: '',
-        cedResidente: '',
-        emaResidente: '',
-        celResidente: '',
         numIntegrantes: '',
         role: {
             id: '',
@@ -26,11 +23,18 @@ const Residente = () => {
         parking: {
             id: '',
             cupParqueadero: ''
+        },
+        user: {
+            id: '',
+            nombre: '',
+            cedula: ''
         }
     });
     const [currentPage, setCurrentPage] = useState(1);
-    const [residentsPerPage] = useState(8);
+    const [residentsPerPage] = useState(5);
+    const [errors, setErrors] = useState({});
 
+    // Fetch functions
     const fetchResidents = async () => {
         try {
             const response = await axios.get('http://localhost:8085/api/resident/all');
@@ -39,6 +43,15 @@ const Residente = () => {
         } catch (error) {
             console.error('Error fetching residents:', error);
             setMessage('Error al listar los residentes');
+        }
+    };
+
+    const fetchParkings = async () => {
+        try {
+            const response = await axios.get('http://localhost:8085/api/parking/all');
+            setParkings(response.data.data);
+        } catch (error) {
+            console.error('Error fetching parkings:', error);
         }
     };
 
@@ -51,67 +64,118 @@ const Residente = () => {
         }
     };
 
-    const fetchParkings = async () => {
+    const fetchUsers = async () => {
         try {
-            const response = await axios.get('http://localhost:8085/api/parking/all');
-            setParkings(response.data.data);
+            const response = await axios.get('http://localhost:8085/api/user/all');
+            setUsers(response.data.data);
         } catch (error) {
-            console.error('Error fetching parkings:', error);
+            console.error('Error fetching users:', error);
         }
     };
+
+    // Fetch data on component mount
     useEffect(() => {
         fetchResidents();
-        fetchRoles();
         fetchParkings();
+        fetchRoles();
+        fetchUsers();
     }, []);
 
+    // Handle input change
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        if (name === 'role.id') {
-            setResident({
-                ...resident,
-                role: {
-                    ...resident.role,
-                    id: value
-                }
-            });
-        } else if (name === 'parking.id') {
-            setResident({
-                ...resident,
+        if (name === 'parking.id') {
+            setResident(prevResident => ({
+                ...prevResident,
                 parking: {
-                    ...resident.parking,
+                    ...prevResident.parking,
                     id: value
                 }
-            });
+            }));
+        } else if (name === 'role.id') {
+            setResident(prevResident => ({
+                ...prevResident,
+                role: {
+                    ...prevResident.role,
+                    id: value
+                }
+            }));
+        } else if (name === 'user.id') {
+            setResident(prevResident => ({
+                ...prevResident,
+                user: {
+                    ...prevResident.user,
+                    id: value
+                }
+            }));
         } else {
             setResident({ ...resident, [name]: value });
         }
     };
 
+    // Validate form
+    const validateForm = () => {
+        let isValid = true;
+        const newErrors = {};
+
+        // Validate numIntegrantes
+        const numIntegrantes = parseInt(resident.numIntegrantes);
+        if (isNaN(numIntegrantes) || numIntegrantes < 1 || numIntegrantes > 10) {
+            newErrors.numIntegrantes = 'El número de integrantes debe ser un número entre 1 y 10';
+            isValid = false;
+        }
+
+        // Validate parking
+        if (!resident.parking.id) {
+            newErrors.parking = 'Seleccione un cupo de parqueadero';
+            isValid = false;
+        }
+
+        // Validate role
+        if (!resident.role.id) {
+            newErrors.role = 'Seleccione un rol';
+            isValid = false;
+        }
+
+        // Validate user
+        if (!resident.user.id) {
+            newErrors.user = 'Seleccione un usuario';
+            isValid = false;
+        }
+
+        setErrors(newErrors);
+        return isValid;
+    };
+
+    // Handle form submit
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (formType === 'create') {
-            await createResident();
-        } else {
-            await updateResident();
+        if (validateForm()) {
+            if (formType === 'create') {
+                await createResident();
+            } else {
+                await updateResident();
+            }
         }
     };
 
+    // Create resident
     const createResident = async () => {
         try {
             await axios.post('http://localhost:8085/api/resident/create', {
-                nomResidente: resident.nomResidente,
-                cedResidente: resident.cedResidente,
-                emaResidente: resident.emaResidente,
-                celResidente: resident.celResidente,
                 numIntegrantes: resident.numIntegrantes,
+                parking: {
+                    id: resident.parking.id,
+                    cupParqueadero: resident.parking.cupParqueadero
+                },
                 role: {
                     id: resident.role.id,
                     nombreRol: resident.role.nombreRol
                 },
-                parking: {
-                    id: resident.parking.id,
-                    cupParqueadero: resident.parking.cupParqueadero
+                user: {
+                    id: resident.user.id,
+                    nombre: resident.user.nombre,
+                    cedula: resident.user.cedula
                 }
             });
             setShowForm(false);
@@ -123,21 +187,23 @@ const Residente = () => {
         }
     };
 
+    // Update resident
     const updateResident = async () => {
         try {
             await axios.put(`http://localhost:8085/api/resident/update/${resident.id}`, {
-                nomResidente: resident.nomResidente,
-                cedResidente: resident.cedResidente,
-                emaResidente: resident.emaResidente,
-                celResidente: resident.celResidente,
                 numIntegrantes: resident.numIntegrantes,
+                parking: {
+                    id: resident.parking.id,
+                    cupParqueadero: resident.parking.cupParqueadero
+                },
                 role: {
                     id: resident.role.id,
                     nombreRol: resident.role.nombreRol
                 },
-                parking: {
-                    id: resident.parking.id,
-                    cupParqueadero: resident.parking.cupParqueadero
+                user: {
+                    id: resident.user.id,
+                    nombre: resident.user.nombre,
+                    cedula: resident.user.cedula
                 }
             });
             setShowForm(false);
@@ -149,6 +215,7 @@ const Residente = () => {
         }
     };
 
+    // Delete resident
     const deleteResident = async (id) => {
         try {
             await axios.delete(`http://localhost:8085/api/resident/delete/${id}`);
@@ -160,47 +227,35 @@ const Residente = () => {
         }
     };
 
+    // Show create form
     const showCreateForm = () => {
         setShowForm(true);
         setFormType('create');
         setResident({
             id: '',
-            nomResidente: '',
-            cedResidente: '',
-            emaResidente: '',
-            celResidente: '',
             numIntegrantes: '',
-            role: {
-                id: '',
-                nombreRol: ''
-            },
             parking: {
-                id: '',
-                cupParqueadero: ''
+                id: ''
+            },
+            role: {
+                id: ''
+            },
+            user: {
+                id: ''
             }
         });
     };
 
+    // Show edit form
     const showEditForm = (selectedResident) => {
+        console.log('selectedResident:', selectedResident);
         if (selectedResident) {
+            console.log('selectedResident.user:', selectedResident.user);
+            console.log('selectedResident.parking:', selectedResident.parking);
+            console.log('selectedResident.role:', selectedResident.role);
             setShowForm(true);
             setFormType('edit');
-            setResident({
-                id: selectedResident.id,
-                nomResidente: selectedResident.nomResidente,
-                cedResidente: selectedResident.cedResidente,
-                emaResidente: selectedResident.emaResidente,
-                celResidente: selectedResident.celResidente,
-                numIntegrantes: selectedResident.numIntegrantes,
-                role: {
-                    id: selectedResident.role ? selectedResident.role.id : '',
-                    nombreRol: selectedResident.role ? selectedResident.role.nombreRol : ''
-                },
-                parking: {
-                    id: selectedResident.parking ? selectedResident.parking.id : '',
-                    cupParqueadero: selectedResident.parking ? selectedResident.parking.cupParqueadero : ''
-                }
-            });
+            setResident(selectedResident);
         } else {
             console.error('Error: selectedResident is null');
         }
@@ -210,15 +265,16 @@ const Residente = () => {
         setCurrentPage(1);
     };
 
+    // Filter residents based on search term
     const filteredResidents = residents.filter(resident =>
-        resident.cedResidente.toString().includes(searchTerm)
+        resident.user && resident.user.cedula && resident.user.cedula.toString().includes(searchTerm)
     );
 
-    // Calcular los residentes a mostrar en la página actual
+    // Pagination logic
     const indexOfLastResident = currentPage * residentsPerPage;
     const indexOfFirstResident = indexOfLastResident - residentsPerPage;
     const currentResidents = filteredResidents.slice(indexOfFirstResident, indexOfLastResident);
-    
+
     const paginate = pageNumber => setCurrentPage(pageNumber);
     return (
         <>
@@ -227,9 +283,9 @@ const Residente = () => {
                 <h2>Lista Residentes <i className="bi bi-person-bounding-box"></i></h2>
                 <div className='d-flex justify-content-between align-items-center'>
                     <button
-                    className="btn btn-success smaller-button" 
-                    onClick={showCreateForm}
-                    style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40', marginLeft:'150px' }}
+                        className="btn btn-success smaller-button" 
+                        onClick={showCreateForm}
+                        style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40', marginLeft:'150px' }}
                     >
                         <i className="bi bi-person-square"></i>
                         <span className="ms-2">Crear Residente</span>
@@ -246,13 +302,9 @@ const Residente = () => {
                                 onChange={handleSearchChange}
                                 style={{ paddingLeft: '0.8rem', width:'350px' }}
                             />
-                            
                         </div>
-                        
                     </div>
-
                 </div>
-                
 
                 {showForm && (
                     <div className='card'>
@@ -270,60 +322,9 @@ const Residente = () => {
                                     </>
                                 )}
                             </h3>
-                            <button
-                                type="button"
-                                className="btn-close"
-                                aria-label="Close"
-                                onClick={() => setShowForm(false)}
-                            >
-                            </button>
                         </div>
                         <div className='card-body'>
                             <form onSubmit={handleSubmit}>
-                                <div className="mb-3">
-                                    <label className="form-label">Nombre</label>
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        placeholder="Nombre"
-                                        name="nomResidente"
-                                        value={resident.nomResidente}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                                <div className="mb-3">
-                                    <label className="form-label">Identificación</label>
-                                    <input
-                                        type="number"
-                                        className="form-control"
-                                        placeholder="cedula"
-                                        name="cedResidente"
-                                        value={resident.cedResidente}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                                <div className="mb-3">
-                                    <label className="form-label">Correo Electrónico</label>
-                                    <input
-                                        type="email"
-                                        className="form-control"
-                                        placeholder="correo"
-                                        name="emaResidente"
-                                        value={resident.emaResidente}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                                <div className="mb-3">
-                                    <label className="form-label">Celular</label>
-                                    <input
-                                        type="tel"
-                                        className="form-control"
-                                        placeholder="celular"
-                                        name="celResidente"
-                                        value={resident.celResidente}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
                                 <div className="mb-3">
                                     <label className="form-label">Número de integrantes</label>
                                     <input
@@ -334,6 +335,25 @@ const Residente = () => {
                                         value={resident.numIntegrantes}
                                         onChange={handleInputChange}
                                     />
+                                    {errors.numIntegrantes && <div className="text-danger">{errors.numIntegrantes}</div>}
+                                </div>
+                                <div className="mb-3">
+                                    <label className="form-label">Parqueadero</label>
+                                    <select
+                                        className='form-select'
+                                        name='parking.id'
+                                        value={resident.parking.id}
+                                        onChange={handleInputChange}
+                                    >
+                                        <option value="">Seleccione un cupo de parqueadero</option>
+                                        {parkings.map((parking) => (
+                                            <option key={parking.id} value={parking.id}>
+                                                {parking.cupParqueadero}
+                                            </option>
+                                        ))}
+                                        <option value="null">Sin carro</option>
+                                    </select>
+                                    {errors.parking && <div className="text-danger">{errors.parking}</div>}
                                 </div>
                                 <div className='mb-3'>
                                     <label className='form-label'>Rol</label>
@@ -350,32 +370,35 @@ const Residente = () => {
                                             </option>
                                         ))}
                                     </select>
+                                    {errors.role && <div className="text-danger">{errors.role}</div>}
                                 </div>
                                 <div className="mb-3">
-                                    <label className="form-label">Parqueadero</label>
+                                    <label className="form-label">Usuario</label>
                                     <select
                                         className='form-select'
-                                        name='parking.id'
-                                        value={resident.parking.id}
+                                        name='user.id'
+                                        value={resident.user.id}
                                         onChange={handleInputChange}
                                     >
-                                        <option value="">Seleccione un cupo de parqueadero</option>
-                                        {parkings.map((parking) => (
-                                            <option key={parking.id} value={parking.id}>
-                                                {parking.cupParqueadero}
+                                        <option value="">Seleccione un usuario</option>
+                                        {users.map((user) => (
+                                            <option key={user.id} value={user.id}>
+                                                {user.nombre} ({user.cedula})
                                             </option>
                                         ))}
                                     </select>
+                                    {errors.user && <div className="text-danger">{errors.user}</div>}
                                 </div>
-
-                                <button type="submit" className="btn btn-success me-2" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}>
-                                    <i className="bi bi-person-square"></i>
-                                    {formType === 'create' ? 'Crear' : 'Editar'}
-                                </button>
-                                <button type="button" className="btn btn-secondary me-2" style={{ backgroundColor: '#a11129' }} onClick={() => setShowForm(false)}>
-                                    <i className="bi bi-person-fill-x"></i>
-                                    <span className="ms-2">Cancelar</span>
-                                </button>
+                                <div className="d-flex justify-content-between">
+                                    <button type="submit" className="btn btn-success smaller-button sm-2" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40',width: '160px', margin: 'auto' }}>
+                                        <i className="bi bi-person-square"></i>
+                                        {formType === 'create' ? 'Crear' : 'Editar'}
+                                    </button>
+                                    <button type="button" className="btn btn-secondary smaller-button sm-2" style={{ backgroundColor: '#a11129',width: '160px', margin: 'auto' }} onClick={() => setShowForm(false)}>
+                                        <i className="bi bi-person-fill-x"></i>
+                                        <span className="sm-2">Cancelar</span>
+                                    </button>
+                                </div>
                             </form>
                         </div>
                     </div>
@@ -385,13 +408,11 @@ const Residente = () => {
                     <thead>
                         <tr>
                             <th>Id</th>
-                            <th>Nombre</th>
-                            <th>Identificación</th>
-                            <th>Correo</th>
-                            <th>Celular</th>
                             <th>Número de integrantes</th>
-                            <th>Rol</th>
                             <th>Parqueadero</th>
+                            <th>Rol</th>
+                            <th>Nombre</th>
+                            <th>Cedula</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -399,13 +420,11 @@ const Residente = () => {
                         {currentResidents.map((resident) => (
                             <tr key={resident.id}>
                                 <td style={{textAlign: 'center'}}>{resident.id}</td>
-                                <td style={{textAlign: 'center'}}>{resident.nomResidente}</td>
-                                <td style={{textAlign: 'center'}}>{resident.cedResidente}</td>
-                                <td style={{textAlign: 'center'}}>{resident.emaResidente}</td>
-                                <td style={{textAlign: 'center'}}>{resident.celResidente}</td>
                                 <td style={{textAlign: 'center'}}>{resident.numIntegrantes}</td>
-                                <td style={{textAlign: 'center'}}>{resident.role ? resident.role.nombreRol : 'N/A'}</td>
                                 <td style={{textAlign: 'center'}}>{resident.parking ? resident.parking.cupParqueadero : 'N/A'}</td>
+                                <td style={{textAlign: 'center'}}>{resident.role ? resident.role.nombreRol : 'N/A'}</td>
+                                <td style={{textAlign: 'center'}}>{resident.user ? resident.user.nombre : 'N/A'}</td>
+                                <td style={{textAlign: 'center'}}>{resident.user ? resident.user.cedula : 'N/A'}</td>
                                 <td className='text-center'>
                                     <div className="d-flex justify-content-center">
                                         <button

@@ -7,27 +7,42 @@ import './css/Trabajador.css';
 const Trabajador = () => {
     const [workers, setWorkers] = useState([]);
     const [roles, setRoles] = useState([]);
+    const [users, setUsers] = useState([]);
     const [message, setMessage] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [showForm, setShowForm] = useState(false);
     const [formType, setFormType] = useState('create');
     const [worker, setWorker] = useState({
         id: '',
-        nomTrabajador: '',
-        ccTrabajador: '',
-        celTrabajador: '',
-        emaTrabajador: '',
         tpcoTrabajador: '',
         cargTrabajador: '',
         empTrabajador: '',
         role: {
             id: '',
             nombreRol: ''
+        },
+        user: {
+            id: '',
+            nombre: '',
+            cedula: ''
         }
+        
     });
     const [currentPage, setCurrentPage] = useState(1);
-    const [workersPerPage] = useState(8); // Cantidad de trabajadores por página
+    const [workersPerPage] = useState(2);
+    const [errors, setErrors] = useState({});
 
+    const tipoContratoOptions = [
+        { id: 1, nombre: "Prestación de Servicios" },
+        { id: 2, nombre: "Fijo" },
+        { id: 3, nombre: "Indefinido" },
+        { id: 4, nombre: "Obra labor" }
+    ];
+
+    const cargoOptions = [
+        { id: 1, nombre: "Administrador" },
+        { id: 2, nombre: "Vigilante" },
+    ];
     const fetchWorkers = async () => {
         try {
             const response = await axios.get(`http://localhost:8085/api/worker/all`);
@@ -47,10 +62,19 @@ const Trabajador = () => {
             console.error('Error fetching roles:', error);
         }
     };
+    const fetchUsers = async () => {
+        try {
+            const response = await axios.get('http://localhost:8085/api/user/all');
+            setUsers(response.data.data);
+        } catch (error) {
+            console.error('Error fetching users:', error);
+        }
+    };
 
     useEffect(() => {
         fetchWorkers();
         fetchRoles();
+        fetchUsers();
     }, []);
 
     const handleInputChange = (e) => {
@@ -63,33 +87,77 @@ const Trabajador = () => {
                     id: value
                 }
             });
+        } else if (name === 'user.id'){
+            setWorker({
+                ...worker,
+                user: {
+                    ...worker.user,
+                    id: value
+                }
+            });
+         
         } else {
             setWorker({ ...worker, [name]: value });
         }
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (formType === 'create') {
-            await createWorker();
-        } else {
-            await updateWorker();
-        }
-    };
+    const validateForm = () => {
+        let isValid = true;
+        const newErrors = {};
 
+        
+        if (!worker.tpcoTrabajador){
+            newErrors.tpcoTrabajador = "Seleccione un tipo de contrato"
+            isValid = false;
+        }
+        
+        if (!worker.cargTrabajador){
+            newErrors.cargTrabajador = "Seleccione un cargo"
+            isValid = false;
+        }
+        const empresaPattern = /^[a-zA-Z0-9\s]{1,30}$/;
+        if (!empresaPattern.test(worker.empTrabajador)) {
+            newErrors.empTrabajador = 'La empresa debe contener solo letras, números y espacios y tener como máximo 30 caracteres';
+            isValid = false;
+        }
+        if (!worker.role.id) {
+            newErrors.role = 'Seleccione un rol';
+            isValid = false;
+        }
+        if (!worker.user.id) {
+            newErrors.user = 'Seleccione un usuario';
+            isValid = false;
+        }
+        setErrors(newErrors);
+        return isValid;
+    };
+        const handleSubmit = async (e) => {
+            e.preventDefault();
+            if (validateForm()){
+                if (formType === 'create') {
+                    await createWorker();
+                } else {
+                    await updateWorker();
+                }
+            }
+            
+        };
+    
     const createWorker = async () => {
         try {
             await axios.post('http://localhost:8085/api/worker/create', {
-                nomTrabajador: worker.nomTrabajador,
-                ccTrabajador: worker.ccTrabajador,
-                celTrabajador: worker.celTrabajador,
-                emaTrabajador: worker.emaTrabajador,
+                
                 tpcoTrabajador: worker.tpcoTrabajador,
                 cargTrabajador: worker.cargTrabajador,
                 empTrabajador: worker.empTrabajador,
                 role: {
                     id: worker.role.id,
                     nombreRol: worker.role.nombreRol
+                },
+                user: {
+                    id: worker.user.id,
+                    nombre: worker.user.nombre,
+                    cedula: worker.user.cedula
                 }
             });
             setShowForm(false);
@@ -104,10 +172,17 @@ const Trabajador = () => {
     const updateWorker = async () => {
         try {
             await axios.put(`http://localhost:8085/api/worker/update/${worker.id}`, {
-                ...worker,
+                tpcoTrabajador: worker.tpcoTrabajador,
+                cargTrabajador: worker.cargTrabajador,
+                empTrabajador: worker.empTrabajador,
                 role: {
                     id: worker.role.id,
                     nombreRol: worker.role.nombreRol
+                },
+                user: {
+                    id: worker.user.id,
+                    nombre: worker.user.nombre,
+                    cedula: worker.user.cedula
                 }
             });
             setShowForm(false);
@@ -135,16 +210,18 @@ const Trabajador = () => {
         setFormType('create');
         setWorker({
             id: '',
-            nomTrabajador: '',
-            ccTrabajador: '',
-            celTrabajador: '',
-            emaTrabajador: '',
+            
             tpcoTrabajador: '',
             cargTrabajador: '',
             empTrabajador: '',
             role: {
                 id: '',
                 nombreRol: ''
+            },
+            user: {
+                id: '',
+                nombre: '',
+                cedula: ''
             }
         });
     };
@@ -155,16 +232,18 @@ const Trabajador = () => {
             setFormType('edit');
             setWorker({
                 id: selectedWorker.id,
-                nomTrabajador: selectedWorker.nomTrabajador,
-                ccTrabajador: selectedWorker.ccTrabajador,
-                celTrabajador: selectedWorker.celTrabajador,
-                emaTrabajador: selectedWorker.emaTrabajador,
+                
                 tpcoTrabajador: selectedWorker.tpcoTrabajador,
                 cargTrabajador: selectedWorker.cargTrabajador,
                 empTrabajador: selectedWorker.empTrabajador,
                 role: {
                     id: selectedWorker.role ? selectedWorker.role.id : '',
                     nombreRol: selectedWorker.role ? selectedWorker.role.nombreRol : ''
+                },
+                user: {
+                    id: selectedWorker.user ? selectedWorker.user.id : '',
+                    nombre: selectedWorker.user ? selectedWorker.user.nombre : '',
+                    cedula: selectedWorker.user ? selectedWorker.user.cedula : ''
                 }
             });
         } else {
@@ -177,7 +256,7 @@ const Trabajador = () => {
     };
 
     const filteredWorkers = workers.filter(worker =>
-        worker.ccTrabajador.toString().includes(searchTerm)
+        worker.user.cedula.toString().includes(searchTerm)
     );
     // Paginación
     const indexOfLastWorker = currentPage * workersPerPage;
@@ -238,82 +317,52 @@ const Trabajador = () => {
                         </div> 
                         <div className='card-body'>
                             <form onSubmit={handleSubmit}>
-                                <div className='mb-3'>
-                                    <label className='form-label'>Nombre</label>
-                                    <input
-                                        type='text'
-                                        className='form-control'
-                                        placeholder='Nombre'
-                                        name='nomTrabajador'
-                                        value={worker.nomTrabajador}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                                <div className='mb-3'>
-                                    <label className='form-label'>Identificación</label>
-                                    <input
-                                        type='number'
-                                        className='form-control'
-                                        placeholder='Identificación'
-                                        name='ccTrabajador'
-                                        value={worker.ccTrabajador}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                                <div className='mb-3'>
-                                    <label className='form-label'>Celular</label>
-                                    <input
-                                        type='tel'
-                                        className='form-control'
-                                        placeholder='Celular'
-                                        name='celTrabajador'
-                                        value={worker.celTrabajador}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                                <div className='mb-3'>
-                                    <label className='form-label'>Correo</label>
-                                    <input
-                                        type='email'
-                                        className='form-control'
-                                        placeholder='Correo Electrónico'
-                                        name='emaTrabajador'
-                                        value={worker.emaTrabajador}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
+                                
                                 <div className='mb-3'>
                                     <label className='form-label'>Tipo Contrato</label>
-                                    <input
-                                        type='text'
-                                        className='form-control'
-                                        placeholder='Tipo del contrato'
+                                    <select
+                                        className={`form-select ${errors.tpcoTrabajador ? 'is-invalid' : ''}`}
                                         name='tpcoTrabajador'
                                         value={worker.tpcoTrabajador}
                                         onChange={handleInputChange}
-                                    />
+                                    >
+                                        <option value="">Seleccionar Tipo de Contrato</option>
+                                        {tipoContratoOptions.map((option) => (
+                                            <option key={option.id} value={option.nombre}>
+                                                {option.nombre}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {errors.tpcoTrabajador && <div className="text-danger">{errors.tpcoTrabajador}</div>}
                                 </div>
                                 <div className='mb-3'>
                                     <label className='form-label'>Cargo</label>
-                                    <input
-                                        type='text'
-                                        className='form-control'
-                                        placeholder='Cargo'
+                                    <select
+                                        className={`form-select ${errors.cargTrabajador ? 'is-invalid' : ''}`}
                                         name='cargTrabajador'
                                         value={worker.cargTrabajador}
                                         onChange={handleInputChange}
-                                    />
+                                    >
+                                        <option value="">Seleccionar Cargo</option>
+                                        {cargoOptions.map((option) => (
+                                            <option key={option.id} value={option.nombre}>
+                                                {option.nombre}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {errors.cargTrabajador && <div className="text-danger">{errors.cargTrabajador}</div>}
                                 </div>
                                 <div className='mb-3'>
                                     <label className='form-label'>Empresa</label>
                                     <input
                                         type='text'
-                                        className='form-control'
+                                        className={`form-control ${errors.empTrabajador ? 'is-invalid' : ''}`}
                                         placeholder='Empresa'
                                         name='empTrabajador'
                                         value={worker.empTrabajador}
                                         onChange={handleInputChange}
                                     />
+                                    {errors.empTrabajador && <div className="text-danger">{errors.empTrabajador}</div>}
                                 </div>
                                 <div className='mb-3'>
                                     <label className='form-label'>Rol</label>
@@ -330,15 +379,35 @@ const Trabajador = () => {
                                             </option>
                                         ))}
                                     </select>
+                                    {errors.role && <div className="text-danger">{errors.role}</div>}
                                 </div>
-                                <button type="submit" className="btn btn-success me-2" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}>
-                                    <i className="bi bi-wallet"></i>
-                                    {formType === 'create' ? 'Crear' : 'Editar'}
-                                </button>
-                                <button type="button" className="btn btn-secondary me-2" style={{ backgroundColor: '#a11129' }} onClick={() => setShowForm(false)}>
-                                    <i className="bi bi-x-square-fill"></i>
-                                    <span className="ms-2">Cancelar</span>
-                                </button>
+                                <div className="mb-3">
+                                    <label className="form-label">Usuario</label>
+                                    <select
+                                        className='form-select'
+                                        name='user.id'
+                                        value={worker.user.id}
+                                        onChange={handleInputChange}
+                                    >
+                                        <option value="">Seleccione un usuario</option>
+                                        {users.map((user) => (
+                                            <option key={user.id} value={user.id}>
+                                                {user.nombre} ({user.cedula})
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {errors.user && <div className="text-danger">{errors.user}</div>}
+                                </div>
+                                <div className="d-flex justify-content-between">
+                                    <button type="submit" className="btn btn-success smaller-button sm-2" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40', width: '160px', margin: 'auto' }}>
+                                        <i className="bi bi-wallet"></i>
+                                        {formType === 'create' ? 'Crear' : 'Editar'}
+                                    </button>
+                                    <button type="button" className="btn btn-secondary smaller-button sm-2" style={{ backgroundColor: '#a11129', width: '160px', margin: 'auto' }} onClick={() => setShowForm(false)}>
+                                        <i className="bi bi-x-square-fill"></i>
+                                        <span className="ms-2">Cancelar</span>
+                                    </button>
+                                </div>  
                             </form>
                         </div>    
                     </div>
@@ -348,9 +417,7 @@ const Trabajador = () => {
                         <tr>
                             <th>Id</th>
                             <th>Nombre</th>
-                            <th>Identificación</th>
-                            <th>Celular</th>
-                            <th>Correo</th>
+                            <th>Cedula</th>
                             <th>Tipo de Contrato</th>
                             <th>Cargo</th>
                             <th>Empresa</th>
@@ -362,10 +429,8 @@ const Trabajador = () => {
                         {currentWorkers.map((worker) => (
                             <tr key={worker.id}>
                                 <td style={{textAlign: 'center'}}>{worker.id}</td>
-                                <td style={{textAlign: 'center'}}>{worker.nomTrabajador}</td>
-                                <td style={{textAlign: 'center'}}>{worker.ccTrabajador}</td>
-                                <td style={{textAlign: 'center'}}>{worker.celTrabajador}</td>
-                                <td style={{textAlign: 'center'}}>{worker.emaTrabajador}</td>
+                                <td style={{textAlign: 'center'}}>{worker.user ? worker.user.nombre : 'N/A'}</td>
+                                <td style={{textAlign: 'center'}}>{worker.user ? worker.user.cedula : 'N/A'}</td>
                                 <td style={{textAlign: 'center'}}>{worker.tpcoTrabajador}</td>
                                 <td style={{textAlign: 'center'}}>{worker.cargTrabajador}</td>
                                 <td style={{textAlign: 'center'}}>{worker.empTrabajador}</td>

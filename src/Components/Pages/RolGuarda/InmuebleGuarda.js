@@ -10,8 +10,9 @@ const InmuebleGuarda = () => {
     const [message, setMessage] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
-    const [propertiesPerPage] = useState(13);
+    const [propertiesPerPage] = useState(10);
 
+    
     const fetchProperties = async () => {
         try {
             const response = await axios.get('http://localhost:8085/api/property/all');
@@ -84,6 +85,7 @@ const InmuebleGuarda = () => {
                                 <th>Anden</th>
                                 <th>Número de Inmueble</th>
                                 <th>Residente</th>
+                                <th>Identificación</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -92,7 +94,8 @@ const InmuebleGuarda = () => {
                                     <td style={{textAlign: 'center'}}>{property.id}</td>
                                     <td style={{textAlign: 'center'}}>{property.andInmueble}</td>
                                     <td style={{textAlign: 'center'}}>{property.numInmueble}</td>
-                                    <td style={{textAlign: 'center'}}>{property.resident ? property.resident.nomResidente : 'N/A'}</td>
+                                    <td style={{ textAlign: 'center' }}>{property.resident ? property.resident.userName : 'N/A'}</td>
+                                    <td style={{ textAlign: 'center' }}>{property.resident ? property.resident.userCedula : 'N/A'}</td>
                                 </tr>
                             ))}
                         </tbody>

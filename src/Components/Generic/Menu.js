@@ -47,6 +47,8 @@ const Menu = () => {
               <a className="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Parqueadero<i className="bi bi-car-front-fill"></i></a>
               <ul className="dropdown-menu">
                 <li><Link className="dropdown-item centered-text" to="/parqueadero">Parqueadero</Link></li>
+                
+                
               </ul>
             </li>
             <li className="nav-item dropdown align-self-center">

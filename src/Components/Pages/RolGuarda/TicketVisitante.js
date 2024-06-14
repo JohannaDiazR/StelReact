@@ -68,7 +68,7 @@ const TicketVisitante = ({ parking }) => {
     };
 
     return (
-        <button onClick={generatePDF} className="btn btn-primary btn-sm mx-2" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}>
+        <button onClick={generatePDF} className="btn btn-primary btn-sm mx-2" style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}>
             <i className="bi bi-filetype-pdf"></i>
         </button>
     );
