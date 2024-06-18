@@ -325,6 +325,23 @@ const Residente = () => {
                         </div>
                         <div className='card-body'>
                             <form onSubmit={handleSubmit}>
+                            <div className="mb-3">
+                                    <label className="form-label">Usuario</label>
+                                    <select
+                                        className='form-select'
+                                        name='user.id'
+                                        value={resident.user.id}
+                                        onChange={handleInputChange}
+                                    >
+                                        <option value="">Seleccione un usuario</option>
+                                        {users.map((user) => (
+                                            <option key={user.id} value={user.id}>
+                                                {user.nombre} ({user.cedula})
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {errors.user && <div className="text-danger">{errors.user}</div>}
+                                </div>
                                 <div className="mb-3">
                                     <label className="form-label">Número de integrantes</label>
                                     <input
@@ -372,23 +389,7 @@ const Residente = () => {
                                     </select>
                                     {errors.role && <div className="text-danger">{errors.role}</div>}
                                 </div>
-                                <div className="mb-3">
-                                    <label className="form-label">Usuario</label>
-                                    <select
-                                        className='form-select'
-                                        name='user.id'
-                                        value={resident.user.id}
-                                        onChange={handleInputChange}
-                                    >
-                                        <option value="">Seleccione un usuario</option>
-                                        {users.map((user) => (
-                                            <option key={user.id} value={user.id}>
-                                                {user.nombre} ({user.cedula})
-                                            </option>
-                                        ))}
-                                    </select>
-                                    {errors.user && <div className="text-danger">{errors.user}</div>}
-                                </div>
+                                
                                 <div className="d-flex justify-content-between">
                                     <button type="submit" className="btn btn-success smaller-button sm-2" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40',width: '160px', margin: 'auto' }}>
                                         <i className="bi bi-person-square"></i>
@@ -408,11 +409,12 @@ const Residente = () => {
                     <thead>
                         <tr>
                             <th>Id</th>
+                            <th>Nombre</th>
+                            <th>Identificación</th>
                             <th>Número de integrantes</th>
                             <th>Parqueadero</th>
                             <th>Rol</th>
-                            <th>Nombre</th>
-                            <th>Cedula</th>
+                            
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -420,11 +422,12 @@ const Residente = () => {
                         {currentResidents.map((resident) => (
                             <tr key={resident.id}>
                                 <td style={{textAlign: 'center'}}>{resident.id}</td>
+                                <td style={{textAlign: 'center'}}>{resident.user ? resident.user.nombre : 'N/A'}</td>
+                                <td style={{textAlign: 'center'}}>{resident.user ? resident.user.cedula : 'N/A'}</td>
                                 <td style={{textAlign: 'center'}}>{resident.numIntegrantes}</td>
                                 <td style={{textAlign: 'center'}}>{resident.parking ? resident.parking.cupParqueadero : 'N/A'}</td>
                                 <td style={{textAlign: 'center'}}>{resident.role ? resident.role.nombreRol : 'N/A'}</td>
-                                <td style={{textAlign: 'center'}}>{resident.user ? resident.user.nombre : 'N/A'}</td>
-                                <td style={{textAlign: 'center'}}>{resident.user ? resident.user.cedula : 'N/A'}</td>
+                                
                                 <td className='text-center'>
                                     <div className="d-flex justify-content-center">
                                         <button

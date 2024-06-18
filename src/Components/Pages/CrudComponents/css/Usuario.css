@@ -98,3 +98,6 @@
     display: block; /* Para centrar el botón */
     margin: 0 auto; /* Para centrar el botón */
 }
+.Usuarios .message-container {
+    margin-top: 20px; /* Ajuste el margen superior según sea necesario */
+}

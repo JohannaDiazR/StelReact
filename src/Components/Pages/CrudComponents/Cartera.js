@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import DocCartera from './DocCartera';
 import Footer from '../../Generic/Footer';
 import Menu from '../../Generic/Menu';
 import './css/Cartera.css';
@@ -407,11 +408,13 @@ const Cartera = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {currentWallets.map((walletStatus) => (
-                            <tr key={walletStatus.id}>
+                        {currentWallets.map((walletStatus) => {
+                            const fecestcarteraFormatted = new Date(walletStatus.fecestcartera).toLocaleDateString('es-ES');
+                            return (
+                                <tr key={walletStatus.id}>
                                 <td style={{textAlign: 'center'}}>{walletStatus.id}</td>
                                 <td style={{textAlign: 'center'}}>{walletStatus.estcartera}</td>
-                                <td style={{textAlign: 'center'}}>{walletStatus.fecestcartera}</td>
+                                <td style={{textAlign: 'center'}}>{fecestcarteraFormatted}</td>
                                 <td style={{textAlign: 'center'}}>{walletStatus.notiestcartera}</td>
                                 <td style={{textAlign: 'center'}}>{walletStatus.property ? walletStatus.property.numInmueble : 'N/A'}</td>
                                 <td style={{textAlign: 'center'}}>{walletStatus.worker ? walletStatus.worker.userName : 'N/A'}</td>
@@ -432,11 +435,13 @@ const Cartera = () => {
                                         >
                                             <i className="bi bi-trash"></i>
                                         </button>
-                                    </div>
-                                    
+                                        <DocCartera walletStatus={walletStatus} /> {/* Añadimos el componente PDFGenerator */}
+                                    </div>   
                                 </td>
                             </tr>
-                        ))}
+                            );
+                        })}
+                            
                     </tbody>      
                 </table>
 

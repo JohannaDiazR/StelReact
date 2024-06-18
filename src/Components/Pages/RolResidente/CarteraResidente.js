@@ -1,8 +1,10 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import DocCartera from '../CrudComponents/DocCartera';
 import Footer from '../../Generic/Footer';
 import MenuResidente from '../../Generic/MenuResidente';
 import '../CrudComponents/css/Cartera.css';
+
 
 const Cartera = () => {
     const [wallets, setWallets] = useState([]);
@@ -82,6 +84,7 @@ const Cartera = () => {
                             <th>Id</th>
                             <th>Estado</th>
                             <th>Inmueble</th>
+                            <th>Acción</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -90,7 +93,12 @@ const Cartera = () => {
                                 <td style={{textAlign: 'center'}}>{walletStatus.id}</td>
                                 <td style={{textAlign: 'center'}}>{walletStatus.estcartera}</td>
                                 <td style={{textAlign: 'center'}}>{walletStatus.property ? walletStatus.property.numInmueble : 'N/A'}</td>
-                                
+                                <td className='text-center'>
+                                    <div className='d-flex justify-content-center'>
+                                        
+                                        <DocCartera walletStatus={walletStatus} /> {/* Añadimos el componente PDFGenerator */}
+                                    </div>   
+                                </td>
                                
                             </tr>
                         ))}

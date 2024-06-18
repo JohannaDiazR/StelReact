@@ -82,25 +82,46 @@ const Parqueadero = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {currentParkings.map((parking) => (
-                            <tr key={parking.id}>
-                                <td style={{textAlign: 'center'}}>{parking.id}</td>
-                                <td style={{textAlign: 'center'}}>{parking.tipoParqueadero}</td>
-                                <td style={{textAlign: 'center'}}>{parking.estadoParqueadero}</td>
-                                <td style={{textAlign: 'center'}}>{parking.fecParqueadero}</td>
-                                <td style={{textAlign: 'center'}}>{parking.dvteParqueadero}</td>
-                                <td style={{textAlign: 'center'}}>{parking.cupParqueadero}</td>
-                                <td style={{textAlign: 'center'}}>{parking.horaSalida}</td>
-                                
-                                <td>
-                                    <div className="d-flex justify-content-center">
-                                        <TicketVisitante parking={parking} />
-                                        
-                                    </div>
-                                    
-                                </td>
-                            </tr>
-                        ))}
+                        {currentParkings.map((parking) => {
+                             const parkingDateTime = new Date(parking.fecParqueadero);
+                             // Formatear la fecha y hora en formato local (español)
+                             const formattedDateTime = parkingDateTime.toLocaleString('es-ES', {
+                                 year: 'numeric',
+                                 month: '2-digit',
+                                 day: '2-digit',
+                                 hour: '2-digit',
+                                 minute: '2-digit',
+                                 second: '2-digit'
+                             });
+                         
+                             // Formatear la hora de salida (asumiendo que es un campo time o datetime)
+                             const salidaDateTime = new Date(parking.horaSalida);
+                             const formattedSalidaTime = salidaDateTime.toLocaleTimeString('es-ES', {
+                                 hour: '2-digit',
+                                 minute: '2-digit',
+                                 second: '2-digit'
+                             });
+                         
+                             return (
+                                 <tr key={parking.id}>
+                                     <td style={{textAlign: 'center'}}>{parking.id}</td>
+                                     <td style={{textAlign: 'center'}}>{parking.tipoParqueadero}</td>
+                                     <td style={{textAlign: 'center'}}>{parking.estadoParqueadero}</td>
+                                     <td style={{textAlign: 'center'}}>{formattedDateTime}</td> {/* Mostrar fecha y hora formateada */}
+                                     <td style={{textAlign: 'center'}}>{parking.dvteParqueadero}</td>
+                                     <td style={{textAlign: 'center'}}>{parking.cupParqueadero}</td>
+                                     <td style={{textAlign: 'center'}}>{formattedSalidaTime}</td> {/* Mostrar hora de salida formateada */}
+                                 
+                                     <td>
+                                         <div className="d-flex justify-content-center">
+                                             <TicketVisitante parking={parking} />
+                                         </div>
+                                     </td>
+                                 </tr>
+                             );
+                         })}
+                           
+                      
                     </tbody>
                 </table>
 

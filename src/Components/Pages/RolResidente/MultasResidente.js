@@ -97,11 +97,12 @@ const MultasResidente = () => {
                         <thead>
                             <tr>
                                 <th>Id</th>
+                                <th>Inmueble</th>
                                 <th>Tipo de Multa</th>
                                 <th>Fecha de Multa</th>
                                 <th>Valor de Multa</th>
                                 <th>Fecha de Pago</th>
-                                <th>Inmueble</th>
+                                
                                 <th>Nombre Trabajador</th>
                                 
                                
@@ -111,12 +112,11 @@ const MultasResidente = () => {
                             {currentMultas.map((multa) => (
                                 <tr key={multa.id}>
                                     <td style={{textAlign: 'center'}}>{multa.id}</td>
+                                    <td style={{textAlign: 'center'}}>{multa.property && multa.property.numInmueble ? multa.property.numInmueble : 'N/A'}</td>
                                     <td style={{textAlign: 'center'}}>{multa.tipoMulta}</td>
                                     <td style={{textAlign: 'center'}}>{multa.fecMulta}</td>
                                     <td style={{textAlign: 'center'}}>{multa.valMulta}</td>
                                     <td style={{textAlign: 'center'}}>{multa.fpagMulta}</td>
-                                    <td style={{textAlign: 'center'}}>{multa.property && multa.property.numInmueble ? multa.property.numInmueble : 'N/A'}</td>
-
                                     <td style={{textAlign: 'center'}}>{multa.worker ? multa.worker.userName : 'N/A'}</td>
                                     
                                 

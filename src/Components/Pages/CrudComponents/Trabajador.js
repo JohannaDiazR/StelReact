@@ -317,7 +317,23 @@ const Trabajador = () => {
                         </div> 
                         <div className='card-body'>
                             <form onSubmit={handleSubmit}>
-                                
+                            <div className="mb-3">
+                                    <label className="form-label">Usuario</label>
+                                    <select
+                                        className='form-select'
+                                        name='user.id'
+                                        value={worker.user.id}
+                                        onChange={handleInputChange}
+                                    >
+                                        <option value="">Seleccione un usuario</option>
+                                        {users.map((user) => (
+                                            <option key={user.id} value={user.id}>
+                                                {user.nombre} ({user.cedula})
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {errors.user && <div className="text-danger">{errors.user}</div>}
+                                </div>
                                 <div className='mb-3'>
                                     <label className='form-label'>Tipo Contrato</label>
                                     <select
@@ -381,23 +397,7 @@ const Trabajador = () => {
                                     </select>
                                     {errors.role && <div className="text-danger">{errors.role}</div>}
                                 </div>
-                                <div className="mb-3">
-                                    <label className="form-label">Usuario</label>
-                                    <select
-                                        className='form-select'
-                                        name='user.id'
-                                        value={worker.user.id}
-                                        onChange={handleInputChange}
-                                    >
-                                        <option value="">Seleccione un usuario</option>
-                                        {users.map((user) => (
-                                            <option key={user.id} value={user.id}>
-                                                {user.nombre} ({user.cedula})
-                                            </option>
-                                        ))}
-                                    </select>
-                                    {errors.user && <div className="text-danger">{errors.user}</div>}
-                                </div>
+                                
                                 <div className="d-flex justify-content-between">
                                     <button type="submit" className="btn btn-success smaller-button sm-2" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40', width: '160px', margin: 'auto' }}>
                                         <i className="bi bi-wallet"></i>
@@ -417,7 +417,7 @@ const Trabajador = () => {
                         <tr>
                             <th>Id</th>
                             <th>Nombre</th>
-                            <th>Cedula</th>
+                            <th>Identificación</th>
                             <th>Tipo de Contrato</th>
                             <th>Cargo</th>
                             <th>Empresa</th>

@@ -81,8 +81,9 @@ const Novedades = () => {
         let  isValid = true;
         const newErrors = {};
 
-        if (!novedad.remNovedades) {
-            newErrors.remNovedades = 'Remitente es requerido';
+        const nombrePattern = /^[a-zA-Z\s]{3,60}$/;
+        if (!nombrePattern.test(novedad.remNovedades)) {
+            newErrors.remNovedades = 'El nombre debe contener mínimo 3 caracteres';
             isValid = false;
         }
         if (!novedad.tipoNovedad) {
@@ -103,9 +104,10 @@ const Novedades = () => {
         }
         
         if (!novedad.role.id) {
-            errors.role = 'Rol es requerido';
+            newErrors.role = 'Rol es requerido';
             isValid = false;
         }
+    
         setErrors(newErrors);
         return isValid;
     };
@@ -277,44 +279,54 @@ const Novedades = () => {
                                     {errors.remNovedades && <div className="text-danger">{errors.remNovedades}</div>}
                                 </div>
                                 <div className="form-label">
-                                    <label>Tipo de novedad:</label>
-                                    <input type="text" className="form-control" name="tipoNovedad" value={novedad.tipoNovedad} onChange={handleInputChange} />
+                                    <label>Tipo de novedad</label>
+                                    <select className="form-control" name="tipoNovedad" value={novedad.tipoNovedad} onChange={handleInputChange}>
+                                        <option value="">Seleccionar tipo de novedad</option>
+                                        <option value="residentes">Residentes</option>
+                                        <option value="zonas comunes">Zonas comunes</option>
+                                        <option value="parqueadero">Parqueadero</option>
+                                        <option value="mascotas">Mascotas</option>
+                                    </select>
                                     {errors.tipoNovedad && <div className="text-danger">{errors.tipoNovedad}</div>}
                                 </div>
                                 <div className="form-label">
-                                    <label>Asunto:</label>
+                                    <label>Asunto</label>
                                     <input type="text" className="form-control" name="asuntoNovedades" value={novedad.asuntoNovedades} onChange={handleInputChange} />
                                     {errors.asuntoNovedades && <div className="text-danger">{errors.asuntoNovedades}</div>}
                                 </div>
                                 <div className="form-label">
-                                    <label>Descripción:</label>
+                                    <label>Descripción</label>
                                     <textarea className="form-control" name="descNovedades" value={novedad.descNovedades} onChange={handleInputChange}></textarea>
                                     {errors.descNovedades && <div className="text-danger">{errors.descNovedades}</div>}
                                 </div>
                                 <div className="form-label">
-                                    <label>Fecha:</label>
-                                    <input type="date" className="form-control" name="fecNovedades" value={novedad.fecNovedades} onChange={handleInputChange} />
+                                    <label>Fecha</label>
+                                    <input type="datetime-local" className="form-control" name="fecNovedades" value={novedad.fecNovedades} onChange={handleInputChange} />
                                     {errors.fecNovedades && <div className="text-danger">{errors.fecNovedades}</div>}
                                 </div>
                                 <div className="form-label">
-                                    <label>Rol:</label>
+                                    <label>Rol</label>
                                     <select className="form-control" name="role.id" value={novedad.role.id} onChange={handleInputChange}>
                                         <option value="">Seleccionar Rol</option>
-                                        {roles.map((rol) => (
-                                            <option key={rol.id} value={rol.id}>
-                                                {rol.nombreRol}
+                                        {roles.map((role) => (
+                                            <option key={role.id} value={role.id}>
+                                                {role.nombreRol}
                                             </option>
                                         ))}
                                     </select>
                                     {errors.role && <div className="text-danger">{errors.role}</div>}
                                 </div>
                                 <div className="form-label">
-                                    <label>Estado:</label>
-                                    <input type="text" className="form-control" name="estNovedades" value={novedad.estNovedades} onChange={handleInputChange} />
-                                    
+                                    <label>Estado</label>
+                                    <select className="form-control" name="estNovedades" value={novedad.estNovedades} onChange={handleInputChange}>
+                                        <option value="">Seleccionar estado</option>
+                                        <option value="Espera">Espera</option>
+                                        <option value="Atendida">Atendida</option>
+                                    </select>
+                                    {errors.estNovedades && <div className="text-danger">{errors.estNovedades}</div>}
                                 </div>
                                 <div className="form-label">
-                                    <label>Respuesta:</label>
+                                    <label>Respuesta</label>
                                     <textarea className="form-control" name="resNovedades" value={novedad.resNovedades} onChange={handleInputChange}></textarea>
                                     {errors.resNovedades && <span className="error">{errors.resNovedades}</span>}
                                 </div>
@@ -348,36 +360,50 @@ const Novedades = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {currentNews.map((novedad) => (
-                            <tr key={novedad.id}>
+                        {currentNews.map((novedad) => {
+                            const novedadDateTime = new Date(novedad.fecNovedades); // Convertir la cadena a un objeto Date
+
+                            const formattedDateTime = novedadDateTime.toLocaleString('es-ES', {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                second: '2-digit'
+                            });
+                            return (
+                                <tr key={novedad.id}>
                                 <td>{novedad.remNovedades}</td>
                                 <td>{novedad.tipoNovedad}</td>
                                 <td>{novedad.asuntoNovedades}</td>
                                 <td>{novedad.descNovedades}</td>
-                                <td>{novedad.fecNovedades}</td>
+                                <td>{formattedDateTime}</td>
                                 <td>{novedad.role.nombreRol}</td>
                                 <td>{novedad.estNovedades}</td>
                                 <td>{novedad.resNovedades}</td>
                                 <td className='text-center'>
-                                        <div className="d-flex justify-content-center">
-                                            <button
-                                                className="btn btn-primary btn-sm mx-1"
-                                                onClick={() => showEditForm(novedad)}
-                                                style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
-                                            >
-                                                <i className="bi bi-pencil"></i>
-                                            </button>
-                                            <button
-                                                className="btn btn-danger btn-sm mx-1"
-                                                onClick={() => deleteNovedad(novedad.id)}
-                                                style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
-                                            >
-                                                <i className="bi bi-trash"></i>
-                                            </button>
-                                        </div>   
-                                    </td>
+                                    <div className="d-flex justify-content-center">
+                                        <button
+                                            className="btn btn-primary btn-sm mx-1"
+                                            onClick={() => showEditForm(novedad)}
+                                            style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
+                                        >
+                                            <i className="bi bi-pencil"></i>
+                                        </button>
+                                        <button
+                                            className="btn btn-danger btn-sm mx-1"
+                                            onClick={() => deleteNovedad(novedad.id)}
+                                            style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
+                                        >
+                                            <i className="bi bi-trash"></i>
+                                        </button>
+                                    </div>   
+                                </td>
                             </tr>
-                        ))}
+                            );
+                        })}
+                           
+                        
                     </tbody>
                 </table>
                 <div className="pagination">

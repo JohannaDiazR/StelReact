@@ -19,6 +19,7 @@ const ParqueaderoGuarda = () => {
         dvteParqueadero: '',
         cupParqueadero: '',
         horaSalida: '',
+        costParqueadero: ''
         
     });
     const [showTicket, setShowTicket] = useState(false);
@@ -50,31 +51,49 @@ const ParqueaderoGuarda = () => {
         const newErrors = {};
 
         if (!parking.tipoParqueadero) {
-            newErrors.tipoParqueadero = 'Tipo parqueadero es requerido';
+            newErrors.tipoParqueadero = 'Tipo de parqueadero es requerido';
             isValid = false;
         }
-        
+
         if (!parking.estadoParqueadero) {
             newErrors.estadoParqueadero = 'Estado es requerido';
             isValid = false;
+        } else if (parking.estadoParqueadero !== 'habilitado' && parking.estadoParqueadero !== 'inhabilitado') {
+            newErrors.estadoParqueadero = 'Estado debe ser "habilitado" o "inhabilitado"';
+            isValid = false;
         }
+
         if (!parking.fecParqueadero) {
-            newErrors.fecParqueadero = 'fecha es requerida';
+            newErrors.fecParqueadero = 'Fecha de entrada es requerida';
             isValid = false;
         }
-        if (!parking.dvteParqueadero) {
-            newErrors.dvteParqueadero = 'Los datos del vehículo son requeridos';
-            isValid = false;
-        }
-        
-        if (!parking.cupParqueadero) {
-            errors.cupParqueadero = 'Número es requerido';
-            isValid = false;
-        }
+
         if (!parking.horaSalida) {
-            newErrors.horaSalida = 'Hora salida es requerida';
+            newErrors.horaSalida = 'Hora de salida es requerida';
+            isValid = false;
+        } else if (new Date(parking.fecParqueadero) >= new Date(parking.horaSalida)) {
+            newErrors.horaSalida = 'La hora de salida debe ser posterior a la fecha de entrada';
             isValid = false;
         }
+
+        if (!parking.dvteParqueadero) {
+            newErrors.dvteParqueadero = 'Datos del vehículo son requeridos';
+            isValid = false;
+        }
+
+        if (!parking.cupParqueadero) {
+            newErrors.cupParqueadero = 'Número de cupo es requerido';
+            isValid = false;
+        } else {
+            if (parking.tipoParqueadero.includes('carro') && (parking.cupParqueadero < 1 || parking.cupParqueadero > 55)) {
+                newErrors.cupParqueadero = 'Número de cupo debe estar entre 1 y 55 para carros';
+                isValid = false;
+            } else if (parking.tipoParqueadero.includes('moto') && (parking.cupParqueadero < 1 || parking.cupParqueadero > 46)) {
+                newErrors.cupParqueadero = 'Número de cupo debe estar entre 1 y 46 para motos';
+                isValid = false;
+            }
+        }
+
         setErrors(newErrors);
         return isValid;
     };
@@ -124,7 +143,7 @@ const ParqueaderoGuarda = () => {
             dvteParqueadero: '',
             cupParqueadero: '',
             horaSalida: '',
-            tarParqueadero: ''
+            costParqueadero: ''
         });
     };
 
@@ -150,10 +169,10 @@ const ParqueaderoGuarda = () => {
         const salidaDate = new Date(salida);
         const oneDay = 24 * 60 * 60 * 1000;
         let totalCost = 0;
-
+    
         if (tipoParqueadero.toLowerCase().includes('visitante')) {
             let currentTime = entradaDate;
-
+    
             while (currentTime < salidaDate) {
                 const nextBoundary = new Date(currentTime);
                 if (currentTime.getHours() >= 6 && currentTime.getHours() < 18) {
@@ -168,7 +187,7 @@ const ParqueaderoGuarda = () => {
                     }
                     totalCost += 6000;
                 }
-
+    
                 currentTime = nextBoundary;
                 if (currentTime > salidaDate) {
                     break;
@@ -179,7 +198,7 @@ const ParqueaderoGuarda = () => {
         } else if (tipoParqueadero.toLowerCase().includes('moto-propietario')) {
             totalCost = 36000;
         }
-
+    
         return totalCost;
     };
 
@@ -243,30 +262,36 @@ const ParqueaderoGuarda = () => {
                         </div>
                         <div className='card-body'>
                             <form onSubmit={handleSubmit}>
-                                <div className="mb-3">
-                                    <label className="form-label">Tipo</label>
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        placeholder="Carro-Visitante/Propietario, Moto-Visitante/Propietario"
-                                        name="tipoParqueadero"
-                                        value={parking.tipoParqueadero}
-                                        onChange={handleInputChange}
-                                    />
-                                    {errors.tipoParqueadero && <div className="text-danger">{errors.tipoParqueadero}</div>}
-                                </div>
-                                <div className="mb-3">
-                                    <label className="form-label">Estado</label>
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        placeholder="Habilitado / Inhabilitado"
+                            <div className="mb-3">
+                                <label className="form-label">Tipo de Parqueadero</label>
+                                <select
+                                    className="form-select"
+                                    name="tipoParqueadero"
+                                    value={parking.tipoParqueadero}
+                                    onChange={handleInputChange}
+                                >
+                                    <option value="">Seleccionar tipo de parqueadero</option>
+                                    <option value="carro-propietario">Carro Propietario</option>
+                                    <option value="carro-visitante">Carro Visitante</option>
+                                    <option value="moto-propietario">Moto Propietario</option>
+                                    <option value="moto-visitante">Moto Visitante</option>
+                                </select>
+                                {errors.tipoParqueadero && <div className="text-danger">{errors.tipoParqueadero}</div>}
+                            </div>
+                            <div className="mb-3">
+                                    <label className="form-label">Estado de Parqueadero</label>
+                                    <select
+                                        className="form-select"
                                         name="estadoParqueadero"
                                         value={parking.estadoParqueadero}
                                         onChange={handleInputChange}
-                                    />
+                                    >
+                                        <option value="">Seleccionar estado de parqueadero</option>
+                                        <option value="habilitado">Habilitado</option>
+                                        <option value="inhabilitado">Inhabilitado</option>
+                                    </select>
                                     {errors.estadoParqueadero && <div className="text-danger">{errors.estadoParqueadero}</div>}
-                                </div>  
+                                </div>
                                 <div className="mb-3">
                                     <label className="form-label">Fecha y Hora de Entrada</label>
                                     <input

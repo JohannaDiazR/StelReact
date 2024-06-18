@@ -109,10 +109,11 @@ const Residente = () => {
                     <thead>
                         <tr>
                             <th>Id</th>
+                            <th>Nombre</th>
                             <th>Número de integrantes</th>
                             <th>Parqueadero</th>
                             <th>Rol</th>
-                            <th>Nombre</th>
+                            
                             
                             
                         </tr>
@@ -121,10 +122,11 @@ const Residente = () => {
                         {currentResidents.map((resident) => (
                             <tr key={resident.id}>
                                 <td style={{textAlign: 'center'}}>{resident.id}</td>
+                                <td style={{textAlign: 'center'}}>{resident.user ? resident.user.nombre : 'N/A'}</td>
                                 <td style={{textAlign: 'center'}}>{resident.numIntegrantes}</td>
                                 <td style={{textAlign: 'center'}}>{resident.parking ? resident.parking.cupParqueadero : 'N/A'}</td>
                                 <td style={{textAlign: 'center'}}>{resident.role ? resident.role.nombreRol : 'N/A'}</td>
-                                <td style={{textAlign: 'center'}}>{resident.user ? resident.user.nombre : 'N/A'}</td>
+                               
                                 
                                 
                             </tr>

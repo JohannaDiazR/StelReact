@@ -16,6 +16,7 @@ const VisitanteGuarda = () => {
     const [visitor, setVisitor] = useState({
         id: '',
         nomVisitante: '',
+        tipoDoc: '',
         cedula: '',
         nomResidente: '',
         carVisitante: '',
@@ -28,6 +29,7 @@ const VisitanteGuarda = () => {
 
     const [currentPage, setCurrentPage] = useState(1);
     const [visitorsPerPage] = useState(8);
+    const [errors, setErrors] = useState({});
 
     function getCurrentDate() {
         const today = new Date();
@@ -118,46 +120,94 @@ const VisitanteGuarda = () => {
         }
       };    
     
-    
+    const validateForm = () => {
+        let isValid = true;
+        const newErrors = {};
+
+        const nombrePattern = /^[a-zA-Z\s]{3,60}$/;
+
+        // Validación para nomVisitante
+        if (!nombrePattern.test(visitor.nomVisitante)) {
+            newErrors.nomVisitante = 'El nombre debe contener mínimo 3 caracteres y sólo letras';
+            isValid = false;
+        }
+
+        // Validación para nomResidente
+        if (!nombrePattern.test(visitor.nomResidente)) {
+            newErrors.nomResidente = 'El nombre debe contener mínimo 3 caracteres y sólo letras';
+            isValid = false;
+        }
+        if (!visitor.tipoDoc) {
+            newErrors.tipoDoc = 'Seleccione un tipo de documento';
+            isValid = false;
+        }
+
+        const cedulaPattern = /^\d{5,10}$/;
+        if (!cedulaPattern.test(visitor.cedula)) {
+            newErrors.cedula = 'La identificación solo debe contener números, debe ser entre 5 a 10 dígitos';
+            isValid = false;
+        }
+        if (!visitor.carVisitante) {
+            newErrors.carVisitante = 'Seleccione una opción ';
+            isValid = false;
+        }
+        if (!visitor.ingrVisitante) {
+            newErrors.ingrVisitante = 'Seleccione una opción ';
+            isValid = false;
+        }
+        if (!visitor.worker) {
+            newErrors.worker = 'Seleccione un trabajador ';
+            isValid = false;
+        }
+        if (!visitor.cupParqueadero) {
+            newErrors.cupParqueadero = 'Seleccione una opción ';
+            isValid = false;
+        }
+        if (!visitor.numInmueble) {
+            newErrors.numInmueble = 'Seleccione una opción ';
+            isValid = false;
+        }
+        setErrors(newErrors);
+        return isValid;
+    };      
 
     // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
     
-        // Add basic validation to ensure required fields are not empty
-        if (!visitor.nomVisitante || !visitor.cedula) {
-            setMessage('Por favor complete los campos requeridos.');
-            return;
-        }
-    
-        let updatedVisitor = { ...visitor }; // Crear una copia del visitante
+        if (validateForm()){
+            let updatedVisitor = { ...visitor }; // Crear una copia del visitante
 
-        if (updatedVisitor.parking && updatedVisitor.parking.id === 'in-carro') {
-            updatedVisitor.parking = { id: 'in-carro', cupParqueadero: 0 }; // Establecer cupParqueadero en 0 si es "sin carro"
-          } else if (updatedVisitor.parking && updatedVisitor.parking.id === '') {
-            updatedVisitor.parking = { id: '', cupParqueadero: '' }; // Limpiar cupParqueadero si es ''
-          }
-    
-        try {
-            if (formType === 'create') {
-                const response = await axios.post('http://localhost:8085/api/visitor/create', updatedVisitor);
-                console.log('Create Response:', response.data);
-                setShowForm(false);
-                fetchVisitors(); // Refresh the list after creation
-                setMessage('Visitante creado correctamente');
-            } else {
-                const response = await axios.put(`http://localhost:8085/api/visitor/update/${updatedVisitor.id}`, updatedVisitor);
-                console.log('Update Response:', response.data);
-                setShowForm(false);
-                fetchVisitors(); // Refresh the list after update
-                setMessage('Visitante actualizado correctamente');
+            if (updatedVisitor.parking && updatedVisitor.parking.id === 'in-carro') {
+                updatedVisitor.parking = { id: 'in-carro', cupParqueadero: 0 }; // Establecer cupParqueadero en 0 si es "sin carro"
+            } else if (updatedVisitor.parking && updatedVisitor.parking.id === '') {
+                updatedVisitor.parking = { id: '', cupParqueadero: '' }; // Limpiar cupParqueadero si es ''
             }
-        } catch (error) {
-            console.error('Error:', error);
-            setMessage('Error al procesar la solicitud');
-        }
-    };
+        
+            try {
 
+                if (formType === 'create') {
+                    const response = await axios.post('http://localhost:8085/api/visitor/create', updatedVisitor);
+                    console.log('Create Response:', response.data);
+                    setShowForm(false);
+                    fetchVisitors(); // Refresh the list after creation
+                    setMessage('Visitante creado correctamente');
+                } else {
+                    const response = await axios.put(`http://localhost:8085/api/visitor/update/${updatedVisitor.id}`, updatedVisitor);
+                    console.log('Update Response:', response.data);
+                    setShowForm(false);
+                    fetchVisitors(); // Refresh the list after update
+                    setMessage('Visitante actualizado correctamente');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                setMessage('Error al procesar la solicitud');
+            }
+        };
+
+    }
+    
+        
     // Create a new visitor
     /*const createVisitor = async () => {
         try {
@@ -207,6 +257,7 @@ const VisitanteGuarda = () => {
         setVisitor({
             id: '',
             nomVisitante: '',
+            tipoDoc: '',
             cedula: '',
             nomResidente: '',
             carVisitante: '',
@@ -291,7 +342,22 @@ const VisitanteGuarda = () => {
                                         value={visitor.nomVisitante}
                                         onChange={handleInputChange}
                                     />
-                                </div>   
+                                </div> 
+                                <div className="mb-3">
+                                    <label className="form-label">Tipo de Documento</label>
+                                    <select
+                                        className="form-control"
+                                        name="tipoDoc"
+                                        value={visitor.tipoDoc}
+                                        onChange={handleInputChange}
+                                    >
+                                        <option value="">Selecciona el tipo de documento</option>
+                                        <option value="Cédula de Ciudadanía">Cédula de Ciudadanía</option>
+                                        <option value="Cédula de Extranjeria">Cédula de Extranjería</option>
+                                        <option value="Permiso de Permanencia">Permiso de Permanencia</option>
+                                    </select>
+                                    
+                                </div>  
                                 <div className="mb-3">
                                     <label className="form-label">Cedula</label>
                                     <input
@@ -314,8 +380,8 @@ const VisitanteGuarda = () => {
                                         onChange={handleInputChange}
                                     />
                                 </div>   
-                                <div className='form-group'>
-                                    <label htmlFor='carVisitante'>Carro Visitante</label>
+                                <div className="mb-3">
+                                    <label className="form-label">Carro Visitante</label>
                                     <select
                                         className='form-control'
                                         id='carVisitante'
@@ -328,8 +394,8 @@ const VisitanteGuarda = () => {
                                         <option value='no'>No</option>
                                     </select>
                                 </div>
-                                <div className='form-group'>
-                                    <label htmlFor='ingrVisitante'>Ingreso Permitido</label>
+                                <div className="mb-3">
+                                    <label className="form-label">Ingreso Permitido</label>
                                     <select
                                         className='form-control'
                                         id='ingrVisitante'
@@ -378,7 +444,7 @@ const VisitanteGuarda = () => {
                                         value={visitor.parking.id || ''}
                                         onChange={handleInputChange}
                                     >
-                                        <option value="">N/A</option> {/* Agregar opción para "N/A" */}
+                                        
                                         <option value="">0</option> 
                                         {parkings.map((parking) => (
                                             <option key={parking.id} value={parking.id}>
@@ -423,6 +489,7 @@ const VisitanteGuarda = () => {
                         <tr>
                             <th>ID</th>
                             <th>Nombre</th>
+                            <th>Tipo Documento</th>
                             <th>Identificación</th>
                             <th>Nombre Residente</th>
                             <th>¿Carro?</th>
@@ -436,16 +503,18 @@ const VisitanteGuarda = () => {
                     </thead>
                     <tbody>
                         {currentVisitors.map((visitor) => {
+                            const fecvisitanteFormatted = new Date(visitor.fecVisitante).toLocaleDateString('es-ES');
                             console.log(visitor.carVisitante, visitor.property);  // Verifica los valores
                             return (
                                 <tr key={visitor.id}>
                                     <td style={{ textAlign: 'center' }}>{visitor.id}</td>
                                     <td style={{ textAlign: 'center' }}>{visitor.nomVisitante}</td>
+                                    <td style={{ textAlign: 'center' }}>{visitor.tipoDoc}</td>
                                     <td style={{ textAlign: 'center' }}>{visitor.cedula}</td>
                                     <td style={{ textAlign: 'center' }}>{visitor.nomResidente}</td>
                                     <td style={{ textAlign: 'center' }}>{visitor.carVisitante}</td>
                                     <td style={{ textAlign: 'center' }}>{visitor.ingrVisitante}</td>
-                                    <td style={{ textAlign: 'center' }}>{visitor.fecVisitante}</td>
+                                    <td style={{ textAlign: 'center' }}>{fecvisitanteFormatted}</td>
                                     <td style={{ textAlign: 'center' }}>{visitor.worker ? visitor.worker.userName : 'N/A'}</td>
                                     <td style={{ textAlign: 'center' }}>{visitor.parking ? visitor.parking.cupParqueadero : 'N/A'}</td>
                                     <td style={{ textAlign: 'center' }}>

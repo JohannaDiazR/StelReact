@@ -103,17 +103,27 @@ const Correspondencia = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {currentCorrespondences.map((correspondence) => (
-                            <tr key={correspondence.id}>
-                                <td style={{textAlign: 'center'}}>{correspondence.id}</td>
-                                <td style={{textAlign: 'center'}}>{correspondence.tipoCorrespondencia}</td>
-                                <td style={{textAlign: 'center'}}>{correspondence.frecCorrespondencia}</td>
-                                <td style={{textAlign: 'center'}}>{correspondence.estCorrespondencia}</td>
-                                <td style={{textAlign: 'center'}}>{correspondence.fentrCorrespondencia}</td>
-                                <td style={{textAlign: 'center'}}>{correspondence.worker ? correspondence.worker.userName : 'N/A'}</td>
-                                <td style={{textAlign: 'center'}}>{correspondence.property ? correspondence.property.numInmueble : 'N/A'}</td>
-                            </tr>
-                        ))}
+                        {currentCorrespondences.map((correspondence) =>{
+                            // Formatear frecuencia de correspondencia
+                            const frecuencia = new Date(correspondence.frecCorrespondencia).toLocaleDateString('es-ES');
+
+                            // Formatear fecha de entrada de correspondencia
+                            const fechaEntrada = correspondence.estCorrespondencia !== 'No entregado' 
+                            ? new Date(correspondence.fentrCorrespondencia).toLocaleDateString('es-ES') 
+                            : '';
+
+                            return (
+                                <tr key={correspondence.id}>
+                                    <td style={{textAlign: 'center'}}>{correspondence.id}</td>
+                                    <td style={{textAlign: 'center'}}>{correspondence.tipoCorrespondencia}</td>
+                                    <td style={{textAlign: 'center'}}>{frecuencia}</td> 
+                                    <td style={{textAlign: 'center'}}>{correspondence.estCorrespondencia}</td>
+                                    <td style={{textAlign: 'center'}}>{fechaEntrada}</td> 
+                                    <td style={{textAlign: 'center'}}>{correspondence.worker ? correspondence.worker.userName : 'N/A'}</td>
+                                    <td style={{textAlign: 'center'}}>{correspondence.property ? correspondence.property.numInmueble : 'N/A'}</td>
+                                </tr>
+                            );
+                        })}
                     </tbody>    
                 </table>
                 </div>

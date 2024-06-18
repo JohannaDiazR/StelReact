@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import Footer from '../../Generic/Footer';
 import Menu from '../../Generic/Menu';
-import './css/Usuario.css'
+import './css/Usuario.css';
 
 const Usuario = () => {
     const [users, setUsers] = useState([]);
@@ -14,8 +14,8 @@ const Usuario = () => {
     const [user, setUser] = useState({
         id: '',
         usuario: '',
-        contrasena: '',
         nombre: '',
+        tipoDoc: '',
         cedula: '',
         celular: '',
         role: {
@@ -25,9 +25,24 @@ const Usuario = () => {
     });
 
     const [errors, setErrors] = useState({});
+    const [showPassword, setShowPassword] = useState(false);
+    const [showPasswordOnEdit, setShowPasswordOnEdit] = useState(false);
 
     const [currentPage, setCurrentPage] = useState(1);
     const [usersPerPage] = useState(8); // Cantidad de usuarios por página
+
+    const generateRandomPassword = () => {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[{]}\\|;:\'",<.>/?';
+        let password = '';
+    
+        for (let i = 0; i < 8; i++) {
+            const randomIndex = Math.floor(Math.random() * characters.length);
+            password += characters.charAt(randomIndex);
+        }
+    
+        return password;
+    };
+      
 
     const fetchUsers = async () => {
         try {
@@ -56,7 +71,7 @@ const Usuario = () => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        if (name === 'role.id'){
+        if (name === 'role.id') {
             setUser({
                 ...user,
                 role: {
@@ -79,30 +94,33 @@ const Usuario = () => {
             isValid = false;
         }
 
-        const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-        if (!passwordPattern.test(user.contrasena)) {
-            newErrors.contrasena = 'La contraseña debe tener al menos 8 caracteres, incluyendo al menos una mayúscula, una minúscula, un número y un carácter especial';
+        const nombrePattern = /^[a-zA-Z\s]{3,60}$/;
+        if (!nombrePattern.test(user.nombre)) {
+            newErrors.nombre = 'El nombre debe contener mínimo 3 caracteres';
             isValid = false;
         }
-        const nombrePattern = /^[a-zA-Z\s]{1,35}$/;
-        if (!nombrePattern.test(user.nombre)){
-            newErrors.nombre = 'El nombre solo debe contener letras y espacio';
-            isValid = false;
-        } 
-        const cedulaPattern = /^\d{1,10}$/; 
-        if (!cedulaPattern.test(user.cedula)){
-            newErrors.cedula = 'La identificación solo debe contener números y no ser mayor a 10 digitos';
+        if (!user.tipoDoc) {
+            newErrors.tipoDoc = 'Seleccione un tipo de documento';
             isValid = false;
         }
-        const celularPattern = /^(300|310|311|312|313|315)\d{7}$/;
-        if (!celularPattern.test(user.celular)){
-            newErrors.celular = 'El celular debe ser valido';
+
+        const cedulaPattern = /^\d{5,10}$/;
+        if (!cedulaPattern.test(user.cedula)) {
+            newErrors.cedula = 'La identificación solo debe contener números, debe ser entre 5 a 10 dígitos';
             isValid = false;
         }
+
+        const celularPattern = /^(300|301|302|303|304|305|314|320|321|322|323|324|325|316|317|318|319|350|351|352|310|311|312|313|315)\d{7}$/;
+        if (!celularPattern.test(user.celular)) {
+            newErrors.celular = 'El celular debe ser válido';
+            isValid = false;
+        }
+
         if (!user.role.id) {
             newErrors.role = 'Seleccione un rol';
             isValid = false;
         }
+
         setErrors(newErrors);
         return isValid;
     };
@@ -112,9 +130,12 @@ const Usuario = () => {
 
         if (validateForm()) {
             if (formType === 'create') {
+                user.contrasena = generateRandomPassword();
                 await createUser();
             } else {
+                user.contrasena = generateRandomPassword();
                 await updateUser();
+                
             }
         }
     };
@@ -125,6 +146,7 @@ const Usuario = () => {
                 usuario: user.usuario,
                 contrasena: user.contrasena,
                 nombre: user.nombre,
+                tipoDoc: user.tipoDoc,
                 cedula: user.cedula,
                 celular: user.celular,
                 role: {
@@ -147,12 +169,14 @@ const Usuario = () => {
                 usuario: user.usuario,
                 contrasena: user.contrasena,
                 nombre: user.nombre,
+                tipoDoc: user.tipoDoc,
                 cedula: user.cedula,
                 celular: user.celular,
                 role: {
                     id: user.role.id,
                     nombreRol: user.role.nombreRol
-                }
+                },
+                contrasena: user.contrasena
             });
             setShowForm(false);
             fetchUsers();
@@ -180,8 +204,8 @@ const Usuario = () => {
         setUser({
             id: '',
             usuario: '',
-            contrasena: '',
             nombre: '',
+            tipoDoc: '',
             cedula: '',
             celular: '',
             role: {
@@ -195,18 +219,21 @@ const Usuario = () => {
         if (selectedUser) {
             setShowForm(true);
             setFormType('edit');
+            const newPassword = generateRandomPassword();
             setUser({
                 id: selectedUser.id,
                 usuario: selectedUser.usuario,
-                contrasena: selectedUser.contrasena,
                 nombre: selectedUser.nombre,
+                tipoDoc: selectedUser.tipoDoc,
                 cedula: selectedUser.cedula,
                 celular: selectedUser.celular,
+                contrasena: user.contrasena,
                 role: {
                     id: selectedUser.role ? selectedUser.role.id : '',
                     nombreRol: selectedUser.role ? selectedUser.role.nombreRol : ''
                 }
             });
+            setShowPasswordOnEdit(true);
         } else {
             console.error('Error: selectedUser is null');
         }
@@ -221,12 +248,18 @@ const Usuario = () => {
         user.usuario.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // Paginación - Calcula los usuarios a mostrar en la página actual
     const indexOfLastUser = currentPage * usersPerPage;
     const indexOfFirstUser = indexOfLastUser - usersPerPage;
     const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
 
     const paginate = pageNumber => setCurrentPage(pageNumber);
+
+    const toggleShowPassword = () => {
+        setShowPassword(!showPassword);
+    };
+    const toggleShowPasswordOnEdit = () => {
+        setShowPasswordOnEdit(!showPasswordOnEdit);
+    };
 
     return (
         <>
@@ -234,6 +267,11 @@ const Usuario = () => {
             <div className='Usuarios'> 
                 <h2>Lista Usuarios <i className="bi bi-people-fill"></i></h2>
                 <div className="d-flex justify-content-between align-items-center">
+                    {message && (
+                        <div className="alert alert-success" role="alert">
+                            {message}
+                        </div>
+                    )}
                     <button 
                         className="btn btn-success mb-3 smaller-button" 
                         onClick={showCreateForm}
@@ -275,38 +313,15 @@ const Usuario = () => {
                                 )}
                             </h3>
                         </div>
+                        
                         <div className="card-body">
                             <form onSubmit={handleSubmit}>
-                                <div className="mb-3">
-                                    <label className="form-label">Usuario</label>
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        placeholder="Usuario"
-                                        name="usuario"
-                                        value={user.usuario}
-                                        onChange={handleInputChange}
-                                    />
-                                    {errors.usuario && <div className="text-danger">{errors.usuario}</div>}
-                                </div>
-                                <div className="mb-3">
-                                    <label className="form-label">Contraseña</label>
-                                    <input
-                                        type="password"
-                                        className="form-control"
-                                        placeholder="Contraseña"
-                                        name="contrasena"
-                                        value={user.contrasena}
-                                        onChange={handleInputChange}
-                                    />
-                                    {errors.contrasena && <div className="text-danger">{errors.contrasena}</div>}
-                                </div>
                                 <div className="mb-3">
                                     <label className="form-label">Nombre</label>
                                     <input
                                         type="text"
                                         className="form-control"
-                                        placeholder="nombre"
+                                        placeholder="Nombre y Apellido"
                                         name="nombre"
                                         value={user.nombre}
                                         onChange={handleInputChange}
@@ -314,11 +329,26 @@ const Usuario = () => {
                                     {errors.nombre && <div className="text-danger">{errors.nombre}</div>}
                                 </div>
                                 <div className="mb-3">
-                                    <label className="form-label">Cedula</label>
+                                    <label className="form-label">Tipo de Documento</label>
+                                    <select
+                                        className="form-control"
+                                        name="tipoDoc"
+                                        value={user.tipoDoc}
+                                        onChange={handleInputChange}
+                                    >
+                                        <option value="">Selecciona el tipo de documento</option>
+                                        <option value="Cédula de Ciudadanía">Cédula de Ciudadanía</option>
+                                        <option value="Cédula de Extranjeria">Cédula de Extranjería</option>
+                                        <option value="Permiso de Permanencia">Permiso de Permanencia</option>
+                                    </select>
+                                    {errors.tipoDoc && <div className="text-danger">{errors.tipoDoc}</div>}
+                                </div>
+                                <div className="mb-3">
+                                    <label className="form-label">Identificación</label>
                                     <input
                                         type="number"
                                         className="form-control"
-                                        placeholder="cedula"
+                                        placeholder="Número de Identificación"
                                         name="cedula"
                                         value={user.cedula}
                                         onChange={handleInputChange}
@@ -337,6 +367,22 @@ const Usuario = () => {
                                     />
                                     {errors.celular && <div className="text-danger">{errors.celular}</div>}
                                 </div>
+                                
+                                <div className="mb-3">
+                                    <label className="form-label">Usuario</label>
+                                    <input
+                                        type='text'
+                                        className="form-control"
+                                        placeholder="Usuario"
+                                        name="usuario"
+                                        value={user.usuario}
+                                        onChange={handleInputChange}
+                                    />
+                                    
+                                    {errors.usuario && <div className="text-danger">{errors.usuario}</div>}
+                                </div>
+                                
+                                
                                 <div className='mb-3'>
                                     <label className='form-label'>Rol</label>
                                     <select
@@ -373,11 +419,13 @@ const Usuario = () => {
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Usuario</th>
-                            <th>Contraseña</th>
                             <th>Nombre</th>
+                            <th>Tipo Documento</th>
                             <th>Cedula</th>
                             <th>Celular</th>
+                            <th>Usuario</th>
+                            <th>Contraseña</th>
+                            
                             <th>Rol</th>
                             <th>Acciones</th>
                         </tr>
@@ -386,11 +434,15 @@ const Usuario = () => {
                         {currentUsers.map((user) => (
                             <tr key={user.id}>
                                 <td style={{textAlign: 'center'}}>{user.id}</td>
-                                <td style={{textAlign: 'center'}}>{user.usuario}</td>
-                                <td style={{textAlign: 'center'}}>{user.contrasena}</td>
                                 <td style={{textAlign: 'center'}}>{user.nombre}</td>
+                                <td style={{textAlign: 'center'}}>{user.tipoDoc}</td>
                                 <td style={{textAlign: 'center'}}>{user.cedula}</td>
                                 <td style={{textAlign: 'center'}}>{user.celular}</td>
+                                <td style={{textAlign: 'center'}}>{user.usuario}</td>
+                                <td style={{textAlign: 'center'}}>
+                                    {formType === 'edit' ? user.contrasena : user.contrasena}
+                                </td>
+                                
                                 <td style={{textAlign: 'center'}}>{user.role ? user.role.nombreRol : 'N/A'}</td>
                                 <td className="text-center">
                                     <div className="d-flex justify-content-center">
@@ -427,7 +479,7 @@ const Usuario = () => {
                     )}
                 </div>
 
-                {message && <p>{message}</p>}
+                
             </div>
             <Footer />
         </>

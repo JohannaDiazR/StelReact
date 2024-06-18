@@ -240,7 +240,7 @@ const Multas = () => {
     };
 
     const filteredMultas = multas.filter((multa) =>
-        multa.tipoMulta.toLowerCase().includes(searchTerm.toLowerCase())
+        multa.property.numInmueble.toString().includes(searchTerm)
     );
 
     const indexOfLastMulta = currentPage * multasPerPage;
@@ -299,6 +299,22 @@ const Multas = () => {
                             </div>
                             <div className='card-body'>
                                 <form onSubmit={handleSubmit}>
+                                <div className='mb-3'>
+                                        <label className='form-label'>Inmueble</label>
+                                        <select
+                                            className='form-select'
+                                            name='property.id'
+                                            value={multa.property.id}
+                                            onChange={handleInputChange}
+                                        >
+                                            {properties.map((property) => (
+                                                <option key={property.id} value={property.id}>
+                                                    {property.numInmueble}
+                                                </option>
+                                            ))}
+                                        </select>    
+                                        {errors.property && <div className="text-danger">{errors.property}</div>}
+                                    </div>  
                                     <div className='mb-3'>
                                         <label className='form-label'>Tipo de Multa</label>
                                         <select
@@ -350,22 +366,7 @@ const Multas = () => {
                                             onChange={handleInputChange}
                                         />
                                     </div>
-                                    <div className='mb-3'>
-                                        <label className='form-label'>Inmueble</label>
-                                        <select
-                                            className='form-select'
-                                            name='property.id'
-                                            value={multa.property.id}
-                                            onChange={handleInputChange}
-                                        >
-                                            {properties.map((property) => (
-                                                <option key={property.id} value={property.id}>
-                                                    {property.numInmueble}
-                                                </option>
-                                            ))}
-                                        </select>    
-                                        {errors.property && <div className="text-danger">{errors.property}</div>}
-                                    </div>       
+                                         
                                     <div className='mb-3'>
                                         <label className='form-label'>Trabajador</label>
                                         <select
@@ -404,29 +405,34 @@ const Multas = () => {
                         <thead>
                             <tr>
                                 <th>Id</th>
+                                <th>Inmueble</th>
                                 <th>Tipo de Multa</th>
                                 <th>Fecha de Multa</th>
                                 <th>Valor de Multa</th>
                                 <th>Fecha de Pago</th>
-                                <th>Inmueble</th>
+                                
                                 <th>Nombre Trabajador</th>
-                                <th>Cedula Trabajador</th>
+                                <th>Identificación Trabajador</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {currentMultas.map((multa) => (
+                        {currentMultas.map((multa) => {
+                            // Convertir las fechas a objetos Date
+                            const fecMultaFormatted = new Date(multa.fecMulta).toLocaleDateString('es-ES');
+                            const fpagMultaFormatted = multa.fpagMulta ? new Date(multa.fpagMulta).toLocaleDateString('es-ES') : 'N/A';
+
+                            return (
                                 <tr key={multa.id}>
                                     <td style={{textAlign: 'center'}}>{multa.id}</td>
-                                    <td style={{textAlign: 'center'}}>{multa.tipoMulta}</td>
-                                    <td style={{textAlign: 'center'}}>{multa.fecMulta}</td>
-                                    <td style={{textAlign: 'center'}}>{multa.valMulta}</td>
-                                    <td style={{textAlign: 'center'}}>{multa.fpagMulta}</td>
                                     <td style={{textAlign: 'center'}}>{multa.property && multa.property.numInmueble ? multa.property.numInmueble : 'N/A'}</td>
-
+                                    <td style={{textAlign: 'center'}}>{multa.tipoMulta}</td>
+                                    <td style={{textAlign: 'center'}}>{fecMultaFormatted}</td>
+                                    <td style={{textAlign: 'center'}}>{multa.valMulta}</td>
+                                    <td style={{textAlign: 'center'}}>{fpagMultaFormatted}</td>
+                                    
                                     <td style={{textAlign: 'center'}}>{multa.worker ? multa.worker.userName : 'N/A'}</td>
                                     <td style={{textAlign: 'center'}}>{multa.worker ? multa.worker.userCedula : 'N/A'}</td>
-                                
                                     <td className='text-center'>
                                         <div className="d-flex justify-content-center">
                                             <button
@@ -443,10 +449,11 @@ const Multas = () => {
                                             >
                                                 <i className="bi bi-trash"></i>
                                             </button>
-                                        </div>   
+                                        </div>
                                     </td>
                                 </tr>
-                            ))}
+                            );
+                        })}
                         </tbody>
                     </table>
 
