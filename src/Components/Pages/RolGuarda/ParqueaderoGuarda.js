@@ -5,8 +5,7 @@ import '../CrudComponents/css/Visitante.css';
 import Footer from '../../Generic/Footer';
 import TicketVisitante from './TicketVisitante';
 
-const ParqueaderoGuarda = () => {
-    const [parkings, setParkings] = useState([]);
+const ParqueaderoGuarda = () => { const [parkings, setParkings] = useState([]);
     const [message, setMessage] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [showForm, setShowForm] = useState(false);
@@ -20,7 +19,6 @@ const ParqueaderoGuarda = () => {
         cupParqueadero: '',
         horaSalida: '',
         costParqueadero: ''
-        
     });
     const [showTicket, setShowTicket] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
@@ -46,8 +44,9 @@ const ParqueaderoGuarda = () => {
         const { name, value } = e.target;
         setParking({ ...parking, [name]: value });
     };
+
     const validateParking = () => {
-        let  isValid = true;
+        let isValid = true;
         const newErrors = {};
 
         if (!parking.tipoParqueadero) {
@@ -100,19 +99,21 @@ const ParqueaderoGuarda = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (validateParking()){
+        if (validateParking()) {
+            const totalCost = calculateCost(parking.fecParqueadero, parking.horaSalida, parking.tipoParqueadero);
+            setParking({ ...parking, costParqueadero: totalCost }); // Actualizar costParqueadero con totalCost
             if (formType === 'create') {
                 await createParking();
             } else {
                 await updateParking();
             }
         }
-        
     };
-
+    
     const createParking = async () => {
         try {
-            await axios.post('http://localhost:8085/api/parking/create', parking);
+            const response = await axios.post('http://localhost:8085/api/parking/create', parking);
+            console.log('Response from createParking:', response.data); // Verificar la respuesta del backend
             setShowForm(false);
             fetchParkings();
         } catch (error) {
@@ -120,10 +121,11 @@ const ParqueaderoGuarda = () => {
             setMessage('Error al crear el parqueadero');
         }
     };
-
+    
     const updateParking = async () => {
         try {
-            await axios.put(`http://localhost:8085/api/parking/update/${parking.id}`, parking);
+            const response = await axios.put(`http://localhost:8085/api/parking/update/${parking.id}`, parking);
+            console.log('Response from updateParking:', response.data); // Verificar la respuesta del backend
             setShowForm(false);
             fetchParkings();
         } catch (error) {
@@ -169,10 +171,10 @@ const ParqueaderoGuarda = () => {
         const salidaDate = new Date(salida);
         const oneDay = 24 * 60 * 60 * 1000;
         let totalCost = 0;
-    
+
         if (tipoParqueadero.toLowerCase().includes('visitante')) {
             let currentTime = entradaDate;
-    
+
             while (currentTime < salidaDate) {
                 const nextBoundary = new Date(currentTime);
                 if (currentTime.getHours() >= 6 && currentTime.getHours() < 18) {
@@ -187,7 +189,7 @@ const ParqueaderoGuarda = () => {
                     }
                     totalCost += 6000;
                 }
-    
+
                 currentTime = nextBoundary;
                 if (currentTime > salidaDate) {
                     break;
@@ -198,7 +200,7 @@ const ParqueaderoGuarda = () => {
         } else if (tipoParqueadero.toLowerCase().includes('moto-propietario')) {
             totalCost = 36000;
         }
-    
+
         return totalCost;
     };
 
@@ -378,7 +380,7 @@ const ParqueaderoGuarda = () => {
                                 <td style={{textAlign: 'center'}}>{parking.dvteParqueadero}</td>
                                 <td style={{textAlign: 'center'}}>{parking.cupParqueadero}</td>
                                 <td style={{textAlign: 'center'}}>{formatDateTime(parking.horaSalida)}</td>
-                                <td style={{textAlign: 'center'}}>
+                                <td style={{ textAlign: 'center' }}>
                                     {['visitante', 'carro-propietario', 'moto-propietario'].some(type => parking.tipoParqueadero.toLowerCase().includes(type))
                                         ? calculateCost(parking.fecParqueadero, parking.horaSalida || new Date(), parking.tipoParqueadero).toFixed(2)
                                         : "N/A"}

@@ -123,7 +123,7 @@ const Visitante = () => {
                             <th>Trabajador</th>
                             <th>Parqueadero</th>        
                             <th>Inmueble</th>
-                            <th>Acciones</th>   
+                              
                         </tr>
                     </thead>
                     <tbody>
@@ -145,9 +145,7 @@ const Visitante = () => {
                                         ? visitor.property.numInmueble
                                         : 'N/A'}
                                 </td>
-                                <td className='text-center'>
-                                    
-                                </td>
+                                
                             </tr>
                         );
                     })}

@@ -201,7 +201,7 @@ const NovedadesResidente = () => {
     
         // Filtrar las novedades según el término de búsqueda
         const filteredNews = news.filter((novedad) =>
-            novedad.asuntoNovedades.toLowerCase().includes(searchTerm.toLowerCase())
+            novedad.tipoNovedad.toLowerCase().includes(searchTerm.toLowerCase())
         );
     
         // Obtener las novedades de la página actual
@@ -234,7 +234,7 @@ const NovedadesResidente = () => {
                                     <input
                                         type="text"
                                         className="form-control"
-                                        placeholder="Buscar Asunto"
+                                        placeholder="Buscar Tipo"
                                         onChange={handleSearchChange}
                                         style={{ paddingLeft: '0.5rem', width:'300px' }}
                                     />
@@ -298,16 +298,7 @@ const NovedadesResidente = () => {
                                         </select>
                                         {errors.role && <div className="text-danger">{errors.role}</div>}
                                     </div>
-                                    <div className="form-label">
-                                        <label>Estado:</label>
-                                        <input type="text" className="form-control" name="estNovedades" value={novedad.estNovedades} onChange={handleInputChange} />
-                                        
-                                    </div>
-                                    <div className="form-label">
-                                        <label>Respuesta:</label>
-                                        <textarea className="form-control" name="resNovedades" value={novedad.resNovedades} onChange={handleInputChange}></textarea>
-                                        {errors.resNovedades && <span className="error">{errors.resNovedades}</span>}
-                                    </div>
+                                    
                                     <button type="submit" className="btn btn-success smaller-button sm-2" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40',width: '160px', margin: 'auto' }}>
                                             <i className="bi bi-check-circle-fill"></i>
                                             {formType === 'create' ? 'Crear' : 'Editar'}
@@ -340,14 +331,14 @@ const NovedadesResidente = () => {
                         <tbody>
                             {currentNews.map((novedad) => (
                                 <tr key={novedad.id}>
-                                    <td>{novedad.remNovedades}</td>
-                                    <td>{novedad.tipoNovedad}</td>
-                                    <td>{novedad.asuntoNovedades}</td>
-                                    <td>{novedad.descNovedades}</td>
-                                    <td>{novedad.fecNovedades}</td>
-                                    <td>{novedad.role.nombreRol}</td>
-                                    <td>{novedad.estNovedades}</td>
-                                    <td>{novedad.resNovedades}</td>
+                                    <td style={{textAlign: 'center'}}>{novedad.remNovedades}</td>
+                                    <td style={{textAlign: 'center'}}>{novedad.tipoNovedad}</td>
+                                    <td style={{textAlign: 'center'}}>{novedad.asuntoNovedades}</td>
+                                    <td style={{textAlign: 'center'}}>{novedad.descNovedades}</td>
+                                    <td style={{textAlign: 'center'}}>{novedad.fecNovedades}</td>
+                                    <td style={{textAlign: 'center'}}>{novedad.role.nombreRol}</td>
+                                    <td style={{textAlign: 'center'}}>{novedad.estNovedades}</td>
+                                    <td style={{textAlign: 'center'}}>{novedad.resNovedades}</td>
                                     <td className='text-center'>
                                             <div className="d-flex justify-content-center">
                                                 <button

@@ -29,6 +29,7 @@ const CorrespondenciaGuarda = () => {
 
         }
     });
+    const [errors, setErrors] = useState({});
     const [currentPage, setCurrentPage] = useState(1);
     const [correspondencesPerPage] = useState(7);
 
@@ -101,6 +102,41 @@ const CorrespondenciaGuarda = () => {
         } else {
             setCorrespondence({ ...correspondence, [name]: value });
         }
+    };
+    const validateForm = () => {
+        let isValid = true;
+        const newErrors = {};
+
+        const today = new Date().toISOString().split('T')[0]; 
+        if (!correspondence.tipoCorrespondencia){
+            newErrors.tipoCorrespondencia = 'Seleccione un tipo de correspondencia';
+            isValid = false;
+        }
+        if (!correspondence.frecCorrespondencia) {
+            newErrors.frecCorrespondencia = 'Seleccione la fecha actual';
+            isValid = false;
+        } else if (correspondence.frecCorrespondencia !== today) {
+            newErrors.frecCorrespondencia = 'La fecha de correspondencia debe ser la fecha actual';
+            isValid = false;
+        }
+        if (!correspondence.estCorrespondencia){
+            newErrors.estCorrespondencia = 'Seleccione un estado';
+            isValid = false;
+        }
+        if (!correspondence.worker.id){
+            newErrors.worker = 'Seleccione un trabajador';
+            isValid = false;
+        }
+        if (!correspondence.property.id){
+            newErrors.property = 'Seleccione un inmueble';
+            isValid = false;
+        }
+        if (correspondence.fentrCorrespondencia && correspondence.fentrCorrespondencia < correspondence.frecCorrespondencia) {
+            newErrors.fentrCorrespondencia = 'La fecha de entrega debe ser igual o posterior a la fecha de correspondencia';
+            isValid = false;
+        }
+        setErrors(newErrors);
+        return isValid;
     };
     
 
@@ -256,14 +292,18 @@ const CorrespondenciaGuarda = () => {
                             <form onSubmit={handleSubmit}>
                                 <div className='mb-3'>
                                     <label className='form-label'>Tipo Correspondencia</label>
-                                    <input
-                                        type='text'
-                                        className='form-control'
-                                        placeholder='TipoCorrespondencias'
-                                        name='tipoCorrespondencia'
+                                    <select
+                                        name="tipoCorrespondencia"
                                         value={correspondence.tipoCorrespondencia}
                                         onChange={handleInputChange}
-                                    />
+                                    >
+                                        <option value="">Seleccione una opción</option>
+                                        <option value="Paquete">Paquete</option>
+                                        <option value="Caja">Caja</option>
+                                        <option value="Recibo">Recibo</option>
+                                        <option value="Documento">Documento</option>
+                                    </select>
+                                    {errors.tipoCorrespondencia && <div className="text-danger">{errors.tipoCorrespondencia}</div>}
                                 </div>
                                 <div className='mb-3'>
                                     <label className='form-label'>Fecha Correspondencia</label>
@@ -275,17 +315,21 @@ const CorrespondenciaGuarda = () => {
                                         value={correspondence.frecCorrespondencia}
                                         onChange={handleInputChange}
                                     />
+                                    {errors.frecCorrespondencia && <div className="text-danger">{errors.frecCorrespondencia}</div>}
                                 </div>
                                 <div className='mb-3'>
                                     <label className='form-label'>Estado Correspondencia</label>
-                                    <input
-                                        type='text'
-                                        className='form-control'
-                                        placeholder='Estado Correspondencia'
+                                    <select
+                                        className='form-select'
                                         name='estCorrespondencia'
                                         value={correspondence.estCorrespondencia}
                                         onChange={handleInputChange}
-                                    />
+                                    >
+                                        <option value="">Selecciona...</option>
+                                        <option value="Entregado">Entregado</option>
+                                        <option value="No Entregado">No Entregado</option>
+                                    </select>
+                                    {errors.estCorrespondencia && <div className="text-danger">{errors.estCorrespondencia}</div>}
                                 </div>
                                 <div className='mb-3'>
                                     <label className='form-label'>Fecha de Entrega</label>
@@ -313,6 +357,7 @@ const CorrespondenciaGuarda = () => {
                                             </option>
                                         ))}
                                     </select>
+                                    {errors.worker && <div className="text-danger">{errors.worker}</div>}
                                 </div>
                                 <div className='mb-3'>
                                         <label className='form-label'>Inmueble</label>
@@ -328,13 +373,13 @@ const CorrespondenciaGuarda = () => {
                                                 </option>
                                             ))}
                                         </select>    
-                                        
+                                        {errors.property && <div className="text-danger">{errors.property}</div>}
                                     </div>  
-                                <button type="submit" className="btn btn-success me-2" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}>
+                                <button type="submit" className="btn btn-success smaller-button sm-2" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40',width: '160px', margin: 'auto' }}>
                                     <i className="bi bi-wallet"></i>
                                     {formType === 'create' ? 'Crear' : 'Editar'}
                                 </button>
-                                <button type="button" className="btn btn-secondary me-2" style={{ backgroundColor: '#a11129' }} onClick={() => setShowForm(false)}>
+                                <button type="button" className="btn btn-secondary smaller-button sm-2" style={{ backgroundColor: '#a11129',width: '160px', margin: 'auto' }} onClick={() => setShowForm(false)}>
                                     <i className="bi bi-x-square-fill"></i>
                                     <span className="ms-2">Cancelar</span>
                                 </button>
@@ -356,36 +401,48 @@ const CorrespondenciaGuarda = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {currentCorrespondences.map((correspondence) => (
-                            <tr key={correspondence.id}>
-                                <td style={{textAlign: 'center'}}>{correspondence.id}</td>
-                                <td style={{textAlign: 'center'}}>{correspondence.tipoCorrespondencia}</td>
-                                <td style={{textAlign: 'center'}}>{correspondence.frecCorrespondencia}</td>
-                                <td style={{textAlign: 'center'}}>{correspondence.estCorrespondencia}</td>
-                                <td style={{textAlign: 'center'}}>{correspondence.fentrCorrespondencia}</td>
-                                <td style={{textAlign: 'center'}}>{correspondence.worker ? correspondence.worker.userName : 'N/A'}</td>
-                                <td style={{textAlign: 'center'}}>{correspondence.property ? correspondence.property.numInmueble : 'N/A'}</td>
-                                <td className='text-center'>
-                                    <div className='d-flex justify-content-center'>
-                                        <button 
-                                            className="btn btn-primary btn-sm mx-1" 
-                                            onClick={() => showEditForm(correspondence)}
-                                            style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
-                                        >
-                                            <i className="bi bi-wallet"></i>
-                                        </button>
-                                        <button 
-                                            className="btn btn-danger btn-sm mx-1" 
-                                            onClick={() => deleteCorrespondence(correspondence.id)}
-                                            style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
-                                        >
-                                            <i className="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-                                    
-                                </td>
-                            </tr>
-                        ))}
+                        {currentCorrespondences.map((correspondence) => {
+                            const fecharecibido = new Date(correspondence.frecCorrespondencia);
+                            const fechaentrega = new Date(correspondence.fentrCorrespondencia);
+                            const formattedDateTime = fecharecibido.toLocaleString('es-ES', {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                second: '2-digit'
+                            });
+                            return (
+                                <tr key={correspondence.id}>
+                                    <td style={{textAlign: 'center'}}>{correspondence.id}</td>
+                                    <td style={{textAlign: 'center'}}>{correspondence.tipoCorrespondencia}</td>
+                                    <td style={{textAlign: 'center'}}>{formattedDateTime}</td>
+                                    <td style={{textAlign: 'center'}}>{correspondence.estCorrespondencia}</td>
+                                    <td style={{textAlign: 'center'}}>{formattedDateTime}</td>
+                                    <td style={{textAlign: 'center'}}>{correspondence.worker ? correspondence.worker.userName : 'N/A'}</td>
+                                    <td style={{textAlign: 'center'}}>{correspondence.property ? correspondence.property.numInmueble : 'N/A'}</td>
+                                    <td className='text-center'>
+                                        <div className='d-flex justify-content-center'>
+                                            <button 
+                                                className="btn btn-primary btn-sm mx-1" 
+                                                onClick={() => showEditForm(correspondence)}
+                                                style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
+                                            >
+                                                <i className="bi bi-wallet"></i>
+                                            </button>
+                                            <button 
+                                                className="btn btn-danger btn-sm mx-1" 
+                                                onClick={() => deleteCorrespondence(correspondence.id)}
+                                                style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
+                                            >
+                                                <i className="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                        
+                                    </td>
+                                </tr>
+                            ); 
+                        })}
                     </tbody>    
                 </table>
                 <div className="pagination">

@@ -80,7 +80,7 @@ const Novedades = () => {
     const validateNovedad = () => {
         let  isValid = true;
         const newErrors = {};
-
+        const today = new Date().toISOString().split('T')[0]; 
         const nombrePattern = /^[a-zA-Z\s]{3,60}$/;
         if (!nombrePattern.test(novedad.remNovedades)) {
             newErrors.remNovedades = 'El nombre debe contener mínimo 3 caracteres';
@@ -101,10 +101,25 @@ const Novedades = () => {
         if (!novedad.fecNovedades) {
             newErrors.fecNovedades = 'Fecha es requerida';
             isValid = false;
+        } else {
+            // Validar que la fecha no sea anterior a la actual (sin considerar horas)
+            const selectedDate = new Date(novedad.fecNovedades).toISOString().split('T')[0];
+            if (selectedDate < today) {
+                newErrors.fecNovedades = 'La fecha no puede ser anterior a la actual';
+                isValid = false;
+            }
         }
         
         if (!novedad.role.id) {
             newErrors.role = 'Rol es requerido';
+            isValid = false;
+        }
+        if (!novedad.estNovedades) {
+            newErrors.estNovedades = 'Estado es requerido';
+            isValid = false;
+        }
+        if (!novedad.resNovedades) {
+            newErrors.resNovedades = 'Respuesta es requerida';
             isValid = false;
         }
     
@@ -213,7 +228,7 @@ const Novedades = () => {
 
     // Filtrar las novedades según el término de búsqueda
     const filteredNews = news.filter((novedad) =>
-        novedad.asuntoNovedades.toLowerCase().includes(searchTerm.toLowerCase())
+        novedad.tipoNovedad.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     // Obtener las novedades de la página actual
@@ -246,7 +261,7 @@ const Novedades = () => {
                                 <input
                                     type="text"
                                     className="form-control"
-                                    placeholder="Buscar Asunto"
+                                    placeholder="Buscar Tipo"
                                     onChange={handleSearchChange}
                                     style={{ paddingLeft: '0.5rem', width:'300px' }}
                                 />
@@ -278,9 +293,9 @@ const Novedades = () => {
                                     <input type="text" className="form-control" name="remNovedades" value={novedad.remNovedades} onChange={handleInputChange} />
                                     {errors.remNovedades && <div className="text-danger">{errors.remNovedades}</div>}
                                 </div>
-                                <div className="form-label">
+                                <div className="form-label ">
                                     <label>Tipo de novedad</label>
-                                    <select className="form-control" name="tipoNovedad" value={novedad.tipoNovedad} onChange={handleInputChange}>
+                                    <select className="form-control select-larger"  name="tipoNovedad" value={novedad.tipoNovedad} onChange={handleInputChange}>
                                         <option value="">Seleccionar tipo de novedad</option>
                                         <option value="residentes">Residentes</option>
                                         <option value="zonas comunes">Zonas comunes</option>
@@ -328,7 +343,7 @@ const Novedades = () => {
                                 <div className="form-label">
                                     <label>Respuesta</label>
                                     <textarea className="form-control" name="resNovedades" value={novedad.resNovedades} onChange={handleInputChange}></textarea>
-                                    {errors.resNovedades && <span className="error">{errors.resNovedades}</span>}
+                                    {errors.resNovedades && <div className="text-danger">{errors.resNovedades}</div>}
                                 </div>
                                 <button type="submit" className="btn btn-success smaller-button sm-2" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40',width: '160px', margin: 'auto' }}>
                                         <i className="bi bi-check-circle-fill"></i>
@@ -373,14 +388,14 @@ const Novedades = () => {
                             });
                             return (
                                 <tr key={novedad.id}>
-                                <td>{novedad.remNovedades}</td>
-                                <td>{novedad.tipoNovedad}</td>
-                                <td>{novedad.asuntoNovedades}</td>
-                                <td>{novedad.descNovedades}</td>
-                                <td>{formattedDateTime}</td>
-                                <td>{novedad.role.nombreRol}</td>
-                                <td>{novedad.estNovedades}</td>
-                                <td>{novedad.resNovedades}</td>
+                                <td style={{textAlign: 'center'}}>{novedad.remNovedades}</td>
+                                <td style={{textAlign: 'center'}}>{novedad.tipoNovedad}</td>
+                                <td style={{textAlign: 'center'}}>{novedad.asuntoNovedades}</td>
+                                <td style={{textAlign: 'center'}}>{novedad.descNovedades}</td>
+                                <td style={{textAlign: 'center'}}>{formattedDateTime}</td>
+                                <td style={{textAlign: 'center'}}>{novedad.role.nombreRol}</td>
+                                <td style={{textAlign: 'center'}}>{novedad.estNovedades}</td>
+                                <td style={{textAlign: 'center'}}>{novedad.resNovedades}</td>
                                 <td className='text-center'>
                                     <div className="d-flex justify-content-center">
                                         <button

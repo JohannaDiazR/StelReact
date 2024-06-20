@@ -78,7 +78,7 @@ const Parqueadero = () => {
                             <th>Número Cupo</th>
                             <th>Hora Salida</th>
                             
-                            <th>Acciones</th>
+                            
                         </tr>
                     </thead>
                     <tbody>
@@ -112,11 +112,7 @@ const Parqueadero = () => {
                                      <td style={{textAlign: 'center'}}>{parking.cupParqueadero}</td>
                                      <td style={{textAlign: 'center'}}>{formattedSalidaTime}</td> {/* Mostrar hora de salida formateada */}
                                  
-                                     <td>
-                                         <div className="d-flex justify-content-center">
-                                             <TicketVisitante parking={parking} />
-                                         </div>
-                                     </td>
+                                     
                                  </tr>
                              );
                          })}
