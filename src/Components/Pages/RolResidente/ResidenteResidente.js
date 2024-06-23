@@ -84,7 +84,7 @@ const Residente = () => {
         <>
             <MenuResidente />
             <div className='Residente'>
-                <h2>Lista Residentes <i className="bi bi-person-bounding-box"></i></h2>
+                <h2>Residentes <i className="bi bi-person-bounding-box"></i></h2>
                 <div className='d-flex justify-content-end align-items-center'>
                     
                     <div className="input-group" style={{ width: '36%' }}>

@@ -58,7 +58,7 @@ const Cartera = () => {
         <>
             <MenuResidente />
             <div className='Wallet'>
-                <h2>Lista Cartera <i className="bi bi-wallet"></i></h2>
+                <h2>Cartera <i className="bi bi-wallet"></i></h2>
 
                 <div className="d-flex justify-content-end align-items-center"> 
                     <div className="input-group" style={{ width: '36%' }}>

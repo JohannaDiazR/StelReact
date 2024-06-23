@@ -58,7 +58,7 @@ const InmuebleResidente = () => {
         <>
             <MenuResidente />
             <div className='Usuarios'>
-                <h2>Lista Inmuebles <i className="bi bi-house-fill"></i></h2>
+                <h2>Inmuebles <i className="bi bi-house-fill"></i></h2>
                 <div className="d-flex justify-content-end align-items-center"> 
                     <div className="input-group" style={{ width: '36%' }}>
                         <div className="input-group-prepend">

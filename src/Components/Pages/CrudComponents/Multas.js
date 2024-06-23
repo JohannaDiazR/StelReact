@@ -132,7 +132,7 @@ const Multas = () => {
         if (!multa.fecMulta) {
             validationErrors.fecMulta = 'La fecha de la multa es obligatoria';
         } else if (multa.fecMulta !== today) {
-           // validationErrors.fecMulta = 'La fecha de la multa debe ser la fecha actual';
+            validationErrors.fecMulta = 'La fecha de la multa debe ser la fecha actual';
         };
 
         if (!multa.valMulta) {
@@ -150,6 +150,9 @@ const Multas = () => {
     
         if (!multa.worker.id) {
             validationErrors.worker = 'El trabajador es obligatorio';
+        }
+        if (multa.fpagMulta && multa.fecMulta && multa.fpagMulta < multa.fecMulta) {
+            validationErrors.fpagMulta = 'La fecha de pago debe ser igual o posterior a la fecha de multa';
         }
     
 
@@ -189,18 +192,6 @@ const Multas = () => {
         }
     };
 
-    const deleteMulta = async (id) => {
-        if (window.confirm('¿Estás seguro de que deseas eliminar esta multa?')) {
-            try {
-                await axios.delete(`http://localhost:8085/api/fine/delete/${id}`);
-                fetchMultas();
-                setMessage('Multa eliminada correctamente');
-            } catch (error) {
-                console.error('Error deleting multa:', error);
-                setMessage('Error al eliminar la multa');
-            }
-        }
-    };
 
     const showCreateForm = () => {
         setShowForm(true);
@@ -253,7 +244,7 @@ const Multas = () => {
             <>
                 <Menu />
                 <div className='Multas'>
-                    <h2>Lista de Multas <i className="bi bi-cash-coin"></i></h2>
+                    <h2>Multas <i className="bi bi-cash-coin"></i></h2>
                     <div className="d-flex justify-content-between align-items-center">
                         <button
                             className="btn btn-success mb-3 smaller-button"
@@ -279,23 +270,23 @@ const Multas = () => {
                         </div>
                     
                     </div>
-                    {/* Formulario */}
+                    
                     {showForm && (
                         <div className='card'>
                             <div className='card-header'>
-                                <h3 className='card-title'>
+                                
                                     {formType === 'create' ? (
                                         <>
-                                            <i className="bi bi-plus-circle-fill"></i>
-                                            <span className='ms-2'>Crear Multa</span>
+                                            <i className="bi bi-plus-circle-fill text-white"style={{ fontSize: '1.8rem' }}></i>
+                                            <span className='ms-2 text-white'style={{ fontSize: '1.8rem' }}> Crear Multa</span>
                                         </>
                                     ) : (
                                         <>
-                                            <i className="bi bi-pencil-square"></i>
-                                            <span className='ms-2'>Editar Multa</span>
+                                            <i className="bi bi-pencil-square text-white"style={{ fontSize: '1.8rem' }}></i>
+                                            <span className='ms-2 text-white'style={{ fontSize: '1.8rem' }}> Editar Multa</span>
                                         </>
                                     )}
-                                </h3>
+                                
                             </div>
                             <div className='card-body'>
                                 <form onSubmit={handleSubmit}>
@@ -307,6 +298,7 @@ const Multas = () => {
                                             value={multa.property.id}
                                             onChange={handleInputChange}
                                         >
+                                            <option value=''>Seleccione un Inmueble</option>
                                             {properties.map((property) => (
                                                 <option key={property.id} value={property.id}>
                                                     {property.numInmueble}
@@ -340,7 +332,7 @@ const Multas = () => {
                                             value={multa.fecMulta}
                                             onChange={handleInputChange}
                                         />
-                                        
+                                         {errors.fecMulta && <div className="text-danger">{errors.fecMulta}</div>}
                                     </div>
                                     <div className='mb-3'>
                                         <label className='form-label'>Valor de Multa</label>
@@ -365,6 +357,7 @@ const Multas = () => {
                                             value={multa.fpagMulta}
                                             onChange={handleInputChange}
                                         />
+                                        {errors.fpagMulta && <div className="text-danger">{errors.fpagMulta}</div>}
                                     </div>
                                          
                                     <div className='mb-3'>
@@ -442,13 +435,7 @@ const Multas = () => {
                                             >
                                                 <i className="bi bi-pencil"></i>
                                             </button>
-                                            <button
-                                                className="btn btn-danger btn-sm mx-1"
-                                                onClick={() => deleteMulta(multa.id)}
-                                                style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
-                                            >
-                                                <i className="bi bi-trash"></i>
-                                            </button>
+                                            
                                         </div>
                                     </td>
                                 </tr>

@@ -81,7 +81,7 @@ const Novedades = () => {
         let  isValid = true;
         const newErrors = {};
         const today = new Date().toISOString().split('T')[0]; 
-        const nombrePattern = /^[a-zA-Z\s]{3,60}$/;
+        const nombrePattern = /^[a-zA-ZÀ-ÿ\s]{3,60}$/;
         if (!nombrePattern.test(novedad.remNovedades)) {
             newErrors.remNovedades = 'El nombre debe contener mínimo 3 caracteres';
             isValid = false;
@@ -243,7 +243,7 @@ const Novedades = () => {
         <>
             <Menu /> 
             <div className='Novedades'>
-                <h2>Lista de novedades <i className="bi bi-newspaper"></i></h2>
+                <h2>Novedades <i className="bi bi-newspaper"></i></h2>
                 <div className="d-flex justify-content-between align-items-center">
                         <button
                             className="btn btn-success mb-3 smaller-button"
@@ -272,30 +272,30 @@ const Novedades = () => {
                 {showForm && (
                     <div className="card">
                         <div className="card-header">
-                            <h3 className='card-title'>
+                            
                                 {formType === 'create' ? (
                                     <>
-                                        <i className="bi bi-plus-circle-fill"></i>
-                                        <span className='ms-2'>Crear Novedad</span>
+                                        <i className="bi bi-plus-circle-fill text-white"style={{ fontSize: '1.8rem' }}></i>
+                                        <span className='ms-2 text-white'style={{ fontSize: '1.8rem' }}> Crear Novedad</span>
                                     </>
                                 ) : (
                                     <>
-                                        <i className="bi bi-pencil-square"></i>
-                                        <span className='ms-2'>Editar Novedad</span>
+                                        <i className="bi bi-pencil-square text-white"style={{ fontSize: '1.8rem' }}></i>
+                                        <span className='ms-2 text-white'style={{ fontSize: '1.8rem' }}> Editar Novedad</span>
                                     </>
                                 )}
-                            </h3>
+                            
                         </div>    
                         <div className='card-body'>
                             <form onSubmit={handleSubmit}>
                                 <div className="form-label">
-                                    <label>Remitente:</label>
-                                    <input type="text" className="form-control" name="remNovedades" value={novedad.remNovedades} onChange={handleInputChange} />
+                                    <label>Remitente</label>
+                                    <input type="text" className="form-control" name="remNovedades" placeholder="Nombre"value={novedad.remNovedades} onChange={handleInputChange} />
                                     {errors.remNovedades && <div className="text-danger">{errors.remNovedades}</div>}
                                 </div>
                                 <div className="form-label ">
                                     <label>Tipo de novedad</label>
-                                    <select className="form-control select-larger"  name="tipoNovedad" value={novedad.tipoNovedad} onChange={handleInputChange}>
+                                    <select className="form-select"  name="tipoNovedad" value={novedad.tipoNovedad} onChange={handleInputChange}>
                                         <option value="">Seleccionar tipo de novedad</option>
                                         <option value="residentes">Residentes</option>
                                         <option value="zonas comunes">Zonas comunes</option>
@@ -306,12 +306,12 @@ const Novedades = () => {
                                 </div>
                                 <div className="form-label">
                                     <label>Asunto</label>
-                                    <input type="text" className="form-control" name="asuntoNovedades" value={novedad.asuntoNovedades} onChange={handleInputChange} />
+                                    <input type="text" className="form-control" name="asuntoNovedades"placeholder="Asunto" value={novedad.asuntoNovedades} onChange={handleInputChange} />
                                     {errors.asuntoNovedades && <div className="text-danger">{errors.asuntoNovedades}</div>}
                                 </div>
                                 <div className="form-label">
                                     <label>Descripción</label>
-                                    <textarea className="form-control" name="descNovedades" value={novedad.descNovedades} onChange={handleInputChange}></textarea>
+                                    <textarea className="form-control" name="descNovedades" placeholder="Descripción"value={novedad.descNovedades} onChange={handleInputChange}></textarea>
                                     {errors.descNovedades && <div className="text-danger">{errors.descNovedades}</div>}
                                 </div>
                                 <div className="form-label">
@@ -321,7 +321,7 @@ const Novedades = () => {
                                 </div>
                                 <div className="form-label">
                                     <label>Rol</label>
-                                    <select className="form-control" name="role.id" value={novedad.role.id} onChange={handleInputChange}>
+                                    <select className="form-select" name="role.id" value={novedad.role.id} onChange={handleInputChange}>
                                         <option value="">Seleccionar Rol</option>
                                         {roles.map((role) => (
                                             <option key={role.id} value={role.id}>
@@ -333,7 +333,7 @@ const Novedades = () => {
                                 </div>
                                 <div className="form-label">
                                     <label>Estado</label>
-                                    <select className="form-control" name="estNovedades" value={novedad.estNovedades} onChange={handleInputChange}>
+                                    <select className="form-select" name="estNovedades" placeholder="Estado"value={novedad.estNovedades} onChange={handleInputChange}>
                                         <option value="">Seleccionar estado</option>
                                         <option value="Espera">Espera</option>
                                         <option value="Atendida">Atendida</option>
@@ -342,7 +342,7 @@ const Novedades = () => {
                                 </div>
                                 <div className="form-label">
                                     <label>Respuesta</label>
-                                    <textarea className="form-control" name="resNovedades" value={novedad.resNovedades} onChange={handleInputChange}></textarea>
+                                    <textarea className="form-control" name="resNovedades" placeholder="Respuesta"value={novedad.resNovedades} onChange={handleInputChange}></textarea>
                                     {errors.resNovedades && <div className="text-danger">{errors.resNovedades}</div>}
                                 </div>
                                 <button type="submit" className="btn btn-success smaller-button sm-2" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40',width: '160px', margin: 'auto' }}>
@@ -405,13 +405,7 @@ const Novedades = () => {
                                         >
                                             <i className="bi bi-pencil"></i>
                                         </button>
-                                        <button
-                                            className="btn btn-danger btn-sm mx-1"
-                                            onClick={() => deleteNovedad(novedad.id)}
-                                            style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
-                                        >
-                                            <i className="bi bi-trash"></i>
-                                        </button>
+                                        
                                     </div>   
                                 </td>
                             </tr>

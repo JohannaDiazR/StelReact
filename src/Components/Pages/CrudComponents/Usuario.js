@@ -8,6 +8,7 @@ const Usuario = () => {
     const [users, setUsers] = useState([]);
     const [roles, setRoles] = useState([]);
     const [message, setMessage] = useState('');
+    const [alertType, setAlertType] = useState('success');
     const [searchTerm, setSearchTerm] = useState('');
     const [showForm, setShowForm] = useState(false);
     const [formType, setFormType] = useState('create'); // 'create' o 'edit'
@@ -27,7 +28,7 @@ const Usuario = () => {
     const [errors, setErrors] = useState({});
     const [showPassword, setShowPassword] = useState(false);
     const [showPasswordOnEdit, setShowPasswordOnEdit] = useState(false);
-
+    
     const [currentPage, setCurrentPage] = useState(1);
     const [usersPerPage] = useState(8); // Cantidad de usuarios por página
 
@@ -52,6 +53,7 @@ const Usuario = () => {
         } catch (error) {
             console.error('Error fetching users:', error);
             setMessage('No se recibió respuesta del servidor');
+            setAlertType('danger');
         }
     };
 
@@ -69,6 +71,15 @@ const Usuario = () => {
         fetchRoles();
     }, []);
 
+    useEffect(() => {
+        if (message) {
+            // Mostrar la alerta por 5 segundos y luego ocultarla
+            const timer = setTimeout(() => {
+                setMessage('');
+            }, 6000);
+            return () => clearTimeout(timer);
+        }
+    }, [message]);
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         if (name === 'role.id') {
@@ -94,7 +105,7 @@ const Usuario = () => {
             isValid = false;
         }
 
-        const nombrePattern = /^[a-zA-Z\s]{3,60}$/;
+        const nombrePattern = /^[a-zA-ZÀ-ÿ\s]{3,60}$/;
         if (!nombrePattern.test(user.nombre)) {
             newErrors.nombre = 'El nombre debe contener mínimo 3 caracteres';
             isValid = false;
@@ -154,12 +165,16 @@ const Usuario = () => {
                     nombreRol: user.role.nombreRol
                 }
             });
+            setMessage('Usuario creado exitosamente');
+            setAlertType('success');
             setShowForm(false);
             fetchUsers();
             setMessage('Usuario creado correctamente');
+            setAlertType('success');
         } catch (error) {
             console.error('Error creating user:', error);
             setMessage('Error al crear el usuario');
+            setAlertType('danger');
         }
     };
 
@@ -181,23 +196,15 @@ const Usuario = () => {
             setShowForm(false);
             fetchUsers();
             setMessage('Usuario actualizado correctamente');
+            setAlertType('success');
         } catch (error) {
             console.error('Error updating user:', error);
             setMessage('Error al actualizar el usuario');
+            setAlertType('danger');
         }
     };
 
-    const deleteUser = async (id) => {
-        try {
-            await axios.delete(`http://localhost:8085/api/user/delete/${id}`);
-            fetchUsers();
-            setMessage('Usuario eliminado correctamente');
-        } catch (error) {
-            console.error('Error deleting user:', error);
-            setMessage('Error al eliminar el usuario');
-        }
-    };
-
+    
     const showCreateForm = () => {
         setShowForm(true);
         setFormType('create');
@@ -264,14 +271,25 @@ const Usuario = () => {
     return (
         <>
             <Menu />
+            {message && (
+                <div className={`alert alert-${alertType}`}>
+                    {message}
+                    <button
+                        type="button"
+                        className="close"
+                        onClick={() => setMessage('')}
+                        aria-label="Close"
+                    >
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            )}
             <div className='Usuarios'> 
-                <h2>Lista Usuarios <i className="bi bi-people-fill"></i></h2>
+                <h2>Usuarios <i className="bi bi-people-fill"></i></h2>
+                
+                
                 <div className="d-flex justify-content-between align-items-center">
-                    {message && (
-                        <div className="alert alert-success" role="alert">
-                            {message}
-                        </div>
-                    )}
+                    
                     <button 
                         className="btn btn-success mb-3 smaller-button" 
                         onClick={showCreateForm}
@@ -298,20 +316,20 @@ const Usuario = () => {
                 
                 {showForm && (
                     <div className="card">
-                        <div className="card-header">
-                            <h3 className="card-title">
+                        <div className="card-header ">
+                            
                                 {formType === 'create' ? (
                                     <>
-                                        <i className="bi bi-person-plus"></i>
-                                        <span className="ms-2">Crear Usuario</span>
+                                        <i className="bi bi-person-plus text-white"style={{ fontSize: '1.8rem' }} ></i>
+                                        <span className=" ms-1 text-white"style={{ fontSize: '1.8rem' }} > Crear Usuario</span>
                                     </>
                                 ) : (
                                     <>
-                                        <i className="bi bi-pen"></i>
-                                        <span className="ms-2">Editar Usuario</span>
+                                        <i className="bi bi-pen text-white"style={{ fontSize: '1.8rem' }}></i>
+                                        <span className="ms-1 text-white"style={{ fontSize: '1.8rem' }}> Editar Usuario</span>
                                     </>
                                 )}
-                            </h3>
+                            
                         </div>
                         
                         <div className="card-body">
@@ -331,7 +349,7 @@ const Usuario = () => {
                                 <div className="mb-3">
                                     <label className="form-label">Tipo de Documento</label>
                                     <select
-                                        className="form-control"
+                                        className="form-select"
                                         name="tipoDoc"
                                         value={user.tipoDoc}
                                         onChange={handleInputChange}
@@ -416,6 +434,7 @@ const Usuario = () => {
                 )}
 
                 <table className="table mt-4">
+                    
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -453,13 +472,7 @@ const Usuario = () => {
                                         >
                                             <i className="bi bi-pen"></i>
                                         </button>
-                                        <button 
-                                            className="btn btn-danger btn-sm mx-1" 
-                                            onClick={() => deleteUser(user.id)}
-                                            style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
-                                        >
-                                            <i className="bi bi-trash"></i>
-                                        </button>
+                                        
                                     </div>
                                 </td>
                             </tr>

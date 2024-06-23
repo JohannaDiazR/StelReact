@@ -75,8 +75,7 @@ const Visitante = () => {
     };
 
     const filteredVisitors = visitors.filter(visitor =>
-        visitor.cedula.toString().includes(searchTerm) ||
-        visitor.nomVisitante.toLowerCase().includes(searchTerm.toLowerCase())
+        visitor.property.numInmueble.toString().includes(searchTerm) 
     );
 
     const indexOfLastVisitor = currentPage * visitorsPerPage;
@@ -91,7 +90,7 @@ const Visitante = () => {
         <>
             <Menu />
             <div className='Visitantes'>
-                <h2>Lista Visitantes <i className="bi bi-people-fill"></i></h2>
+                <h2>Visitantes <i className="bi bi-people-fill"></i></h2>
                 <div className="d-flex justify-content-end align-items-center">
                     
                     <div className="input-group" style={{ width: '36%' }}>
@@ -102,7 +101,7 @@ const Visitante = () => {
                             <input
                                 type="text"
                                 className="form-control"
-                                placeholder="Buscar Identificación Visitante"
+                                placeholder="Buscar Número de Inmueble"
                                 onChange={handleSearchChange}
                                 style={{ paddingLeft: '0.5rem', width:'300px' }}
                             />

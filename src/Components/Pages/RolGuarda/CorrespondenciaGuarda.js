@@ -69,7 +69,7 @@ const CorrespondenciaGuarda = () => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-    
+
         if (name === 'worker.id') {
             const selectedWorker = workers.find(worker => worker.id === parseInt(value));
             if (selectedWorker && selectedWorker.user) {
@@ -100,15 +100,39 @@ const CorrespondenciaGuarda = () => {
                 }
             }));
         } else {
-            setCorrespondence({ ...correspondence, [name]: value });
+            setCorrespondence(prevCorrespondence => ({
+                ...prevCorrespondence,
+                [name]: value
+            }));
+
+            // Limpiar el campo de fecha de entrega si el estado es No Entregado
+            if (name === 'estCorrespondencia' && value === 'No Entregado') {
+                setCorrespondence(prevCorrespondence => ({
+                    ...prevCorrespondence,
+                    fentrCorrespondencia: '' // Limpiamos la fecha de entrega
+                }));
+            }
         }
+    };
+    
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (validateForm()) {
+            if (formType === 'create') {
+                await createCorrespondence();
+            } else {
+                await updateCorrespondence();
+            }
+        }
+        
     };
     const validateForm = () => {
         let isValid = true;
         const newErrors = {};
-
-        const today = new Date().toISOString().split('T')[0]; 
-        if (!correspondence.tipoCorrespondencia){
+    
+        const today = new Date().toISOString().split('T')[0];
+    
+        if (!correspondence.tipoCorrespondencia) {
             newErrors.tipoCorrespondencia = 'Seleccione un tipo de correspondencia';
             isValid = false;
         }
@@ -119,35 +143,35 @@ const CorrespondenciaGuarda = () => {
             newErrors.frecCorrespondencia = 'La fecha de correspondencia debe ser la fecha actual';
             isValid = false;
         }
-        if (!correspondence.estCorrespondencia){
+        if (!correspondence.estCorrespondencia) {
             newErrors.estCorrespondencia = 'Seleccione un estado';
             isValid = false;
         }
-        if (!correspondence.worker.id){
+        if (!correspondence.worker.id) {
             newErrors.worker = 'Seleccione un trabajador';
             isValid = false;
         }
-        if (!correspondence.property.id){
+        if (!correspondence.property.id) {
             newErrors.property = 'Seleccione un inmueble';
             isValid = false;
         }
-        if (correspondence.fentrCorrespondencia && correspondence.fentrCorrespondencia < correspondence.frecCorrespondencia) {
+        if (correspondence.estCorrespondencia === 'Entregado' && !correspondence.fentrCorrespondencia) {
+            newErrors.fentrCorrespondencia = 'La fecha de entrega es obligatoria si el estado es Entregado';
+            isValid = false;
+        }
+        if (correspondence.estCorrespondencia === 'Entregado' && correspondence.fentrCorrespondencia && correspondence.fentrCorrespondencia < correspondence.frecCorrespondencia) {
             newErrors.fentrCorrespondencia = 'La fecha de entrega debe ser igual o posterior a la fecha de correspondencia';
             isValid = false;
         }
-        setErrors(newErrors);
-        return isValid;
-    };
-    
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        if (formType === 'create') {
-            await createCorrespondence();
-        } else {
-            await updateCorrespondence();
+        if (correspondence.estCorrespondencia === 'No Entregado' && correspondence.fentrCorrespondencia) {
+            newErrors.fentrCorrespondencia = 'La fecha de entrega debe estar vacía si la correspondencia no ha sido entregada';
+            isValid = false;
         }
+        
+        // Actualizar el estado de errores
+        setErrors(newErrors);
+    
+        return isValid;
     };
 
     const createCorrespondence = async () => {
@@ -240,7 +264,7 @@ const CorrespondenciaGuarda = () => {
         <>
             <Menuguarda />
             <div className='Correspondence'>
-                <h2>Lista correspondencias <i className="bi bi-universal-access-circle"></i></h2>
+                <h2>Correspondencias <i className="bi bi-universal-access-circle"></i></h2>
                 <div className='d-flex justify-content-between align-items-center'>
                     <button
                         className="btn btn-success smaller-button"
@@ -273,19 +297,19 @@ const CorrespondenciaGuarda = () => {
                 {showForm && (
                     <div className='card'>
                         <div className='card-header'>
-                            <h3 className='card-title'>
+                            
                                 {formType === 'create' ? (
                                     <>
-                                        <i className="bi bi-person-lines-fill"></i>
-                                        <span className='ms-2'>Crear Correspondencia</span>
+                                        <i className="bi bi-person-lines-fill text-white"style={{ fontSize: '1.8rem' }}></i>
+                                        <span className='ms-2 text-white'style={{ fontSize: '1.8rem' }}> Crear Correspondencia</span>
                                     </>
                                 ) : (
                                     <>
-                                        <i className="bi bi-wrench-adjustable"></i>
-                                        <span className='ms-2'>Editar Correspondencia</span>
+                                        <i className="bi bi-wrench-adjustable text-white"style={{ fontSize: '1.8rem' }}></i>
+                                        <span className='ms-2 text-white'style={{ fontSize: '1.8rem' }}> Editar Correspondencia</span>
                                     </>
                                 )}
-                            </h3> 
+                           
                             
                         </div> 
                         <div className='card-body'>
@@ -293,6 +317,7 @@ const CorrespondenciaGuarda = () => {
                                 <div className='mb-3'>
                                     <label className='form-label'>Tipo Correspondencia</label>
                                     <select
+                                        className='form-select'
                                         name="tipoCorrespondencia"
                                         value={correspondence.tipoCorrespondencia}
                                         onChange={handleInputChange}
@@ -351,6 +376,7 @@ const CorrespondenciaGuarda = () => {
                                         value={correspondence.worker.id}
                                         onChange={handleInputChange}
                                     >
+                                        <option value="">Selecciona...</option>
                                         {workers.map((worker) => (
                                             <option key={worker.id} value={worker.id}>
                                                 {worker.user.nombre}
@@ -377,7 +403,7 @@ const CorrespondenciaGuarda = () => {
                                     </div>  
                                 <button type="submit" className="btn btn-success smaller-button sm-2" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40',width: '160px', margin: 'auto' }}>
                                     <i className="bi bi-wallet"></i>
-                                    {formType === 'create' ? 'Crear' : 'Editar'}
+                                    {formType === 'create' ? ' Crear' : ' Editar'}
                                 </button>
                                 <button type="button" className="btn btn-secondary smaller-button sm-2" style={{ backgroundColor: '#a11129',width: '160px', margin: 'auto' }} onClick={() => setShowForm(false)}>
                                     <i className="bi bi-x-square-fill"></i>
@@ -401,10 +427,21 @@ const CorrespondenciaGuarda = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {currentCorrespondences.map((correspondence) => {
-                            const fecharecibido = new Date(correspondence.frecCorrespondencia);
+                    {currentCorrespondences.map((correspondence) => {
+                        const fecharecibido = new Date(correspondence.frecCorrespondencia);
+                        const formattedFechaRecibido = fecharecibido.toLocaleString('es-ES', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit'
+                        });
+
+                        let formattedFechaEntrega = '';
+                        if (correspondence.fentrCorrespondencia) {
                             const fechaentrega = new Date(correspondence.fentrCorrespondencia);
-                            const formattedDateTime = fecharecibido.toLocaleString('es-ES', {
+                            formattedFechaEntrega = fechaentrega.toLocaleString('es-ES', {
                                 year: 'numeric',
                                 month: '2-digit',
                                 day: '2-digit',
@@ -412,53 +449,49 @@ const CorrespondenciaGuarda = () => {
                                 minute: '2-digit',
                                 second: '2-digit'
                             });
-                            return (
-                                <tr key={correspondence.id}>
-                                    <td style={{textAlign: 'center'}}>{correspondence.id}</td>
-                                    <td style={{textAlign: 'center'}}>{correspondence.tipoCorrespondencia}</td>
-                                    <td style={{textAlign: 'center'}}>{formattedDateTime}</td>
-                                    <td style={{textAlign: 'center'}}>{correspondence.estCorrespondencia}</td>
-                                    <td style={{textAlign: 'center'}}>{formattedDateTime}</td>
-                                    <td style={{textAlign: 'center'}}>{correspondence.worker ? correspondence.worker.userName : 'N/A'}</td>
-                                    <td style={{textAlign: 'center'}}>{correspondence.property ? correspondence.property.numInmueble : 'N/A'}</td>
-                                    <td className='text-center'>
-                                        <div className='d-flex justify-content-center'>
-                                            <button 
-                                                className="btn btn-primary btn-sm mx-1" 
-                                                onClick={() => showEditForm(correspondence)}
-                                                style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
-                                            >
-                                                <i className="bi bi-wallet"></i>
-                                            </button>
-                                            <button 
-                                                className="btn btn-danger btn-sm mx-1" 
-                                                onClick={() => deleteCorrespondence(correspondence.id)}
-                                                style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
-                                            >
-                                                <i className="bi bi-trash"></i>
-                                            </button>
-                                        </div>
+                        }
+
+                        return (
+                            <tr key={correspondence.id}>
+                                <td style={{ textAlign: 'center' }}>{correspondence.id}</td>
+                                <td style={{ textAlign: 'center' }}>{correspondence.tipoCorrespondencia}</td>
+                                <td style={{ textAlign: 'center' }}>{formattedFechaRecibido}</td>
+                                <td style={{ textAlign: 'center' }}>{correspondence.estCorrespondencia}</td>
+                                <td style={{ textAlign: 'center' }}>{formattedFechaEntrega}</td>
+                                <td style={{ textAlign: 'center' }}>{correspondence.worker ? correspondence.worker.userName : 'N/A'}</td>
+                                <td style={{ textAlign: 'center' }}>{correspondence.property ? correspondence.property.numInmueble : 'N/A'}</td>
+                                <td className='text-center'>
+                                    <div className='d-flex justify-content-center'>
+                                        <button 
+                                            className="btn btn-primary btn-sm mx-1" 
+                                            onClick={() => showEditForm(correspondence)}
+                                            style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40' }}
+                                        >
+                                            <i className="bi bi-wallet"></i>
+                                        </button>
                                         
-                                    </td>
-                                </tr>
-                            ); 
-                        })}
-                    </tbody>    
-                </table>
-                <div className="pagination">
-                    {filteredCorrespondences.length > correspondencesPerPage && (
-                    <ul className="pagination-list">
-                        {Array(Math.ceil(filteredCorrespondences.length / correspondencesPerPage)).fill().map((_, i) => (
-                        <li key={i + 1} className={`pagination-item ${currentPage === i + 1 ? 'active' : ''}`}>
-                            <button onClick={() => paginate(i + 1)} className="pagination-link">{i + 1}</button>
-                        </li>
-                        ))}
-                    </ul>
-                    )}
-                </div>
-                {message && <p>{message}</p>}
-            </div>
-            <Footer />
+                                    </div>
+                                    
+                                </td>
+                                    </tr>
+                                ); 
+                            })}
+                                </tbody>    
+                            </table>
+                            <div className="pagination">
+                                {filteredCorrespondences.length > correspondencesPerPage && (
+                                <ul className="pagination-list">
+                                    {Array(Math.ceil(filteredCorrespondences.length / correspondencesPerPage)).fill().map((_, i) => (
+                                    <li key={i + 1} className={`pagination-item ${currentPage === i + 1 ? 'active' : ''}`}>
+                                        <button onClick={() => paginate(i + 1)} className="pagination-link">{i + 1}</button>
+                                    </li>
+                                    ))}
+                                </ul>
+                                )}
+                            </div>
+                            {message && <p>{message}</p>}
+                        </div>
+                        <Footer />
         </>
     );
 }

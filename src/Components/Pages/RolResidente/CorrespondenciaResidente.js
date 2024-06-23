@@ -68,7 +68,7 @@ const Correspondencia = () => {
         <>
             <MenuResidente />
             <div className='Correspondence'>
-                <h2>Lista correspondencias <i className="bi bi-universal-access-circle"></i></h2>
+                <h2>Correspondencias <i className="bi bi-universal-access-circle"></i></h2>
                 <div className='d-flex justify-content-end align-items-center'>
                     <div className="input-group" style={{ width: '36%' }}>
                         <div className="input-group-prepend">

@@ -251,7 +251,7 @@ const Cartera = () => {
         <>
             <Menu />
             <div className='Wallet'>
-                <h2>Lista Cartera <i className="bi bi-wallet"></i></h2>
+                <h2>Cartera <i className="bi bi-wallet"></i></h2>
 
                 <div className="d-flex justify-content-between align-items-center">
                     <button
@@ -282,19 +282,18 @@ const Cartera = () => {
                 {showForm && (
                     <div className='card'>
                         <div className='card-header'>
-                            <h3 className='card-title'>
+                            
                                 {formType === 'create' ? (
                                     <>
-                                        <i className="bi bi-wallet-fill"></i>
-                                        <span className='ms-2'>Crear Cartera</span>
+                                        <i className="bi bi-wallet-fill text-white"style={{ fontSize: '1.8rem' }}></i>
+                                        <span className='ms-2 text-white'style={{ fontSize: '1.8rem' }}> Crear Cartera</span>
                                     </>
                                 ) : (
                                     <>
-                                        <i className="bi bi-wallet2"></i>
-                                        <span className='ms-2'>Editar Cartera</span>
+                                        <i className="bi bi-wallet2 text-white"style={{ fontSize: '1.8rem' }}></i>
+                                        <span className='ms-2 text-white'style={{ fontSize: '1.8rem' }}> Editar Cartera</span>
                                     </>
                                 )}
-                            </h3>
                             
                         </div>
                         <div className='card-body'>
@@ -428,13 +427,7 @@ const Cartera = () => {
                                         >
                                             <i className="bi bi-wallet"></i>
                                         </button>
-                                        <button 
-                                            className="btn btn-danger btn-sm mx-1" 
-                                            onClick={() => deleteWalletStatus(walletStatus.id)}
-                                            style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
-                                        >
-                                            <i className="bi bi-trash"></i>
-                                        </button>
+                                        
                                         <DocCartera walletStatus={walletStatus} /> {/* Añadimos el componente PDFGenerator */}
                                     </div>   
                                 </td>

@@ -36,7 +36,7 @@ import ResidenteResidente from './Components/Pages/RolResidente/ResidenteResiden
 import CorrespondenciaResidente from './Components/Pages/RolResidente/CorrespondenciaResidente';
 import NovedadesResidente from './Components/Pages/RolResidente/NovedadesResidente';
 import MultasResidente from './Components/Pages/RolResidente/MultasResidente';
-import ParqueaderoResidente from './Components/Pages/RolResidente/ParqueaderoResidente';
+
 
 function App() {
   return (
@@ -79,7 +79,6 @@ function App() {
           <Route path='/CorrespondenciaResidente' element={<CorrespondenciaResidente />} />
           <Route path='/NovedadesResidente' element={<NovedadesResidente />} />
           <Route path='/MultasResidente' element={<MultasResidente />} />
-          <Route path='/ParqueaderoResidente' element={<ParqueaderoResidente />} />
           
         </Routes>
         

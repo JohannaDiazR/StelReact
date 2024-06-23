@@ -47,7 +47,7 @@ const Parqueadero = () => {
         <>
            <Menu />
            <div className='Parqueaderos'>
-                <h2>Lista Parqueadero <i className="bi bi-car-front"></i></h2>
+                <h2>Parqueadero <i className="bi bi-car-front"></i></h2>
                 <div className="d-flex justify-content-end align-items-center">
                     <div className="input-group" style={{ width: '36%' }}>
                         <div className="input-group-prepend">

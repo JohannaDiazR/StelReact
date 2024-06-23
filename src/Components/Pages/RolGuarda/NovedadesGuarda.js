@@ -80,9 +80,10 @@ const NovedadesGuarda = () => {
         const validateNovedad = () => {
             let  isValid = true;
             const newErrors = {};
-    
-            if (!novedad.remNovedades) {
-                newErrors.remNovedades = 'Remitente es requerido';
+            const today = new Date().toISOString().split('T')[0];
+            const nombrePattern = /^[a-zA-ZÀ-ÿ\s]{3,60}$/;
+            if (!nombrePattern.test(novedad.remNovedades)) {
+                newErrors.remNovedades = 'El nombre debe contener mínimo 3 caracteres';
                 isValid = false;
             }
             if (!novedad.tipoNovedad) {
@@ -100,14 +101,9 @@ const NovedadesGuarda = () => {
             if (!novedad.fecNovedades) {
                 newErrors.fecNovedades = 'Fecha es requerida';
                 isValid = false;
-            } else {
-                // Validar que la fecha no sea anterior a la actual
-                const selectedDate = new Date(novedad.fecNovedades);
-                const currentDate = new Date();
-                if (selectedDate < currentDate) {
-                    newErrors.fecNovedades = 'La fecha no puede ser anterior a la actual';
-                    isValid = false;
-                }
+            } else if (novedad.fecNovedades !== today){
+                newErrors.fecNovedades = 'La fecha debe ser la fecha actual';
+                isValid = false;
             }
             
             if (!novedad.role.id) {
@@ -215,14 +211,14 @@ const NovedadesGuarda = () => {
             <>
                 <Menuguarda /> 
                 <div className='Novedades'>
-                    <h2>Lista de novedades <i className="bi bi-newspaper"></i></h2>
+                    <h2>Novedades <i className="bi bi-newspaper"></i></h2>
                     <div className="d-flex justify-content-between align-items-center">
                             <button
                                 className="btn btn-success mb-3 smaller-button"
                                 onClick={showCreateForm}
                                 style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40', marginLeft:'200px' }}
                             >
-                                <i className="bi bi-cash-coin"></i>
+                                <i classname="bi bi-newspaper"></i>
                                 <span className='ms-2'>Crear Novedad</span>
                             </button>
                             <div className="input-group" style={{ width: '36%' }}>
@@ -244,50 +240,56 @@ const NovedadesGuarda = () => {
                     {showForm && (
                         <div className="card">
                             <div className="card-header">
-                                <h3 className='card-title'>
+                                
                                     {formType === 'create' ? (
                                         <>
-                                            <i className="bi bi-plus-circle-fill"></i>
-                                            <span className='ms-2'>Crear Novedad</span>
+                                            <i className="bi bi-plus-circle-fill text-white"style={{ fontSize: '1.8rem' }}></i>
+                                            <span className='ms-2 text-white'style={{ fontSize: '1.8rem' }}> Crear Novedad</span>
                                         </>
                                     ) : (
                                         <>
-                                            <i className="bi bi-pencil-square"></i>
-                                            <span className='ms-2'>Editar Novedad</span>
+                                            <i className="bi bi-pencil-square text-white"style={{ fontSize: '1.8rem' }}></i>
+                                            <span className='ms-2 text-white' style={{ fontSize: '1.8rem' }}> Editar Novedad</span>
                                         </>
                                     )}
-                                </h3>
+                                
                             </div>    
                             <div className='card-body'>
                                 <form onSubmit={handleSubmit}>
                                     <div className="form-label">
-                                        <label>Remitente:</label>
-                                        <input type="text" className="form-control" name="remNovedades" value={novedad.remNovedades} onChange={handleInputChange} />
+                                        <label>Remitente</label>
+                                        <input type="text" className="form-control" name="remNovedades" placeholder="Nombre"value={novedad.remNovedades} onChange={handleInputChange} />
                                         {errors.remNovedades && <div className="text-danger">{errors.remNovedades}</div>}
                                     </div>
+                                    <div className="form-label ">
+                                    <label>Tipo de novedad</label>
+                                    <select className="form-select"  name="tipoNovedad" value={novedad.tipoNovedad} onChange={handleInputChange}>
+                                        <option value="">Seleccionar tipo de novedad</option>
+                                        <option value="residentes">Residentes</option>
+                                        <option value="zonas comunes">Zonas comunes</option>
+                                        <option value="parqueadero">Parqueadero</option>
+                                        <option value="mascotas">Mascotas</option>
+                                    </select>
+                                    {errors.tipoNovedad && <div className="text-danger">{errors.tipoNovedad}</div>}
+                                </div>
                                     <div className="form-label">
-                                        <label>Tipo de novedad:</label>
-                                        <input type="text" className="form-control" name="tipoNovedad" value={novedad.tipoNovedad} onChange={handleInputChange} />
-                                        {errors.tipoNovedad && <div className="text-danger">{errors.tipoNovedad}</div>}
-                                    </div>
-                                    <div className="form-label">
-                                        <label>Asunto:</label>
-                                        <input type="text" className="form-control" name="asuntoNovedades" value={novedad.asuntoNovedades} onChange={handleInputChange} />
+                                        <label>Asunto</label>
+                                        <input type="text" className="form-control" name="asuntoNovedades"placeholder="Asunto" value={novedad.asuntoNovedades} onChange={handleInputChange} />
                                         {errors.asuntoNovedades && <div className="text-danger">{errors.asuntoNovedades}</div>}
                                     </div>
                                     <div className="form-label">
-                                        <label>Descripción:</label>
-                                        <textarea className="form-control" name="descNovedades" value={novedad.descNovedades} onChange={handleInputChange}></textarea>
+                                        <label>Descripción</label>
+                                        <textarea className="form-control" name="descNovedades" placeholder="Descripción"value={novedad.descNovedades} onChange={handleInputChange}></textarea>
                                         {errors.descNovedades && <div className="text-danger">{errors.descNovedades}</div>}
                                     </div>
                                     <div className="form-label">
-                                        <label>Fecha:</label>
-                                        <input type="date" className="form-control" name="fecNovedades" value={novedad.fecNovedades} onChange={handleInputChange} />
+                                        <label>Fecha</label>
+                                        <input type="date" className="form-control" name="fecNovedades" placeholder="Fecha" value={novedad.fecNovedades} onChange={handleInputChange} />
                                         {errors.fecNovedades && <div className="text-danger">{errors.fecNovedades}</div>}
                                     </div>
                                     <div className="form-label">
-                                        <label>Rol:</label>
-                                        <select className="form-control" name="role.id" value={novedad.role.id} onChange={handleInputChange}>
+                                        <label>Rol</label>
+                                        <select className="form-select" name="role.id" value={novedad.role.id} onChange={handleInputChange}>
                                             <option value="">Seleccionar Rol</option>
                                             {roles.map((rol) => (
                                                 <option key={rol.id} value={rol.id}>
@@ -328,13 +330,15 @@ const NovedadesGuarda = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {currentNews.map((novedad) => (
-                                <tr key={novedad.id}>
+                            {currentNews.map((novedad) => {
+                                const fechaformatted = new Date(novedad.fecNovedades).toLocaleDateString('es-ES');
+                                return (
+                                    <tr key={novedad.id}>
                                     <td style={{textAlign: 'center'}}>{novedad.remNovedades}</td>
                                     <td style={{textAlign: 'center'}}>{novedad.tipoNovedad}</td>
                                     <td style={{textAlign: 'center'}}>{novedad.asuntoNovedades}</td>
                                     <td style={{textAlign: 'center'}}>{novedad.descNovedades}</td>
-                                    <td style={{textAlign: 'center'}}>{novedad.fecNovedades}</td>
+                                    <td style={{textAlign: 'center'}}>{fechaformatted}</td>
                                     <td style={{textAlign: 'center'}}>{novedad.role.nombreRol}</td>
                                     <td style={{textAlign: 'center'}}>{novedad.estNovedades}</td>
                                     <td style={{textAlign: 'center'}}>{novedad.resNovedades}</td>
@@ -351,7 +355,10 @@ const NovedadesGuarda = () => {
                                             </div>   
                                         </td>
                                 </tr>
-                            ))}
+                                );
+                            })}
+                                
+                           
                         </tbody>
                     </table>
                     <div className="pagination">

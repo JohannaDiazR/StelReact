@@ -71,7 +71,7 @@ const MultasResidente = () => {
             <>
                 <MenuResidente />
                 <div className='Multas'>
-                    <h2>Lista de Multas <i className="bi bi-cash-coin"></i></h2>
+                    <h2>Multas <i className="bi bi-cash-coin"></i></h2>
                     <div className="d-flex justify-content-end align-items-center">
                         
                         <div className="input-group" style={{ width: '36%' }}>

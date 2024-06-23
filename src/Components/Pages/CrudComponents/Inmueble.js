@@ -242,7 +242,7 @@ const Inmueble = () => {
         <>
             <Menu />
             <div className='Usuarios'>
-                <h2>Lista Inmuebles <i className="bi bi-people-fill"></i></h2>
+                <h2>Inmuebles <i className="bi bi-people-fill"></i></h2>
                 <div className="d-flex justify-content-between align-items-center">
                     <button 
                         className="btn btn-success smaller-button" 
@@ -270,19 +270,19 @@ const Inmueble = () => {
                 {showForm && (
                     <div className='card'>
                         <div className='card-header'>
-                            <h3 className='card-title'>
+                            
                                 {formType === 'create' ? (
                                     <>
-                                        <i className="bi bi-house-add"></i>
-                                        <span className='ms-2'>Crear Inmueble</span>
+                                        <i className="bi bi-house-add text-white"style={{ fontSize: '1.8rem' }}></i>
+                                        <span className='ms-1 text-white'style={{ fontSize: '1.8rem' }}> Crear Inmueble</span>
                                     </>
                                 ) : (
                                     <>
-                                        <i className="bi bi-pencil"></i>
-                                        <span className='ms-2'>Editar Inmueble</span>
+                                        <i className="bi bi-pencil text-white"style={{ fontSize: '1.8rem' }}></i>
+                                        <span className='ms-2 text-white' style={{ fontSize: '1.8rem' }}> Editar Inmueble</span>
                                     </>
                                 )}
-                            </h3>
+                            
                             
                         </div>
                         <div className='card-body'>
@@ -377,13 +377,7 @@ const Inmueble = () => {
                                         >
                                             <i className="bi bi-pencil"></i>
                                         </button>
-                                        <button
-                                            className='btn btn-danger btn-sm mx-1'
-                                            onClick={() => deleteProperty(property.id)}
-                                            style={{ backgroundColor: '#a11129', borderColor: '#a11129' }}
-                                        >
-                                            <i className="bi bi-trash"></i>
-                                        </button>
+                                        
                                     </div>
                                 </td>
                             </tr>

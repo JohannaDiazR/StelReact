@@ -49,53 +49,61 @@ const ParqueaderoGuarda = () => { const [parkings, setParkings] = useState([]);
         let isValid = true;
         const newErrors = {};
 
+        // Validar tipo de parqueadero
         if (!parking.tipoParqueadero) {
             newErrors.tipoParqueadero = 'Tipo de parqueadero es requerido';
             isValid = false;
         }
 
+        // Validar estado del parqueadero
         if (!parking.estadoParqueadero) {
             newErrors.estadoParqueadero = 'Estado es requerido';
             isValid = false;
-        } else if (parking.estadoParqueadero !== 'habilitado' && parking.estadoParqueadero !== 'inhabilitado') {
-            newErrors.estadoParqueadero = 'Estado debe ser "habilitado" o "inhabilitado"';
-            isValid = false;
         }
 
+        // Validar fecha de entrada
         if (!parking.fecParqueadero) {
             newErrors.fecParqueadero = 'Fecha de entrada es requerida';
             isValid = false;
         }
 
-        if (!parking.horaSalida) {
-            newErrors.horaSalida = 'Hora de salida es requerida';
-            isValid = false;
-        } else if (new Date(parking.fecParqueadero) >= new Date(parking.horaSalida)) {
-            newErrors.horaSalida = 'La hora de salida debe ser posterior a la fecha de entrada';
-            isValid = false;
-        }
-
+        // Validar datos del vehículo
         if (!parking.dvteParqueadero) {
             newErrors.dvteParqueadero = 'Datos del vehículo son requeridos';
             isValid = false;
         }
 
-        if (!parking.cupParqueadero) {
-            newErrors.cupParqueadero = 'Número de cupo es requerido';
-            isValid = false;
-        } else {
-            if (parking.tipoParqueadero.includes('carro') && (parking.cupParqueadero < 1 || parking.cupParqueadero > 55)) {
+        // Validar número de cupo (si está presente y no es inhabilitado)
+        if (parking.cupParqueadero && parking.estadoParqueadero !== 'inhabilitado') {
+            const cupo = parseInt(parking.cupParqueadero);
+
+            // Validar rango del número de cupo según el tipo de parqueadero
+            if (parking.tipoParqueadero.includes('carro') && (cupo < 1 || cupo > 55)) {
                 newErrors.cupParqueadero = 'Número de cupo debe estar entre 1 y 55 para carros';
                 isValid = false;
-            } else if (parking.tipoParqueadero.includes('moto') && (parking.cupParqueadero < 1 || parking.cupParqueadero > 46)) {
+            } else if (parking.tipoParqueadero.includes('moto') && (cupo < 1 || cupo > 46)) {
                 newErrors.cupParqueadero = 'Número de cupo debe estar entre 1 y 46 para motos';
                 isValid = false;
             }
+
+            // Verificar si el cupo está inhabilitado en otro registro solo si el estado es habilitado
+            if (parking.estadoParqueadero === 'habilitado') {
+                const isCupoInhabilitadoEnOtroRegistro = parkings.some(p => 
+                    p.cupParqueadero === cupo && p.estadoParqueadero === 'inhabilitado' && p.id!== parking.id
+                );
+
+                if (isCupoInhabilitadoEnOtroRegistro) {
+                    newErrors.cupParqueadero = 'El número de cupo está inhabilitado en otro registro';
+                    isValid = false;
+                }
+            }
         }
 
+        // Establecer errores y retornar la validez
         setErrors(newErrors);
         return isValid;
     };
+    
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -112,15 +120,39 @@ const ParqueaderoGuarda = () => { const [parkings, setParkings] = useState([]);
     
     const createParking = async () => {
         try {
-            const response = await axios.post('http://localhost:8085/api/parking/create', parking);
-            console.log('Response from createParking:', response.data); // Verificar la respuesta del backend
+            const dataToSend = {
+                tipoParqueadero: parking.tipoParqueadero,
+                estadoParqueadero: parking.estadoParqueadero,
+                fecParqueadero: parking.fecParqueadero,
+                dvteParqueadero: parking.dvteParqueadero,
+                cupParqueadero: parking.cupParqueadero,
+                horaSalida: parking.horaSalida || null,
+                costParqueadero: parking.costParqueadero // Si el backend lo requiere
+            };
+    
+            const response = await axios.post('http://localhost:8085/api/parking/create', dataToSend);
+            console.log('Parking creado:', response.data);
+    
+            // Limpiar el formulario y actualizar la lista de parqueaderos
             setShowForm(false);
-            fetchParkings();
+            setParking({
+                id: '',
+                tipoParqueadero: '',
+                estadoParqueadero: '',
+                fecParqueadero: '',
+                dvteParqueadero: '',
+                cupParqueadero: '',
+                horaSalida: '',
+                costParqueadero: ''
+            });
+    
+            fetchParkings(); // Actualizar lista de parqueaderos después de crear uno nuevo
         } catch (error) {
             console.error('Error creating parking:', error);
             setMessage('Error al crear el parqueadero');
         }
     };
+    
     
     const updateParking = async () => {
         try {
@@ -218,7 +250,7 @@ const ParqueaderoGuarda = () => { const [parkings, setParkings] = useState([]);
         <>
             <Menuguarda />
             <div className='Parqueaderos'>
-                <h2>Lista Parqueadero <i className="bi bi-car-front"></i></h2>
+                <h2>Parqueadero <i className="bi bi-car-front"></i></h2>
                 <div className="d-flex justify-content-between align-items-center">
                     <button 
                         className="btn btn-success smaller-button" 
@@ -247,48 +279,49 @@ const ParqueaderoGuarda = () => { const [parkings, setParkings] = useState([]);
                 {showForm && (
                     <div className='card'>
                         <div className='card-header'>
-                            <h3 className="card-title">
+                            
                                 {formType === 'create' ? (
                                     <>
-                                        <i className="bi bi-ev-front"></i>
-                                        <span className="ms-2">Crear Parqueadero</span>
+                                        <i className="bi bi-ev-front text-white"style={{ fontSize: '1.8rem' }}></i>
+                                        <span className="ms-2 text-white"style={{ fontSize: '1.8rem' }}> Crear Parqueadero</span>
                                     </>
                                 ) : (
                                     <>
-                                        <i className="bi bi-pencil-square"></i>
-                                        <span className="ms-2">Editar Parqueadero</span>
+                                        <i className="bi bi-pencil-square text-white"style={{ fontSize: '1.8rem' }}></i>
+                                        <span className="ms-2 text-white"style={{ fontSize: '1.8rem' }}> Editar Parqueadero</span>
                                     </>
                                 )}
-                            </h3>
+                          
                             
                         </div>
                         <div className='card-body'>
                             <form onSubmit={handleSubmit}>
-                            <div className="mb-3">
-                                <label className="form-label">Tipo de Parqueadero</label>
-                                <select
-                                    className="form-select"
-                                    name="tipoParqueadero"
-                                    value={parking.tipoParqueadero}
-                                    onChange={handleInputChange}
-                                >
-                                    <option value="">Seleccionar tipo de parqueadero</option>
-                                    <option value="carro-propietario">Carro Propietario</option>
-                                    <option value="carro-visitante">Carro Visitante</option>
-                                    <option value="moto-propietario">Moto Propietario</option>
-                                    <option value="moto-visitante">Moto Visitante</option>
-                                </select>
-                                {errors.tipoParqueadero && <div className="text-danger">{errors.tipoParqueadero}</div>}
-                            </div>
-                            <div className="mb-3">
-                                    <label className="form-label">Estado de Parqueadero</label>
+                                <div className="mb-3">
+                                    <label className="form-label">Tipo de Parqueadero</label>
                                     <select
                                         className="form-select"
+                                        name="tipoParqueadero"
+                                        value={parking.tipoParqueadero}
+                                        onChange={handleInputChange}
+                                    >
+                                        <option value="">Seleccionar tipo de parqueadero</option>
+                                        <option value="carro-propietario">Carro Propietario</option>
+                                        <option value="carro-visitante">Carro Visitante</option>
+                                        <option value="moto-propietario">Moto Propietario</option>
+                                        <option value="moto-visitante">Moto Visitante</option>
+                                    </select>
+                                    {errors.tipoParqueadero && <div className="text-danger">{errors.tipoParqueadero}</div>}
+                                </div>
+                                <div className="mb-3">
+                                    <label className="form-label">Estado</label>
+                                    <select
+                                        className="form-select"
+                                        id="estadoParqueadero"
                                         name="estadoParqueadero"
                                         value={parking.estadoParqueadero}
                                         onChange={handleInputChange}
                                     >
-                                        <option value="">Seleccionar estado de parqueadero</option>
+                                        <option value="">Seleccionar estado</option>
                                         <option value="habilitado">Habilitado</option>
                                         <option value="inhabilitado">Inhabilitado</option>
                                     </select>
@@ -329,6 +362,7 @@ const ParqueaderoGuarda = () => { const [parkings, setParkings] = useState([]);
                                         name="cupParqueadero"
                                         value={parking.cupParqueadero}
                                         onChange={handleInputChange}
+                                        /*disabled={parking.estadoParqueadero === 'inhabilitado'}*/
                                     />
                                     {errors.cupParqueadero && <div className="text-danger">{errors.cupParqueadero}</div>}
                                 </div>
@@ -346,11 +380,11 @@ const ParqueaderoGuarda = () => { const [parkings, setParkings] = useState([]);
                                 </div>
                                 <button type="submit" className="btn btn-success smaller-button sm-2" style={{ backgroundColor: '#1E4C40', borderColor: '#1E4C40',width: '160px', margin: 'auto' }}>
                                     <i class="bi bi-car-front-fill"></i>
-                                    {formType === 'create' ? 'Crear' : 'Editar'}
+                                    {formType === 'create' ? ' Crear' : ' Editar'}
                                 </button>
-                                <button type="button" className="btn btn-secondary me-2"style={{ backgroundColor: '#a11129'}} onClick={() => setShowForm(false)}>
+                                <button type="button" className="btn btn-secondary smaller-button sm-2"style={{ backgroundColor: '#a11129',width: '160px', margin: 'auto' }} onClick={() => setShowForm(false)}>
                                     <i className="bi bi-x-circle-fill"></i>
-                                    <span className="ms-2">Cancelar</span>
+                                    <span className="ms-2"> Cancelar</span>
                                 </button>
                             </form>
                         </div>

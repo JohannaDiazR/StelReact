@@ -41,12 +41,6 @@ const Menu = () => {
               </ul>
             </li>
             <li className="nav-item dropdown align-self-center">
-              <a className="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Parqueadero<i className="bi bi-car-front-fill"></i></a>
-              <ul className="dropdown-menu">
-                <li><Link className="dropdown-item centered-text" to="/parqueaderoResidente">Parqueadero</Link></li>
-              </ul>
-            </li>
-            <li className="nav-item dropdown align-self-center">
               <a className="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Comunicación <i className="bi bi-chat-left-text"></i></a>
               <ul className="dropdown-menu">
                 <li><Link className="dropdown-item centered-text" to="/CorrespondenciaResidente">Correspondencia</Link></li>

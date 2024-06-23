@@ -68,7 +68,7 @@ const Correspondencia = () => {
         <>
             <Menu />
             <div className='Correspondence'>
-                <h2>Lista correspondencias <i className="bi bi-universal-access-circle"></i></h2>
+                <h2>Correspondencias <i className="bi bi-universal-access-circle"></i></h2>
                 <div className='d-flex justify-content-end align-items-center'>
                     <div className="input-group" style={{ width: '36%' }}>
                         <div className="input-group-prepend">
@@ -104,21 +104,36 @@ const Correspondencia = () => {
                     </thead>
                     <tbody>
                         {currentCorrespondences.map((correspondence) =>{
-                            // Formatear frecuencia de correspondencia
-                            const frecuencia = new Date(correspondence.frecCorrespondencia).toLocaleDateString('es-ES');
-
-                            // Formatear fecha de entrada de correspondencia
-                            const fechaEntrada = correspondence.estCorrespondencia !== 'No entregado' 
-                            ? new Date(correspondence.fentrCorrespondencia).toLocaleDateString('es-ES') 
-                            : '';
+                           const fecharecibido = new Date(correspondence.frecCorrespondencia);
+                           const formattedFechaRecibido = fecharecibido.toLocaleString('es-ES', {
+                               year: 'numeric',
+                               month: '2-digit',
+                               day: '2-digit',
+                               hour: '2-digit',
+                               minute: '2-digit',
+                               second: '2-digit'
+                           });
+   
+                           let formattedFechaEntrega = '';
+                           if (correspondence.fentrCorrespondencia) {
+                               const fechaentrega = new Date(correspondence.fentrCorrespondencia);
+                               formattedFechaEntrega = fechaentrega.toLocaleString('es-ES', {
+                                   year: 'numeric',
+                                   month: '2-digit',
+                                   day: '2-digit',
+                                   hour: '2-digit',
+                                   minute: '2-digit',
+                                   second: '2-digit'
+                               });
+                           }
 
                             return (
                                 <tr key={correspondence.id}>
                                     <td style={{textAlign: 'center'}}>{correspondence.id}</td>
                                     <td style={{textAlign: 'center'}}>{correspondence.tipoCorrespondencia}</td>
-                                    <td style={{textAlign: 'center'}}>{frecuencia}</td> 
+                                    <td style={{textAlign: 'center'}}>{formattedFechaRecibido}</td> 
                                     <td style={{textAlign: 'center'}}>{correspondence.estCorrespondencia}</td>
-                                    <td style={{textAlign: 'center'}}>{fechaEntrada}</td> 
+                                    <td style={{textAlign: 'center'}}>{formattedFechaEntrega}</td> 
                                     <td style={{textAlign: 'center'}}>{correspondence.worker ? correspondence.worker.userName : 'N/A'}</td>
                                     <td style={{textAlign: 'center'}}>{correspondence.property ? correspondence.property.numInmueble : 'N/A'}</td>
                                 </tr>
