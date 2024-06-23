@@ -81,7 +81,7 @@ const ParqueaderoGuarda = () => { const [parkings, setParkings] = useState([]);
             if (parking.tipoParqueadero.includes('carro') && (cupo < 1 || cupo > 55)) {
                 newErrors.cupParqueadero = 'Número de cupo debe estar entre 1 y 55 para carros';
                 isValid = false;
-            } else if (parking.tipoParqueadero.includes('moto') && (cupo < 1 || cupo > 46)) {
+            } else if (parking.tipoParqueadero.includes('moto') && (cupo < 1 || cupo > 41)) {
                 newErrors.cupParqueadero = 'Número de cupo debe estar entre 1 y 46 para motos';
                 isValid = false;
             }
